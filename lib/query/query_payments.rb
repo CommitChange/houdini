@@ -334,8 +334,28 @@ module QueryPayments
     ParamValidation.new({npo_id: npo_id, query:query}, {npo_id: {required: true, is_int: true},
                                                         query: {required:true, is_hash: true}})
 
+    payment_column = nil
     return QexprQueryChunker.for_export_enumerable(chunk_limit) do |offset, limit, skip_header|
-      get_chunk_of_export(npo_id, query, offset, limit, skip_header)
+      result = get_chunk_of_export(npo_id, query, offset, limit, skip_header).to_a
+      if query[:include_custom_fields]
+        custom_fields = Nonprofit.find(npo_id).custom_field_masters.order("created_at ASC").to_a
+
+        if !skip_header
+          result[0] = result[0].concat(custom_fields.map{|i| i.name})
+          payment_column = result[0].each_with_index.select{|i, index| i == 'Payment'}.map{|i, index| index}.first
+        end
+
+        start_index = skip_header ? 0 : 1
+        result.drop(start_index).map do |payment_record|
+          payment = Payment.find(payment_record[payment_column])
+          supporter_id = payment.supporter.id
+          payment_record.concat(custom_fields.map{|cf| 
+            joins = cf.custom_field_joins.where(supporter_id: payment.supporter.id).limit(1)
+            joins.any? ? joins.first.value : ""
+          })
+        end
+      end
+      result
     end
 
   end
