@@ -167,6 +167,8 @@ module QuerySupporters
                         .where("supporters.nonprofit_id = $id and deleted != 'true'", id: np_id )
                         .as("payments_to_supporters"),  "payments_to_supporters.id = payments.supporter_id"
               )
+              .where(query[:max_payment_date_for_aggregate] ? "payments.date < '#{Chronic.parse(query[:max_payment_date_for_aggregate])}'" : "TRUE" )
+              .and_where(query[:min_payment_date_for_aggregate] ? "payments.date > '#{Chronic.parse(query[:min_payment_date_for_aggregate])}'" : "TRUE" )
               .as("outer_from_payment_to_supporter")
               .parse)
       .group_by(:supporter_id)
@@ -364,6 +366,8 @@ UNION DISTINCT
 
       get_last_payment_query = Qx.select('supporter_id', "MAX(date) AS date")
                                    .from(:payments)
+                                   .where(query[:max_payment_date_for_aggregate] ? "payments.date < '#{Chronic.parse(query[:max_payment_date_for_aggregate])}'" : "TRUE" )
+                                   .and_where(query[:min_payment_date_for_aggregate] ? "payments.date > '#{Chronic.parse(query[:min_payment_date_for_aggregate])}'" : "TRUE" )
                                    .group_by("supporter_id")
                                    .as("last_payment")
 
