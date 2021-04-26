@@ -91,8 +91,6 @@ Commitchange::Application.configure do
 	# with SQLite, MySQL, and PostgreSQL)
 	# config.active_record.auto_explain_threshold_in_seconds = 0.5
 
-  config.assets.compile = false
-
 	config.threadsafe!
 	config.dependency_loading = true if $rails_rake_task
 	# Compress json
