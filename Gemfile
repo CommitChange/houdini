@@ -4,6 +4,9 @@ ruby '2.3.8'
 gem 'rake', '~> 12.3.3'
 gem 'rails', '3.2.22.5'
 
+#Fixes 'invalid hash' error on Ubuntu 20.04
+gem 'bcrypt', '~> 3.1.16'
+
 # https://stripe.com/docs/api
 gem 'stripe', '~> 4'
 
