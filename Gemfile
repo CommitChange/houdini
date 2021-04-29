@@ -94,6 +94,9 @@ gem 'rails-i18n', '~> 3.0.0' # For 3.x
 gem 'i18n-js'
 gem 'countries'
 
+# App monitoring https://appsignal.com/
+gem 'appsignal'
+
 
 group :development, :ci do
   gem 'traceroute'
