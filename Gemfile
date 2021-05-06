@@ -32,6 +32,9 @@ gem 'rack-attack'
 # to find middleware thread safety bugs
 gem 'rack-freeze'
 
+# support for CORS for rack compatible web applications
+gem 'rack-cors'
+
 # Database (postgres)
 gem 'pg' # Postgresql
 gem 'qx', path: 'gems/ruby-qx'

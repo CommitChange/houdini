@@ -57,6 +57,19 @@ module Commitchange
 		# parameters by using an attr_accessible or attr_protected declaration.
 		config.active_record.whitelist_attributes = true
 
+		config.middleware.insert_before 0, Rack::Cors do
+			allow do
+				origins %w[
+					https://us.commitchange.com
+					https://commitchange.herokuapp.com
+					https://commitchange-test.herokuapp.com
+				]
+				resource '*',
+					headers: :any,
+					methods: [:get, :post, :put, :patch, :delete, :options, :head]
+			end
+		end
+
 		# Enable the asset pipeline
 		config.assets.enabled = true
 
