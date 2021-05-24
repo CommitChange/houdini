@@ -95,6 +95,10 @@ module QueryRecurringDonations
         OR recurring_donations.id=$id
       )), {name: matcher, email: matcher, amount: query[:search].to_i, id: query[:search].to_i})
     end
+
+    if query[:ids].present?
+      expr = expr.where('recurring_donations.id IN ($ids)', ids: query[:ids])
+    end
     return expr
   end
 
