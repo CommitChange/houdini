@@ -35,7 +35,10 @@ RSpec.shared_context :shared_donation_charge_context do
 
   let(:donation_for_rd) {force_create(:donation, recurring: true, nonprofit: nonprofit, supporter: supporter, card: card_with_valid_stripe_id, amount: 500)}
   let(:recurring_donation) {force_create(:recurring_donation, donation: donation_for_rd, nonprofit: nonprofit, supporter:supporter, start_date: Time.now, interval: 1, time_unit: 'month')}
-
+  
+  let!(:current_fee_era) { create(:fee_era_with_structures)}
+  let!(:previous_fee_era) { create(:fee_era_with_no_start)}
+  let!(:future_fee_era) { create(:fee_era_with_no_end)}
 
   let(:stripe_helper) { StripeMock.create_test_helper }
 
