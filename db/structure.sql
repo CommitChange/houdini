@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.6 (Ubuntu 12.6-0ubuntu0.20.10.1)
--- Dumped by pg_dump version 12.6 (Ubuntu 12.6-0ubuntu0.20.10.1)
+-- Dumped from database version 13.2
+-- Dumped by pg_dump version 13.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -462,7 +462,8 @@ CREATE TABLE public.charges (
     payment_id integer,
     status character varying(255),
     fee integer,
-    direct_debit_detail_id integer
+    direct_debit_detail_id integer,
+    revenue character varying
 );
 
 
@@ -5426,4 +5427,6 @@ INSERT INTO schema_migrations (version) VALUES ('20210521210949');
 INSERT INTO schema_migrations (version) VALUES ('20210524185334');
 
 INSERT INTO schema_migrations (version) VALUES ('20210524185342');
+
+INSERT INTO schema_migrations (version) VALUES ('20210602125759');
 
