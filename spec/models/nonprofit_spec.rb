@@ -206,7 +206,21 @@ RSpec.describe Nonprofit, type: :model do
           end
         end
       end
+    end
 
+    describe '#fee_coverage_details' do
+      
+
+      it {
+        expect(nonprofit.fee_coverage_details).to be({percentage_fee:  BigDecimal.new("0.05"), flat_fee: 0})
+      }
+
+      context 'for a nonprofit with CC percentage_fee 2.5% + 5 cents' do
+        subject(:nonprofit){ create(:nonprofit_with_billing_plan_percentage_fee_of_2_5_percent_and_5_cents_flat)}
+        it {
+          expect(nonprofit.fee_coverage_details).to be({percentage_fee: BigDecimal.new("0.025") + "0.022", flat_fee: 35})
+        }
+      end
     end
   end
 end

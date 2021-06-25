@@ -124,6 +124,7 @@ RSpec.describe FeeEra, type: :model do
   context 'validation' do
     it {is_expected.to validate_numericality_of(:international_surcharge_fee).is_greater_than_or_equal_to(0).is_less_than(1)}
     it {is_expected.to have_many(:fee_structures).validate(true)}
+    it {is_expected.to belong_to(:fee_coverage_detail).validate(true)}
   end
 
   describe '.find_fee_structure' do

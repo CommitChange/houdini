@@ -13,6 +13,8 @@
 #   @return One or more FeeStructure objects that apply during the FeeEra
 class FeeEra < ActiveRecord::Base
 
+  belongs_to :fee_coverage_detail
+
   has_many :fee_structures do 
     def find_by_source(source)
       raise ArgumentError, 
@@ -27,13 +29,14 @@ class FeeEra < ActiveRecord::Base
     end
   end
 
-  validates_associated :fee_structures
+  validates_associated :fee_structures, :fee_coverage_detail
   
   validates :international_surcharge_fee,
     numericality: {greater_than_or_equal_to: 0, less_than: 1}, allow_nil: true
 
   validates_presence_of :international_surcharge_fee, if: -> { local_country.present? }
   
+  validate_presence_of :fee_coverage_detail
   #
   # Should an international surcharge be added
   #

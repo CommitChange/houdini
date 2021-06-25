@@ -1,24 +1,15 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-require 'format/currency'
-require 'validation_error'
-require 'stripe'
-require 'active_support/core_ext'
-require 'psql'
-require 'qexpr'
-require 'calculate/calculate_fees'
-require 'param_validation'
-require 'insert/insert_activities'
 
 module InsertRefunds
 
   # Refund a given charge, up to its net amount
   # params: amount, donation obj
   def self.with_stripe(charge, h)
-    if Time.now < FEE_SWITCHOVER_TIME
-      legacy_refund(charge, h)
-    else
+    # if Time.now < FEE_SWITCHOVER_TIME
+    #   legacy_refund(charge, h)
+    # else
       modern_refund(charge, h)
-    end
+    # end
   end
 
 

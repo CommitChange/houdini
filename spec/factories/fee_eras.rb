@@ -1,6 +1,6 @@
 FactoryBot.define do
   
-  factory :fee_era, aliases: [:fee_era_with_no_local_country] do
+  factory :fee_era do
     start_time "2020-05-01"
     end_time "2020-05-07"
     local_country { 'US'}
