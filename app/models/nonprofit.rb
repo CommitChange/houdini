@@ -242,6 +242,38 @@ class Nonprofit < ActiveRecord::Base
     ret
   end
 
+  concerning :FeeCalculation do
+    
+    # @param [Hash] opts
+    # @option opts [#brand, #country] :source the source to use for calculating the fee
+    # @option opts [Integer] :amount  the amount of the transaction in cents
+    # @option opts [DateTime,nil] :at (nil) the time to use for searching for a FeeEra. Default of current time
+    def calculate_fee(opts={})
+      FeeEra.calculate_fee(
+        **opts,
+        platform_fee: billing_plan.percentage_fee.to_s,
+        flat_platform_fee: billing_plan.flat_platform_fee
+        )
+    end
+
+
+    # @param [Hash] opts
+    # @option opts [#brand, #country] :source  the source to use for calculating the fee
+    # @option opts [Integer] :amount  the amount of the transaction in cents
+    # @option opts [DateTime,nil] :at (nil) the time to use for searching for a FeeEra. Default of current time
+    def calculate_stripe_fee(opts={})
+      FeeEra.calculate_stripe_fee(opts)
+    end
+
+    # @param [Hash] opts
+    # @option opts [Stripe::Charge] :charge the Stripe::Charge to use for calculating the fee
+    # @option opts [Stripe::Refund] :refund the Stripe::Refund for 
+    # @option opts [Stripe::ApplicationFee] :application_fee the Stripe::ApplicationFee for this Charge
+    def calculate_application_fee_refund(opts={})
+      FeeEra.calculate_application_fee_refund(opts)
+    end
+  end
+
   def hide_cover_fees?
     miscellaneous_np_info&.hide_cover_fees
   end

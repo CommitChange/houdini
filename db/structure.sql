@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.6 (Ubuntu 12.6-0ubuntu0.20.10.1)
--- Dumped by pg_dump version 12.6 (Ubuntu 12.6-0ubuntu0.20.10.1)
+-- Dumped from database version 12.7 (Ubuntu 12.7-0ubuntu0.20.10.1)
+-- Dumped by pg_dump version 12.7 (Ubuntu 12.7-0ubuntu0.20.10.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -200,7 +200,8 @@ CREATE TABLE public.billing_plans (
     updated_at timestamp without time zone NOT NULL,
     tier integer,
     "interval" character varying(255),
-    percentage_fee real DEFAULT 0 NOT NULL
+    percentage_fee numeric DEFAULT 0 NOT NULL,
+    flat_platform_fee integer DEFAULT 0 NOT NULL
 );
 
 
@@ -1026,6 +1027,77 @@ CREATE SEQUENCE public.exports_id_seq
 --
 
 ALTER SEQUENCE public.exports_id_seq OWNED BY public.exports.id;
+
+
+--
+-- Name: fee_eras; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fee_eras (
+    id integer NOT NULL,
+    start_time timestamp without time zone,
+    end_time timestamp without time zone,
+    local_country character varying,
+    international_surcharge_fee numeric,
+    refund_stripe_fee boolean DEFAULT false,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: fee_eras_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.fee_eras_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: fee_eras_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.fee_eras_id_seq OWNED BY public.fee_eras.id;
+
+
+--
+-- Name: fee_structures; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fee_structures (
+    id integer NOT NULL,
+    brand character varying,
+    flat_fee integer,
+    stripe_fee numeric,
+    fee_era_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: fee_structures_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.fee_structures_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: fee_structures_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.fee_structures_id_seq OWNED BY public.fee_structures.id;
 
 
 --
@@ -2874,6 +2946,20 @@ ALTER TABLE ONLY public.exports ALTER COLUMN id SET DEFAULT nextval('public.expo
 
 
 --
+-- Name: fee_eras id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fee_eras ALTER COLUMN id SET DEFAULT nextval('public.fee_eras_id_seq'::regclass);
+
+
+--
+-- Name: fee_structures id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fee_structures ALTER COLUMN id SET DEFAULT nextval('public.fee_structures_id_seq'::regclass);
+
+
+--
 -- Name: full_contact_infos id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3363,6 +3449,22 @@ ALTER TABLE ONLY public.events
 
 ALTER TABLE ONLY public.exports
     ADD CONSTRAINT exports_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fee_eras fee_eras_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fee_eras
+    ADD CONSTRAINT fee_eras_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fee_structures fee_structures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fee_structures
+    ADD CONSTRAINT fee_structures_pkey PRIMARY KEY (id);
 
 
 --
@@ -5426,4 +5528,12 @@ INSERT INTO schema_migrations (version) VALUES ('20210521210949');
 INSERT INTO schema_migrations (version) VALUES ('20210524185334');
 
 INSERT INTO schema_migrations (version) VALUES ('20210524185342');
+
+INSERT INTO schema_migrations (version) VALUES ('20210607214751');
+
+INSERT INTO schema_migrations (version) VALUES ('20210607215241');
+
+INSERT INTO schema_migrations (version) VALUES ('20210611211647');
+
+INSERT INTO schema_migrations (version) VALUES ('20210616163838');
 
