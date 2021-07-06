@@ -11,6 +11,7 @@ describe NonprofitsController, type: :request do
   describe '#donate' do
     it 'allows being put into a frame by not setting X-Frame-Options header' do
       get "/nonprofits/#{our_np.id}/donate"
+      byebug
       expect(response.status).to eq 200
       expect(response.headers).to_not include 'X-Frame-Options'
     end

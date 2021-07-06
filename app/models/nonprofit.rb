@@ -272,6 +272,21 @@ class Nonprofit < ActiveRecord::Base
     def calculate_application_fee_refund(opts={})
       FeeEra.calculate_application_fee_refund(opts)
     end
+
+    # the flat_fee and percentage_fee to use for calculating fee coverage on transactions for this nonprofit
+    # 
+    # These fee_coverage details are calcuated as follows:
+    # 
+    # {
+    #   flat_fee: flat_platform_fee as part of BillingPlan + flat_fee from FeeCoverageDetailBase on current FeeEra,
+    #   percentage_fee: percentage_fee as part of BillingPlan + percentage_fee from FeeCoverageDetailBase on current FeeEra
+    # }
+    def fee_coverage_details
+      {
+        flat_fee: billing_plan.flat_platform_fee + FeeEra.current.fee_coverage_detail_base.flat_fee,
+        percentage_fee: billing_plan.percentage_fee + FeeEra.current.fee_coverage_detail_base.percentage_fee
+      }
+    end
   end
 
   def hide_cover_fees?

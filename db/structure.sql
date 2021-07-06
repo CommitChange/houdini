@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 12.7 (Ubuntu 12.7-0ubuntu0.20.10.1)
--- Dumped by pg_dump version 12.7 (Ubuntu 12.7-0ubuntu0.20.10.1)
+-- Dumped by pg_dump version 13.3 (Ubuntu 13.3-0ubuntu0.21.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1027,6 +1027,40 @@ CREATE SEQUENCE public.exports_id_seq
 --
 
 ALTER SEQUENCE public.exports_id_seq OWNED BY public.exports.id;
+
+
+--
+-- Name: fee_coverage_detail_bases; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fee_coverage_detail_bases (
+    id integer NOT NULL,
+    flat_fee integer,
+    percentage_fee numeric,
+    fee_era_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: fee_coverage_detail_bases_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.fee_coverage_detail_bases_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: fee_coverage_detail_bases_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.fee_coverage_detail_bases_id_seq OWNED BY public.fee_coverage_detail_bases.id;
 
 
 --
@@ -2946,6 +2980,13 @@ ALTER TABLE ONLY public.exports ALTER COLUMN id SET DEFAULT nextval('public.expo
 
 
 --
+-- Name: fee_coverage_detail_bases id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fee_coverage_detail_bases ALTER COLUMN id SET DEFAULT nextval('public.fee_coverage_detail_bases_id_seq'::regclass);
+
+
+--
 -- Name: fee_eras id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3449,6 +3490,14 @@ ALTER TABLE ONLY public.events
 
 ALTER TABLE ONLY public.exports
     ADD CONSTRAINT exports_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fee_coverage_detail_bases fee_coverage_detail_bases_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fee_coverage_detail_bases
+    ADD CONSTRAINT fee_coverage_detail_bases_pkey PRIMARY KEY (id);
 
 
 --
@@ -5536,4 +5585,6 @@ INSERT INTO schema_migrations (version) VALUES ('20210607215241');
 INSERT INTO schema_migrations (version) VALUES ('20210611211647');
 
 INSERT INTO schema_migrations (version) VALUES ('20210616163838');
+
+INSERT INTO schema_migrations (version) VALUES ('20210625185856');
 

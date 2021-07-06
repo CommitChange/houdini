@@ -7,6 +7,23 @@ RSpec.describe FeeEra, type: :model do
       example.run
     end
   end
+
+  describe '.current' do
+    context 'when era exists' do 
+      let!(:fee_era) { create(:fee_era)}
+      let!(:fee_era_with_no_start) { create(:fee_era_with_no_start)}
+      let!(:fee_era_with_no_end) { create(:fee_era_with_no_end)}
+      it "for current time" do
+          expect(FeeEra.current).to eq fee_era
+      end
+    end
+    
+    context 'when no era is found' do
+      it {
+        expect { FeeEra.current}.to raise_error(ActiveRecord::RecordNotFound)
+      }
+    end
+  end
   
   describe '.find_by_time' do
     context 'when era exists' do 
@@ -124,7 +141,8 @@ RSpec.describe FeeEra, type: :model do
   context 'validation' do
     it {is_expected.to validate_numericality_of(:international_surcharge_fee).is_greater_than_or_equal_to(0).is_less_than(1)}
     it {is_expected.to have_many(:fee_structures).validate(true)}
-    it {is_expected.to belong_to(:fee_coverage_detail).validate(true)}
+    it {is_expected.to have_one(:fee_coverage_detail_base).validate(true)}
+    it {is_expected.to validate_presence_of(:fee_coverage_detail_base)}
   end
 
   describe '.find_fee_structure' do

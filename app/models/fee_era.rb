@@ -13,9 +13,9 @@
 #   @return One or more FeeStructure objects that apply during the FeeEra
 class FeeEra < ActiveRecord::Base
 
-  belongs_to :fee_coverage_detail
+  has_one :fee_coverage_detail_base, validate: true
 
-  has_many :fee_structures do 
+  has_many :fee_structures do
     def find_by_source(source)
       raise ArgumentError, 
         'source must be a valid Stripe::Source, Stripe::Card or similar' unless source.respond_to?(:brand) and source.respond_to?(:country)
@@ -29,14 +29,14 @@ class FeeEra < ActiveRecord::Base
     end
   end
 
-  validates_associated :fee_structures, :fee_coverage_detail
+  validates_associated :fee_structures, :fee_coverage_detail_base
   
   validates :international_surcharge_fee,
     numericality: {greater_than_or_equal_to: 0, less_than: 1}, allow_nil: true
 
   validates_presence_of :international_surcharge_fee, if: -> { local_country.present? }
   
-  validate_presence_of :fee_coverage_detail
+  validates_presence_of :fee_coverage_detail_base
   #
   # Should an international surcharge be added
   #
@@ -141,5 +141,9 @@ class FeeEra < ActiveRecord::Base
   # @option opts [DateTime,nil] :at (nil) the time to use for searching for a FeeEra. Default of current time
   def self.calculate_stripe_fee(opts={})
     FeeEra.find_by_time(opts[:at]).calculate_stripe_fee(opts)
+  end
+
+  def self.current
+    FeeEra.find_by_time
   end
 end
