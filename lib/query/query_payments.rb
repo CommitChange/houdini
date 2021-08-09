@@ -359,17 +359,32 @@ module QueryPayments
 
     return QexprQueryChunker.get_chunk_of_query(offset, limit, skip_header) {
 
-
+      payments_to_supporters_subquery =
+        Qexpr.new
+          .select('id')
+          .from('supporters')
+          .where("supporters.nonprofit_id=$id AND deleted != 'true'", id: npo_id)
+      outer_from_payment_to_supporter_subquery =
+        Qexpr.new
+          .select('supporter_id', 'gross_amount')
+          .from('payments')
+          .join("(#{payments_to_supporters_subquery}) AS payments_to_supporters", 'payments_to_supporters.id = payments.supporter_id')
+      supporter_payments_subquery = 
+        Qexpr.new
+          .select('supporter_id', 'SUM(gross_amount)')
+          .from("(#{outer_from_payment_to_supporter_subquery}) AS outer_from_payment_to_supporter")
+          .group_by('supporter_id')
       tickets_subquery = Qexpr.new.select("payment_id", "MAX(event_id) AS event_id").from("tickets").group_by("payment_id").as("tickets")
       expr = full_search_expr(npo_id, query)
-                 .select(*export_selects)
-                 .left_outer_join('campaign_gifts', 'campaign_gifts.donation_id=donations.id')
-                .left_outer_join('campaign_gift_options', 'campaign_gifts.campaign_gift_option_id=campaign_gift_options.id')
-                .left_outer_join("(#{campaigns_with_creator_email}) AS campaigns_for_export", 'donations.campaign_id=campaigns_for_export.id')
-                 .left_outer_join(tickets_subquery, 'tickets.payment_id=payments.id')
-                 .left_outer_join('events events_for_export', 'events_for_export.id=tickets.event_id OR donations.event_id=events_for_export.id')
-                 .left_outer_join('offsite_payments', 'offsite_payments.payment_id=payments.id')
-                 .left_outer_join('misc_payment_infos', 'payments.id = misc_payment_infos.payment_id')
+              .select(*export_selects)
+              .left_outer_join('campaign_gifts', 'campaign_gifts.donation_id=donations.id')
+              .left_outer_join('campaign_gift_options', 'campaign_gifts.campaign_gift_option_id=campaign_gift_options.id')
+              .left_outer_join("(#{campaigns_with_creator_email}) AS campaigns_for_export", 'donations.campaign_id=campaigns_for_export.id')
+              .left_outer_join(tickets_subquery, 'tickets.payment_id=payments.id')
+              .left_outer_join('events events_for_export', 'events_for_export.id=tickets.event_id OR donations.event_id=events_for_export.id')
+              .left_outer_join('offsite_payments', 'offsite_payments.payment_id=payments.id')
+              .left_outer_join('misc_payment_infos', 'payments.id = misc_payment_infos.payment_id')
+              .left_outer_join("(#{supporter_payments_subquery}) AS supporter_payments", 'supporter_payments.supporter_id = supporters.id')
     }
   end
 
@@ -404,7 +419,8 @@ module QueryPayments
      'payments.id AS payment_id',
      'offsite_payments.check_number AS check_number',
      'donations.comment AS donation_note',
-     'coalesce(nullif(misc_payment_infos.fee_covered, false), false) AS "Fee Covered by Supporter"'
+     'coalesce(nullif(misc_payment_infos.fee_covered, false), false) AS "Fee Covered by Supporter"',
+     '(supporter_payments.sum / 100.0) :: money :: text AS "Total Supporter Contribution"'
     ])
   end
 
