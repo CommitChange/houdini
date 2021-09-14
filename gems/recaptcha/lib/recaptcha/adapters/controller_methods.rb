@@ -89,6 +89,7 @@ module Recaptcha
         rescue Timeout::Error
             result = {success:false, error: RecaptchaError.new, error_message: Recaptcha::Helpers.to_error_message(:recaptcha_unreachable) }
         rescue StandardError => e
+          byebug
           result = {success:false, error: RecaptchaError.new, error_message: e.message + "\n" + e.backtrace }
         end
       end

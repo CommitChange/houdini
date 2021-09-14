@@ -61,7 +61,7 @@ module Recaptcha
 
   def self.verify_via_api_call(response, options)
     secret_key = options.fetch(:secret_key) { configuration.secret_key! }
-    verify_hash = { 'secret' => secret_key, 'response' => response }
+    verify_hash = { 'key' => secret_key, 'response' => response }
     verify_hash['remoteip'] = options[:remote_ip] if options.key?(:remote_ip)
 
     reply = api_verification(verify_hash, timeout: options[:timeout])
@@ -126,6 +126,8 @@ module Recaptcha
     http_instance.read_timeout = http_instance.open_timeout = timeout
     http_instance.use_ssl = true if uri.port == 443
     request = Net::HTTP::Get.new(uri.request_uri)
-    JSON.parse(http_instance.request(request).body)
+    result = http_instance.request(request).body
+    byebug
+    JSON.parse(result)
   end
 end
