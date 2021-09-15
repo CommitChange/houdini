@@ -35,7 +35,7 @@ class CardsController < ApplicationController
         action: 'create_card',
         minimum_score_required: ENV['MINIMUM_RECAPTCHA_SCORE'],
         recaptcha_result: recaptcha_reply,
-        recaptcha_value: d['g-recaptcha-response']
+        recaptcha_value: params['g-recaptcha-response']
       }
       failure = RecaptchaRejection.new
       failure.details_json = failure_details
