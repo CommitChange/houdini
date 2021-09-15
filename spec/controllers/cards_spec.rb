@@ -11,4 +11,10 @@ describe CardsController, :type => :controller do
       end
     end
   end
+
+  it {is_expected.to rescue_from(::Recaptcha::RecaptchaError).with(:handle_recaptcha_failure)}
+
+  it {is_expected.to use_before_action(:verify_via_recaptcha!)}
+  it {success}
+
 end
