@@ -792,7 +792,7 @@ CREATE TABLE public.donations (
     card_id integer,
     designation text,
     offsite boolean,
-    anonymous boolean,
+    anonymous boolean DEFAULT false NOT NULL,
     supporter_id integer,
     origin_url text,
     manual boolean,
@@ -2154,7 +2154,7 @@ CREATE TABLE public.recurring_donations (
     time_unit character varying(255),
     start_date date,
     end_date date,
-    anonymous boolean,
+    anonymous boolean DEFAULT false NOT NULL,
     donation_id integer,
     n_failures integer,
     cancelled_by character varying(255),
@@ -2351,6 +2351,39 @@ ALTER SEQUENCE public.stripe_accounts_id_seq OWNED BY public.stripe_accounts.id;
 
 
 --
+-- Name: stripe_charges; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.stripe_charges (
+    id integer NOT NULL,
+    object jsonb NOT NULL,
+    stripe_charge_id character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: stripe_charges_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.stripe_charges_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: stripe_charges_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.stripe_charges_id_seq OWNED BY public.stripe_charges.id;
+
+
+--
 -- Name: stripe_disputes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2421,6 +2454,44 @@ CREATE SEQUENCE public.stripe_events_id_seq
 --
 
 ALTER SEQUENCE public.stripe_events_id_seq OWNED BY public.stripe_events.id;
+
+
+--
+-- Name: supporter_addresses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.supporter_addresses (
+    id integer NOT NULL,
+    address character varying,
+    city character varying,
+    zip_code character varying,
+    state_code character varying,
+    country character varying,
+    deleted boolean DEFAULT false NOT NULL,
+    supporter_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: supporter_addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.supporter_addresses_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: supporter_addresses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.supporter_addresses_id_seq OWNED BY public.supporter_addresses.id;
 
 
 --
@@ -2514,7 +2585,7 @@ CREATE TABLE public.supporters (
     address character varying(255),
     city character varying(255),
     state_code character varying(255),
-    anonymous boolean,
+    anonymous boolean DEFAULT false NOT NULL,
     zip_code character varying(255),
     latitude double precision,
     longitude double precision,
@@ -2524,7 +2595,6 @@ CREATE TABLE public.supporters (
     imported_at timestamp without time zone,
     country character varying(255) DEFAULT 'United States'::character varying,
     import_id integer,
-    email_unsubscribe_uuid character varying(255),
     is_unsubscribed_from_emails boolean,
     merged_into integer,
     merged_at timestamp without time zone,
@@ -2533,7 +2603,8 @@ CREATE TABLE public.supporters (
     last_name character varying(255),
     locale character varying(255),
     fts tsvector,
-    phone_index character varying
+    phone_index character varying,
+    primary_address_id integer
 );
 
 
@@ -3241,6 +3312,13 @@ ALTER TABLE ONLY public.stripe_accounts ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: stripe_charges id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stripe_charges ALTER COLUMN id SET DEFAULT nextval('public.stripe_charges_id_seq'::regclass);
+
+
+--
 -- Name: stripe_disputes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3252,6 +3330,13 @@ ALTER TABLE ONLY public.stripe_disputes ALTER COLUMN id SET DEFAULT nextval('pub
 --
 
 ALTER TABLE ONLY public.stripe_events ALTER COLUMN id SET DEFAULT nextval('public.stripe_events_id_seq'::regclass);
+
+
+--
+-- Name: supporter_addresses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supporter_addresses ALTER COLUMN id SET DEFAULT nextval('public.supporter_addresses_id_seq'::regclass);
 
 
 --
@@ -3797,6 +3882,14 @@ ALTER TABLE ONLY public.stripe_accounts
 
 
 --
+-- Name: stripe_charges stripe_charges_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stripe_charges
+    ADD CONSTRAINT stripe_charges_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: stripe_disputes stripe_disputes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3810,6 +3903,14 @@ ALTER TABLE ONLY public.stripe_disputes
 
 ALTER TABLE ONLY public.stripe_events
     ADD CONSTRAINT stripe_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: supporter_addresses supporter_addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supporter_addresses
+    ADD CONSTRAINT supporter_addresses_pkey PRIMARY KEY (id);
 
 
 --
@@ -4292,6 +4393,13 @@ CREATE INDEX index_stripe_accounts_on_stripe_account_id ON public.stripe_account
 
 
 --
+-- Name: index_stripe_charges_on_stripe_charge_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_stripe_charges_on_stripe_charge_id ON public.stripe_charges USING btree (stripe_charge_id);
+
+
+--
 -- Name: index_stripe_disputes_on_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4324,6 +4432,13 @@ CREATE INDEX index_stripe_events_on_event_id ON public.stripe_events USING btree
 --
 
 CREATE INDEX index_stripe_events_on_object_id_and_event_time ON public.stripe_events USING btree (object_id, event_time);
+
+
+--
+-- Name: index_supporter_addresses_on_supporter_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_supporter_addresses_on_supporter_id ON public.supporter_addresses USING btree (supporter_id);
 
 
 --
@@ -4552,6 +4667,14 @@ ALTER TABLE ONLY public.campaign_gifts
 
 
 --
+-- Name: supporters fk_rails_1007f7f722; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supporters
+    ADD CONSTRAINT fk_rails_1007f7f722 FOREIGN KEY (primary_address_id) REFERENCES public.supporter_addresses(id);
+
+
+--
 -- Name: fee_coverage_detail_bases fk_rails_13c8ce7956; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4565,6 +4688,14 @@ ALTER TABLE ONLY public.fee_coverage_detail_bases
 
 ALTER TABLE ONLY public.fee_structures
     ADD CONSTRAINT fk_rails_55f7b67177 FOREIGN KEY (fee_era_id) REFERENCES public.fee_eras(id);
+
+
+--
+-- Name: supporter_addresses fk_rails_bd7fbee619; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supporter_addresses
+    ADD CONSTRAINT fk_rails_bd7fbee619 FOREIGN KEY (supporter_id) REFERENCES public.supporters(id);
 
 
 --
@@ -5644,4 +5775,22 @@ INSERT INTO schema_migrations (version) VALUES ('20210721175103');
 INSERT INTO schema_migrations (version) VALUES ('20210804203440');
 
 INSERT INTO schema_migrations (version) VALUES ('20210812220753');
+
+INSERT INTO schema_migrations (version) VALUES ('20210818221411');
+
+INSERT INTO schema_migrations (version) VALUES ('20210917204956');
+
+INSERT INTO schema_migrations (version) VALUES ('20210929200206');
+
+INSERT INTO schema_migrations (version) VALUES ('20210930192755');
+
+INSERT INTO schema_migrations (version) VALUES ('20210930194624');
+
+INSERT INTO schema_migrations (version) VALUES ('20211004124725');
+
+INSERT INTO schema_migrations (version) VALUES ('20211004130610');
+
+INSERT INTO schema_migrations (version) VALUES ('20211004173137');
+
+INSERT INTO schema_migrations (version) VALUES ('20211004173808');
 
