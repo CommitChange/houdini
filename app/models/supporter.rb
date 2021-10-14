@@ -123,6 +123,65 @@ class Supporter < ActiveRecord::Base
     Format::Address.full_address(self.address, self.city, self.state_code)
   end
 
+  def address
+    self&.primary_address&.address || nil
+  end
+
+  def address=(address)
+    if primary_address.present?
+      primary_address.update_attributes(address: address)
+    else
+      self.addresses.build(address: address)
+    end
+  end
+
+  def city
+    self&.primary_address&.city || nil
+  end
+
+  def city=(city)
+    if primary_address.present?
+      primary_address.update_attributes(city: city)
+    else
+      self.addresses.build(city: city)
+    end
+  end
+
+  def state_code
+    self&.primary_address&.state_code || nil
+  end
+
+  def state_code=(state_code)
+    if primary_address.present?
+      primary_address.update_attributes(state_code: state_code)
+    else
+      self.addresses.build(state_code: state_code)
+    end
+  end
+
+  def country
+    self&.primary_address&.country || nil
+  end
+
+  def country=(country)
+    if primary_address.present?
+      primary_address.update_attributes(country: country)
+    else
+      self.addresses.build(country: country)
+    end
+  end
+
+  def zip_code
+    self&.primary_address&.zip_code || nil
+  end
+
+  def zip_code=(zip_code)
+    if primary_address.present?
+      primary_address.update_attributes(zip_code: zip_code)
+    else
+      self.addresses.build(zip_code: zip_code)
+    end
+  end
 
   private
   def cleanup_address

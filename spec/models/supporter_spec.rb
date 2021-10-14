@@ -61,10 +61,38 @@ RSpec.describe Supporter, type: :model do
     end
   end
 
+  context 'when updating address fields' do
+    let!(:supporter) { create(:supporter_with_fv_poverty, :with_primary_address) }
+    let(:primary_address) { supporter.primary_address }
+    subject do
+      supporter.address = 'Other street'
+      supporter.city = 'Brasilia'
+      supporter.zip_code = '40028922'
+      supporter.state_code = 'DF'
+      supporter.country = 'Brazil'
+
+      supporter.save!
+    end
+
+    it 'updates the primary address' do
+      primary_address_original_attributes = primary_address.attributes.except('updated_at', 'id', 'created_at', 'supporter_id', 'deleted')
+      primary_address_expected_new_attributes = {
+        "address" => 'Other street',
+        "city" => 'Brasilia',
+        "zip_code" => '40028922',
+        "state_code" => 'DF',
+        "country" => 'Brazil'
+      }
+      expect { subject }
+        .to change{ primary_address.attributes.except('updated_at', 'id', 'created_at', 'supporter_id', 'deleted') }
+        .from(primary_address_original_attributes)
+        .to(primary_address_expected_new_attributes)
+    end
+  end
+
 
   context 'after_save' do
     describe 'update_primary_address' do
-      
       context 'when primary_address is originally nil' do
         context 'and address is being created' do
           subject(:supporter) { create(:supporter_with_fv_poverty) }
