@@ -8,12 +8,12 @@ const loaded$ = flyd.stream()
 const data$ = flyd.stream()
 
 function initScript() {
-  // if(document.getElementById('googleAutocomplete')) return
-  // var script = document.createElement('script')
-  // script.type = 'text/javascript'
-  // script.id = 'googleAutocomplete'
-  // document.body.appendChild(script)
-  // script.src = `https://maps.googleapis.com/maps/api/js?key=${app.google_api}&libraries=places&callback=initGoogleAutocomplete`
+  if(document.getElementById('googleAutocomplete')) return
+  var script = document.createElement('script')
+  script.type = 'text/javascript'
+  script.id = 'googleAutocomplete'
+  document.body.appendChild(script)
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${app.google_api}&libraries=places&callback=initGoogleAutocomplete`
   return loaded$
 }
 

@@ -1,6 +1,5 @@
 // License: LGPL-3.0-or-later
 if (app.autocomplete) {
-  console.log('yes?')
   require('../components/address-autocomplete')
 }
 require('../cards/create')
