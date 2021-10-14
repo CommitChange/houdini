@@ -13,6 +13,7 @@ module QuerySupporters
      .left_outer_join('donations', 'donations.supporter_id=supporters.id')
      .left_outer_join('campaign_gifts', 'donations.id=campaign_gifts.donation_id')
      .left_outer_join('campaign_gift_options', 'campaign_gifts.campaign_gift_option_id=campaign_gift_options.id')
+     .left_outer_join('supporter_addresses', 'supporters.primary_address_id = supporter_addresses.id')
     .join_lateral(:payments,  Qx
                                   .select('payments.id, payments.gross_amount').from(:payments)
                                   .where('payments.donation_id = donations.id')
@@ -381,6 +382,7 @@ UNION DISTINCT
                                    .as("last_payment")
 
       expr.add_left_join(get_last_payment_query, 'last_payment.supporter_id = supporters.id')
+      expr.add_left_join('supporter_addresses', 'supporters.primary_address_id = supporter_addresses.id')
       selects = selects.concat(['last_payment.date as "Last Payment Received"'])
 
 
@@ -473,11 +475,11 @@ UNION DISTINCT
       "supporters.organization AS \"Organization\"",
       "supporters.email \"Email\"",
       "supporters.phone \"Phone\"",
-      "supporters.address \"Address\"",
-      "supporters.city \"City\"",
-      "supporters.state_code \"State\"",
-      "supporters.zip_code \"Postal Code\"",
-      "supporters.country \"Country\"",
+      "supporter_addresses.address \"Address\"",
+      "supporter_addresses.city \"City\"",
+      "supporter_addresses.state_code \"State\"",
+      "supporter_addresses.zip_code \"Postal Code\"",
+      "supporter_addresses.country \"Country\"",
       "supporters.id \"Supporter ID\""
     ]
     if (!remove.include? :anonymous) 
@@ -492,6 +494,7 @@ UNION DISTINCT
   def self.dupes_expr(np_id)
     Qx.select("ARRAY_AGG(id) AS ids")
       .from(:supporters)
+      .left_outer_join('supporter_addresses', 'supporters.primary_address_id = supporter_addresses.id')
       .where("nonprofit_id=$id", id: np_id)
       .and_where("NOT deleted")
       .having('COUNT(id) > 1')
@@ -662,6 +665,7 @@ UNION DISTINCT
     supporter_expr = Qexpr.new
       .select( supporter_export_selections.concat(["(payments.sum::numeric / 100.0)::money::text AS \"Total Contributions #{year}\"", "supporters.id"]) )
       .from(:supporters)
+      .left_outer_join('supporter_addresses', 'supporters.primary_address_id = supporter_addresses.id')
       .join(Qexpr.new
         .select("SUM(gross_amount)", "supporter_id")
         .from(:payments)
@@ -697,11 +701,11 @@ UNION DISTINCT
      ["supporters.id",
       "supporters.name",
       "supporters.email",
-      "supporters.address",
-      "supporters.state_code",
-      "supporters.city",
-      "supporters.zip_code",
-      "supporters.country",
+      "supporter_addresses.address",
+      "supporter_addresses.state_code",
+      "supporter_addresses.city",
+      "supporter_addresses.zip_code",
+      "supporter_addresses.country",
       "supporters.organization",
       "supporters.phone"] + arr
   end
@@ -738,9 +742,18 @@ UNION DISTINCT
         ["donations", "donations.supporter_id=supporters.id"],
         ["full_contact_infos", "full_contact_infos.supporter_id=supporters.id"],
         ["recurring_donations", "recurring_donations.donation_id=donations.id"],
+        ["supporter_addresses", "supporters.primary_address_id = supporter_addresses.id"],
         [QuerySupporters.profile_payments_subquery, "payments.supporter_id=supporters.id"])
-      .group_by("supporters.id")
-      .where("supporters.id IN ($ids)", ids: ids)
+      .group_by(
+        "supporters.id",
+        "supporter_addresses.id",
+        "supporter_addresses.supporter_id",
+        "supporter_addresses.address",
+        "supporter_addresses.state_code",
+        "supporter_addresses.city",
+        "supporter_addresses.zip_code",
+        "supporter_addresses.country"
+      ).where("supporters.id IN ($ids)", ids: ids)
       .and_where("supporters.nonprofit_id = $id", id: npo_id)
       .execute
   end
@@ -796,6 +809,7 @@ UNION DISTINCT
     return Qx.select(selects)
       .from(:supporters)
       .join("payments", "payments.supporter_id=supporters.id AND payments.date::date >= $min_date AND payments.date::date < $max_date",:min_date => min_date.to_date, :max_date => max_date.to_date )
+      .left_outer_join('supporter_addresses', 'supporters.primary_address_id = supporter_addresses.id')
       .where('supporters.nonprofit_id=$id', id: npo_id)
       .group_by("supporters.id")
       .order_by("substring(trim(supporters.name) from '^.+ ([^\s]+)$')")

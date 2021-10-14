@@ -53,6 +53,7 @@ module QueryRecurringDonations
     expr = Qexpr.new
       .from('recurring_donations')
       .left_outer_join('supporters', 'supporters.id=recurring_donations.supporter_id')
+      .left_outer_join('supporter_addresses', 'supporters.primary_address_id=supporter_addresses.id')
       .join('donations', 'donations.id=recurring_donations.donation_id')
       .left_outer_join('charges paid_charges', 'paid_charges.donation_id=donations.id')
       .left_outer_join('misc_recurring_donation_infos',
@@ -165,10 +166,10 @@ module QueryRecurringDonations
     'MAX(supporters.name) AS supporter_name',
     'MAX(supporters.email) AS supporter_email',
     'MAX(supporters.phone) AS phone',
-    'MAX(supporters.address) AS address',
-    'MAX(supporters.city) AS city',
-    'MAX(supporters.state_code) AS state',
-    'MAX(supporters.zip_code) AS zip_code',
+    'MAX(supporter_addresses.address) AS address',
+    'MAX(supporter_addresses.city) AS city',
+    'MAX(supporter_addresses.state_code) AS state',
+    'MAX(supporter_addresses.zip_code) AS zip_code',
     'MAX(cards.name) AS card_name',
     'recurring_donations.id AS "Recurring Donation ID"',
     'MAX(donations.id) AS "Donation ID"',

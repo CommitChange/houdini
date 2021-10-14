@@ -28,6 +28,7 @@ module QueryDonations
                  ])
     ).from(:donations)
      .join(:supporters, "supporters.id=donations.supporter_id")
+     .left_outer_join(:supporter_addresses, "supporter_addresses.id = supporters.primary_address_id")
      .left_outer_join(:campaign_gifts, "campaign_gifts.donation_id=donations.id")
      .left_outer_join(:campaign_gift_options, "campaign_gift_options.id=campaign_gifts.campaign_gift_option_id")
      .left_outer_join(:recurring_donations, "recurring_donations.donation_id = donations.id")
@@ -42,7 +43,21 @@ module QueryDonations
               .from('users')
               .add_join('profiles', 'profiles.user_id = users.id')
               .as("users").parse, "users.profiles_id=campaigns.profile_id")
-     .group_by("donations.id", "supporters.id", "payments.id", "payments.gross_amount", "users.email")
+     .group_by(
+        "donations.id",
+        "supporters.id",
+        "payments.id",
+        "payments.gross_amount",
+        "users.email",
+        "supporters.id",
+        "supporter_addresses.id",
+        "supporter_addresses.supporter_id",
+        "supporter_addresses.address",
+        "supporter_addresses.state_code",
+        "supporter_addresses.city",
+        "supporter_addresses.zip_code",
+        "supporter_addresses.country"
+      )
      .order_by("donations.date")
     )
 	end
