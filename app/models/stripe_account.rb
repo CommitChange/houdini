@@ -1,3 +1,4 @@
+# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 class StripeAccount < ActiveRecord::Base
   attr_accessible  :object, :stripe_account_id
   has_one :nonprofit, primary_key: :stripe_account_id
@@ -20,13 +21,12 @@ class StripeAccount < ActiveRecord::Base
     result
   end
 
-  def deadline
-    obj = object
+  def requirements
+    Requirements.new(object['requirements'])
+  end
 
-    if obj['requirements'] && obj['requirements']['current_deadline'] && obj['requirements']['current_deadline'].to_i != 0
-      return Time.at(obj['requirements']['current_deadline'].to_i)
-    end
-    nil
+  def deadline
+    requirements.current_deadline
   end
 
   def needs_more_validation_info
@@ -63,17 +63,53 @@ class StripeAccount < ActiveRecord::Base
     end
     self.charges_enabled = !!object_json['charges_enabled']
     self.payouts_enabled = !!object_json['payouts_enabled']
-    requirements = object_json['requirements'] || {}
-    self.disabled_reason =  requirements['disabled_reason']
-    self.currently_due = requirements['currently_due'] || []
-    self.past_due =  requirements['past_due'] || []
-    self.eventually_due =  requirements['eventually_due'] || []
-    self.pending_verification = requirements['pending_verification'] || []
+    requirements = Requirements.new( object_json['requirements'])
+    self.disabled_reason =  requirements.disabled_reason
+    self.currently_due = requirements.currently_due
+    self.past_due =  requirements.past_due
+    self.eventually_due =  requirements.eventually_due
+    self.pending_verification = requirements.pending_verification
 
     unless self.stripe_account_id
       self.stripe_account_id = object_json['id']
     end
 
     self.object
+  end
+
+
+  # describes the Stripe Account Requirements in a more pleasant way
+  class Requirements
+    def initialize(requirements)
+      @requirements = requirements || {}
+    end
+    
+    def current_deadline
+      if @requirements['current_deadline'] && @requirements['current_deadline'].to_i != 0
+        Time.at(@requirements['current_deadline'].to_i)
+      else
+        nil
+      end
+    end
+  
+    def disabled_reason
+      @requirements['disabled_reason']
+    end
+  
+    def currently_due
+      @requirements['currently_due']  || []
+    end
+    
+    def past_due
+      @requirements['past_due']  || []
+    end
+  
+    def eventually_due
+      @requirements['eventually_due'] || []
+    end
+  
+    def pending_verification
+      @requirements['pending_verification'] || []
+    end
   end
 end
