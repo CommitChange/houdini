@@ -1,10 +1,10 @@
 FactoryBot.define do
   factory :supporter_address do
-    address {"MyString"}
-    city {"MyString"}
-    zip_code {"MyString"}
-    state_code {"MyString"}
-    country {"MyString"}
+    address {"That street right there"}
+    city {"Appleton"}
+    zip_code {"71707273"}
+    state_code {"WI"}
+    country {"United States"}
     supporter nil
   end
 end
