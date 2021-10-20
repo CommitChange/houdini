@@ -4,6 +4,10 @@ class StripeAccount < ActiveRecord::Base
   has_one :nonprofit, primary_key: :stripe_account_id
   has_one :nonprofit_verification_process_status, primary_key: :stripe_account_id
 
+  ## this scopes let you find accounts that do or do not have a future_requirements attribute
+  scope :with_future_requirements, -> {where("object->'future_requirements' IS NOT NULL") }
+  scope :without_future_requirements, -> {where("object->'future_requirements' IS NULL") }
+
   def object=(input)
     serialize_on_update(input)
   end
@@ -23,6 +27,10 @@ class StripeAccount < ActiveRecord::Base
 
   def requirements
     Requirements.new(object['requirements'])
+  end
+
+  def future_requirements
+    Requirements.new(object['future_requirements'])
   end
 
   def deadline

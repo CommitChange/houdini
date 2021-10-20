@@ -93,4 +93,73 @@ RSpec.describe StripeAccount, :type => :model do
       expect(sa.deadline).to eq Time.at(1580858639)
     end
   end
+
+
+  describe '.without_future_requirements' do 
+    let(:json) do
+      event =StripeMock.mock_webhook_event('account.updated.without-future-requirements')
+      event['data']['object']
+    end
+
+    let!(:sa) do 
+      sa = StripeAccount.new
+      sa.object = json
+      sa.save!
+      sa
+    end
+
+    it { expect(StripeAccount.without_future_requirements.count).to eq 1}
+    it { expect(StripeAccount.with_future_requirements.count).to eq 0}
+  end
+
+  describe '.with_future_requirements' do 
+    let(:json) do
+      event =StripeMock.mock_webhook_event('account.updated.with-pending')
+      event['data']['object']
+    end
+
+    let!(:sa) do 
+      sa = StripeAccount.new
+      sa.object = json
+      sa.save!
+      sa
+    end
+
+    it { expect(StripeAccount.without_future_requirements.count).to eq 0}
+    it { expect(StripeAccount.with_future_requirements.count).to eq 1}
+  end
+
+  describe '#future_requirements' do
+    let(:json) do
+      event =StripeMock.mock_webhook_event('account.updated.with-pending')
+      event['data']['object']
+    end
+
+    let(:sa) do 
+      sa = StripeAccount.new
+      sa.object = json
+      sa.save!
+      sa
+    end
+
+    subject(:future_requirements) {
+      sa.future_requirements
+    }
+
+    it do 
+      expect(future_requirements.current_deadline).to eq Time.at(1580935094)
+    end
+
+    it do 
+      expect(future_requirements.currently_due.count).to eq 8
+    end
+
+    it do 
+      expect(future_requirements.eventually_due.count).to eq 9
+    end
+
+    it do 
+      expect(future_requirements.past_due.count).to eq 6
+    end
+  end
 end

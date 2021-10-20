@@ -95,43 +95,6 @@
           "total_count": 0,
           "url": "/v1/accounts/acct_1G8Y94CcxDUSisy4/external_accounts"
         },
-        "future_requirements": {
-          "current_deadline": 1580935094,
-          "currently_due": [
-            "external_account",
-            "person_Gftx2SbD8oEptB.address.city",
-            "person_Gftx2SbD8oEptB.address.line1",
-            "person_Gftx2SbD8oEptB.address.postal_code",
-            "person_Gftx2SbD8oEptB.ssn",
-            "relationship.owner",
-            "tos_acceptance.date",
-            "tos_acceptance.ip"
-          ],
-          "disabled_reason": null,
-          "eventually_due": [
-            "external_account",
-            "person_Gftx2SbD8oEptB.address.city",
-            "person_Gftx2SbD8oEptB.address.line1",
-            "person_Gftx2SbD8oEptB.address.postal_code",
-            "person_Gftx2SbD8oEptB.address.state",
-            "person_Gftx2SbD8oEptB.ssn",
-            "relationship.owner",
-            "tos_acceptance.date",
-            "tos_acceptance.ip"
-          ],
-          "past_due": [
-            "external_account",
-            "person_Gftx2SbD8oEptB.address.city",
-            "person_Gftx2SbD8oEptB.address.line1",
-            "person_Gftx2SbD8oEptB.address.postal_code",
-            "person_Gftx2SbD8oEptB.address.state",
-            "person_Gftx2SbD8oEptB.ssn"
-
-          ],
-          "pending_verification": [
-            "company.tax_id"
-          ]
-        },
         "metadata": {
         },
         "requirements": {
