@@ -1843,7 +1843,8 @@ CREATE TABLE public.nonprofits (
     card_failure_message_bottom text,
     fields_needed text,
     autocomplete_supporter_address boolean DEFAULT false,
-    currency character varying(255) DEFAULT 'usd'::character varying
+    currency character varying(255) DEFAULT 'usd'::character varying,
+    feature_flag_autocomplete_supporter_address boolean DEFAULT false
 );
 
 
@@ -6001,6 +6002,8 @@ INSERT INTO schema_migrations (version) VALUES ('20211004130610');
 INSERT INTO schema_migrations (version) VALUES ('20211004173137');
 
 INSERT INTO schema_migrations (version) VALUES ('20211004173808');
+
+INSERT INTO schema_migrations (version) VALUES ('20211019205925');
 
 INSERT INTO schema_migrations (version) VALUES ('20211021173546');
 

@@ -10,7 +10,7 @@ autocomplete.initScript()
 function init(state, params$) {
   state = state||{}
   state = R.merge({
-    isManual$: flyd.stream(false)
+    isManual$: flyd.stream(!app.autocomplete)
   , data$: flyd.stream(app.profile ? R.pick(['address', 'city', 'state_code', 'zip_code'], app.profile) : {})
   , autoData$: autocomplete.data$
   , autocompleteInputInserted$: flyd.stream()
@@ -112,6 +112,8 @@ const manualFields = state => {
       , value: state.data$().country
       , required: calculateToShip(state) ? state.params$().gift_option.to_ship : undefined
       }})
+    ]), h('p.u-margin--0.u-centered', { style: { display: !!app.autocomplete ? 'block' : 'none' } }, [
+      h('a', {on: {click: [state.isManual$, false]}}, [h('small', 'Search for your address')])
     ])
   ])
 }

@@ -17,7 +17,7 @@ function init(state, params$) {
     }, R.pick(['first_name', 'last_name', 'phone', 'address', 'city', 'state_code', 'zip_code'], app.profile || {}) )
   , required: {}
   }, state)
-    state.addressAutocomplete = addressAutocomplete.init({data$: flyd.stream(state.supporter)}, params$)
+  state.addressAutocomplete = addressAutocomplete.init({data$: flyd.stream(state.supporter)}, params$)
   state.notUSA$ = flyd.mergeAll([
     flyd.stream(!app.show_state_field)
   , flyd.map(select => !geography.isUSA(select.value), state.selectCountry$)
