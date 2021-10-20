@@ -3,6 +3,7 @@ const flyd = require('flyd')
 const h = require('snabbdom/h')
 const R = require('ramda')
 const autocomplete = require('./address-autocomplete')
+flyd.filter = require('flyd/module/filter')
 flyd.lift = require('flyd/module/lift')
 
 autocomplete.initScript()

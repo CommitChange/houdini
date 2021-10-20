@@ -1,16 +1,14 @@
 // License: LGPL-3.0-or-later
-if (app.autocomplete) {
-  require('../components/address-autocomplete')
-}
 require('../cards/create')
 var request = require('../common/super-agent-promise')
 var create_card = require('../cards/create')
 var format_err = require('../common/format_response_error')
 var path = '/nonprofits/' + app.nonprofit_id + '/events/' + appl.event_id + '/tickets'
 const R = require('ramda')
+// const supporterFields = require('../components/supporter-fields')
+const addressAutocomplete = require('../components/address-autocomplete-fields')
 
 const CommitchangeFeeCoverageCalculator = require('../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator').CommitchangeFeeCoverageCalculator;
-
 
 
 appl.def('discounts.apply', function (node) {
@@ -271,4 +269,7 @@ function hide_err() {
   appl.def('card_form', { status: '', error: false, loading: false })
 }
 
+// supporterFields.init({ required: { email: true } }, {})
+const addressAutocompleteInstance = addressAutocomplete.init({ }, { })
+addressAutocomplete.view(addressAutocompleteInstance)
 appl.ticket_wiz.set_defaults()
