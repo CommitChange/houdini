@@ -42,4 +42,17 @@ class Charge < ActiveRecord::Base
 	def stripe_fee
 		stripe_charge('balance_transaction').balance_transaction.fee
 	end
+
+
+	concerning :Maintenance do 
+		included do 
+			scope :with_missing_stripe_charge_objects, -> { where('charges.stripe_charge_id IS NOT NULL AND stripe_charges.id IS NULL').includes(:stripe_charge_object).references(:stripe_charges)}
+		end
+	end
+
+	def calculate_stripe_fee
+		source = stripe_charge_object.stripe_object.source
+		stripe_fee = nonprofit.calculate_stripe_fee(source: source, amount: amount, at: created_at)
+	end
+
 end

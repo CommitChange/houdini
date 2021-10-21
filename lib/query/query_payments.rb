@@ -144,6 +144,9 @@ module QueryPayments
       campaign_search = campaign_and_child_query_as_raw_string
       inner_donation_search = inner_donation_search.where("donations.campaign_id IN (#{campaign_search})", id: query[:campaign_id])
     end
+
+    # We are including deleted supporters on this query because deleted supporters may have made
+    # payments.
     expr = Qexpr.new.select('payments.id').from('payments')
           .inner_join('supporters', "supporters.id=payments.supporter_id")
           .inner_join('nonprofits', 'nonprofits.id=payments.nonprofit_id')
@@ -230,6 +233,18 @@ module QueryPayments
                  .left_outer_join(tickets_subquery, "tix.payment_id=payments.id")
                  .where("tix.event_id=$id OR donations.event_id=$id", id: query[:event_id])
 
+    end
+
+    if query[:anonymous].present?
+      expr = if(query[:anonymous] == 'true')
+        expr.where(
+          '(supporters.anonymous OR donations.anonymous)'
+        )
+      else
+        expr.where(
+          '(NOT supporters.anonymous AND NOT donations.anonymous)'
+        )
+      end
     end
 
     #we have the first part of the search. We need to create the second in certain situations
@@ -394,7 +409,7 @@ module QueryPayments
      "#{get_dedication_or_empty('contact', "phone")}::text AS \"Dedicated To: Phone\"",
      "#{get_dedication_or_empty( "contact", "address")}::text AS \"Dedicated To: Address\"",
      "#{get_dedication_or_empty(  "note")}::text AS \"Dedicated To: Note\"",
-     '(coalesce(donations.anonymous, false) OR coalesce(supporters.anonymous, false)) AS "Anonymous?"',
+     '(donations.anonymous OR supporters.anonymous) AS "Anonymous?"',
      'donations.comment',
      "coalesce(nullif(campaigns_for_export.name, ''), 'None') AS campaign",
      "campaigns_for_export.id AS \"Campaign Id\"",
@@ -440,7 +455,7 @@ module QueryPayments
           .concat([
             "coalesce(donations.designation, 'None') AS \"Designation\"",
             "donations.dedication AS \"Honorarium/Memorium\"",
-            "(coalesce(donations.anonymous, false) OR coalesce(supporters.anonymous, false)) AS \"Anonymous?\"",
+            "(donations.anonymous OR supporters.anonymous) AS \"Anonymous?\"",
             "donations.comment AS \"Comment\"",
             "coalesce(nullif(campaigns.name, ''), 'None') AS \"Campaign\"",
             "coalesce(nullif(campaign_gift_options.name, ''), 'None') AS \"Campaign Gift Level\"",
@@ -508,7 +523,7 @@ module QueryPayments
       .concat([
         "coalesce(donations.designation, 'None') AS \"Designation\"",
         "donations.dedication AS \"Honorarium/Memorium\"",
-        "(coalesce(donations.anonymous, false) OR coalesce(supporters.anonymous, false)) AS \"Anonymous?\"",
+        "(donations.anonymous OR supporters.anonymous) AS \"Anonymous?\"",
         "donations.comment AS \"Comment\"",
         "coalesce(nullif(campaigns.name, ''), 'None') AS \"Campaign\"",
         "coalesce(nullif(campaign_gift_options.name, ''), 'None') AS \"Campaign Gift Level\"",
