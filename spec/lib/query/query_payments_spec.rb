@@ -7,7 +7,7 @@ describe QueryPayments do
   before :each do
     @nonprofit = force_create(:nonprofit, name: "npo1");
     @supporters = [ force_create(:supporter, name: "supporter-0", nonprofit: @nonprofit),
-                    force_create(:supporter, name: "supporter-1", nonprofit: @nonprofit)]
+                    force_create(:supporter, :with_primary_address, name: "supporter-1", nonprofit: @nonprofit)]
 
     @payments = [force_create(:payment, gross_amount: 1000, fee_total: 99, net_amount: 901, supporter: @supporters[0], nonprofit:@nonprofit),
                  force_create(:payment, gross_amount: 2000, fee_total: 22, net_amount: 1978, supporter: @supporters[1], nonprofit:@nonprofit)]
