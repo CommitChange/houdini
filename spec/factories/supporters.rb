@@ -9,6 +9,11 @@ FactoryBot.define do
         create(:active_card_1, holder: supporter)
       }
     end
+
+    trait :with_primary_address do
+      addresses { [build(:supporter_address)]}
+      primary_address { addresses.first}
+    end
   end
   factory :supporter_with_fv_poverty, class: 'Supporter' do
     name { 'Fake Supporter Name' }
