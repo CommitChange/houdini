@@ -18,7 +18,8 @@ module UpdateSupporter
   end
 
   def self.general_info(supporter_id, data)
-    Qx.update(:supporters).set(data).where(id: supporter_id).returning('*').ex.last
+    supporter = Supporter.find(supporter_id)
+    supporter.update_attributes(data)
   end
 
 end
