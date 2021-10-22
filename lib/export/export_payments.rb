@@ -90,6 +90,7 @@ module ExportPayments
       expr = QueryPayments.full_search_expr(npo_id, query)
               .select(*export_selects(query[:export_format_id]))
               .left_outer_join('campaign_gifts', 'campaign_gifts.donation_id=donations.id')
+              .left_outer_join('supporter_addresses', 'supporters.primary_address_id=supporter_addresses.id')
               .left_outer_join('campaign_gift_options', 'campaign_gifts.campaign_gift_option_id=campaign_gift_options.id')
               .left_outer_join("(#{campaigns_with_creator_email}) AS campaigns_for_export", 'donations.campaign_id=campaigns_for_export.id')
               .left_outer_join(tickets, 'tickets.payment_id=payments.id')

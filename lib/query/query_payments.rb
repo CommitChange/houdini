@@ -111,7 +111,6 @@ module QueryPayments
     expr = Qexpr.new.from('payments')
           .inner_join('supporters', "supporters.id=payments.supporter_id")
           .inner_join('nonprofits', 'nonprofits.id=payments.nonprofit_id')
-          .left_outer_join('supporter_addresses', 'supporters.primary_address_id=supporter_addresses.id')
           .left_outer_join('donations', 'donations.id=payments.donation_id' )
     .join("(#{select_to_filter_search(npo_id, query)}) AS \"filtered_payments\"", 'payments.id = filtered_payments.id')
     .order_by('payments.date DESC')
