@@ -236,17 +236,17 @@ describe QueryRecurringDonations do
   describe '.for_export_enumerable' do
     before :each do
       @nonprofit = force_create(:nonprofit, name: "npo1");
-      @supporters = [ force_create(:supporter, name: "supporter-0", nonprofit: @nonprofit),
-                      force_create(:supporter, name: "supporter-1", nonprofit: @nonprofit)]
+      @supporters = [ force_create(:supporter, :with_primary_address, name: "supporter-0", nonprofit: @nonprofit),
+                      force_create(:supporter, :with_primary_address, name: "supporter-1", nonprofit: @nonprofit)]
 
 
 
-      @recurring_donations = [force_create(:recurring_donation, amount: 1000, active: false, n_failures: 0, nonprofit: @nonprofit, donation: force_create(:donation), edit_token: "edit_token_1"),
-                              force_create(:recurring_donation, amount: 2000, active: true, n_failures: 3, nonprofit: @nonprofit, donation: force_create(:donation), edit_token: "edit_token_2"),
-                              force_create(:recurring_donation, amount: 3000, active: true, n_failures: 0, nonprofit: @nonprofit, donation: force_create(:donation, card: force_create(:card, stripe_customer_id: "stripe_cus_id")), edit_token: "edit_token_3"),
-                              force_create(:recurring_donation, amount: 400, active: false, n_failures: 3, nonprofit: @nonprofit, donation: force_create(:donation), edit_token: "edit_token_4"),
-                              force_create(:recurring_donation, amount: 100, active: true, n_failures: 0, end_date: Time.current - 1.day, nonprofit: @nonprofit, donation: force_create(:donation), edit_token: "edit_token_5"),
-                              force_create(:recurring_donation, amount: 200, active: true, n_failures: 0, end_date: Time.current + 1.day, nonprofit: @nonprofit, donation: force_create(:donation), edit_token: "edit_token_6")
+      @recurring_donations = [force_create(:recurring_donation, supporter_id: @supporters[0].id, amount: 1000, active: false, n_failures: 0, nonprofit: @nonprofit, donation: force_create(:donation, supporter_id: @supporters[0].id), edit_token: "edit_token_1"),
+                              force_create(:recurring_donation, supporter_id: @supporters[0].id, amount: 2000, active: true, n_failures: 3, nonprofit: @nonprofit, donation: force_create(:donation, supporter_id: @supporters[0].id), edit_token: "edit_token_2"),
+                              force_create(:recurring_donation, supporter_id: @supporters[0].id, amount: 3000, active: true, n_failures: 0, nonprofit: @nonprofit, donation: force_create(:donation, supporter_id: @supporters[0].id, card: force_create(:card, stripe_customer_id: "stripe_cus_id")), edit_token: "edit_token_3"),
+                              force_create(:recurring_donation, supporter_id: @supporters[0].id, amount: 400, active: false, n_failures: 3, nonprofit: @nonprofit, donation: force_create(:donation, supporter_id: @supporters[0].id), edit_token: "edit_token_4"),
+                              force_create(:recurring_donation, supporter_id: @supporters[0].id, amount: 100, active: true, n_failures: 0, end_date: Time.current - 1.day, nonprofit: @nonprofit, donation: force_create(:donation, supporter_id: @supporters[0].id), edit_token: "edit_token_5"),
+                              force_create(:recurring_donation, supporter_id: @supporters[0].id, amount: 200, active: true, n_failures: 0, end_date: Time.current + 1.day, nonprofit: @nonprofit, donation: force_create(:donation, supporter_id: @supporters[0].id), edit_token: "edit_token_6")
                             ]
       @root_url ='https://localhost:8080'
     end
@@ -339,6 +339,62 @@ describe QueryRecurringDonations do
 
     it 'gets the stripe_customer_id when requested' do
       expect(csv.select{|i| i['Stripe Customer Id'] == 'stripe_cus_id'}).to be_any
+    end
+
+    # we need to remove this context when we remove the address attributes from supporters table
+    context 'when looking at the supporter address' do
+      let(:np) { @nonprofit }
+      let(:supporter) { @supporters[0] }
+
+      before do
+        supporter.save!
+
+        # Update directly on the database to avoid updating primary_address
+        Qx.update(:supporters)
+          .set(address: 'Some street', city: 'Aguas Claras', country: 'Brazil', state_code: 'DF', zip_code: '4002-8922')
+          .where(id: supporter.id)
+          .execute
+      end
+
+      subject do
+        CSV.parse(Format::Csv.from_array(QueryRecurringDonations::for_export_enumerable(@nonprofit.id, {:failed => false, :root_url => 'https://localhost:8080/'}).to_a), headers: true)
+      end
+
+      it 'points to the primary_address.address instead of the supporter address' do
+        result = subject
+        expect(result[0]['Address']).to eq('That street right there')
+      end
+      
+      it 'address from the supporter does not change' do
+        expect(supporter.reload.attributes['address']).to eq('Some street')
+      end
+
+      it 'points to the primary_address.city instead of the supporter city' do
+        result = subject
+        expect(result[0]['City']).to eq('Appleton')
+      end
+
+      it 'city from the supporter does not change' do
+        expect(supporter.reload.attributes['city']).to eq('Aguas Claras')
+      end
+
+      it 'points to the primary_address.state_code instead of the supporter state_code' do
+        result = subject
+        expect(result[0]['State']).to eq('WI')
+      end
+
+      it 'state_code from the supporter does not change' do
+        expect(supporter.reload.attributes['state_code']).to eq('DF')
+      end
+
+      it 'points to the primary_address.zip_code instead of the supporter zip_code' do
+        result = subject
+        expect(result[0]['Zip Code']).to eq('71707273')
+      end
+
+      it 'zip_code from the supporter does not change' do
+        expect(supporter.reload.attributes['zip_code']).to eq('4002-8922')
+      end
     end
 
     let(:csv) do
