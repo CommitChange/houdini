@@ -7,7 +7,7 @@
     
   <div>
     <fieldset class='u-marginBottom--5'> 
-      <input class="u-margin--0 js-autocompleteAddress" type="text" placeholder="Search for your address">
+      <input class="u-margin--0 js-autocompleteAddress" type="text" placeholder="Search for your address" id="autocompleteAddressInVS">
     </fieldset>
 
     <p class='u-margin--0 u-centered'>
@@ -31,11 +31,11 @@
 
       <fieldset class="u-marginBottom--0 u-floatL col-4">
         <input class="u-marginBottom--0" type="text" title="State/Region" name="state_code" placeholder="State/Region">
-        <!--= set_value (any autocomplete.data.state '<%= profile && profile['state_code'] %>') -->
+        <!--= set_value (any autocomplete.data.state_code '<%= profile && profile['state_code'] %>') -->
       </fieldset>
       <fieldset class="u-marginBottom--0 u-floatL col-right-4 u-fontSize--14">
         <input class="u-marginBottom--0" type="text" title="Zip/Postal" name="zip_code" placeholder="Zip/Postal">
-        <!--= set_value (any autocomplete.data.zip '<%= profile && profile['zip_code'] %>') -->
+        <!--= set_value (any autocomplete.data.zip_code '<%= profile && profile['zip_code'] %>') -->
       </fieldset>
 
       <fieldset class="u-marginBottom--0 u-floatL col-right-4">

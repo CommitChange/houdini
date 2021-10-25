@@ -13,21 +13,19 @@ function init(state, params$) {
   state = R.merge({
     isManual$: flyd.stream(!app.autocomplete)
   , data$: flyd.stream(app.profile ? R.pick(['address', 'city', 'state_code', 'zip_code'], app.profile) : {})
-  , autoData$: autocomplete.data$
   , autocompleteInputInserted$: flyd.stream()
   }, state)
-
-  state.data$ = flyd.merge(state.data$, state.autoData$)
-  state.isManual$ = flyd.merge(state.isManual$, flyd.map(()=> true, state.autoData$))
 
   const loaded$ = flyd.filter(
     R.identity
   , flyd.lift((x, input) => input, autocomplete.loaded$, state.autocompleteInputInserted$) )
-
-  flyd.map(
+  
+  state.autoData$ = flyd.flatMap(
     input => autocomplete.initInput(input)
   , loaded$ )
 
+  state.data$ = flyd.merge(state.data$, state.autoData$)
+  state.isManual$ = flyd.merge(state.isManual$, flyd.map(()=> true, state.autoData$))
   state.params$ = params$
   return state
 }
