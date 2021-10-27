@@ -7,4 +7,13 @@ FactoryBot.define do
     country {"United States"}
     supporter nil
   end
+
+  factory :other_supporter_address, class: SupporterAddress do
+    address {"Clear Waters Park Avenue"}
+    city {"Aguas Claras"}
+    zip_code {"71707277"}
+    state_code {"DF"}
+    country {"Brazil"}
+    supporter nil
+  end
 end

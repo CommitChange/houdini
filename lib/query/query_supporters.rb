@@ -771,8 +771,17 @@ UNION DISTINCT
   def self.merge_data(ids)
     Qx.select(*QuerySupporters.profile_selects)
       .from("supporters")
-      .group_by("supporters.id")
-      .where("supporters.id IN ($ids)", ids: ids.split(','))
+      .left_join("supporter_addresses", "supporters.primary_address_id = supporter_addresses.id")
+      .group_by(
+        "supporters.id",
+        "supporter_addresses.id",
+        "supporter_addresses.supporter_id",
+        "supporter_addresses.address",
+        "supporter_addresses.state_code",
+        "supporter_addresses.city",
+        "supporter_addresses.zip_code",
+        "supporter_addresses.country"
+      ).where("supporters.id IN ($ids)", ids: ids.split(','))
       .execute
   end
 
