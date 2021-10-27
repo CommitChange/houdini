@@ -341,59 +341,6 @@ describe QueryRecurringDonations do
       expect(csv.select{|i| i['Stripe Customer Id'] == 'stripe_cus_id'}).to be_any
     end
 
-    # we need to remove this context when we remove the address attributes from supporters table
-    context 'when looking at the supporter address' do
-      let(:np) { @nonprofit }
-      let(:supporter) { @supporters[0] }
-
-      before do
-        supporter.save!
-
-        # Update directly on the database to avoid updating primary_address
-        Supporter.where(id: supporter.id).update_all(address: 'Some street', city: 'Aguas Claras', country: 'Brazil', state_code: 'DF', zip_code: '4002-8922')
-      end
-
-      subject do
-        CSV.parse(Format::Csv.from_array(QueryRecurringDonations::for_export_enumerable(@nonprofit.id, {:failed => false, :root_url => 'https://localhost:8080/'}).to_a), headers: true)
-      end
-
-      it 'points to the primary_address.address instead of the supporter address' do
-        result = subject
-        expect(result[0]['Address']).to eq('That street right there')
-      end
-      
-      it 'address from the supporter does not change' do
-        expect(supporter.reload.attributes['address']).to eq('Some street')
-      end
-
-      it 'points to the primary_address.city instead of the supporter city' do
-        result = subject
-        expect(result[0]['City']).to eq('Appleton')
-      end
-
-      it 'city from the supporter does not change' do
-        expect(supporter.reload.attributes['city']).to eq('Aguas Claras')
-      end
-
-      it 'points to the primary_address.state_code instead of the supporter state_code' do
-        result = subject
-        expect(result[0]['State']).to eq('WI')
-      end
-
-      it 'state_code from the supporter does not change' do
-        expect(supporter.reload.attributes['state_code']).to eq('DF')
-      end
-
-      it 'points to the primary_address.zip_code instead of the supporter zip_code' do
-        result = subject
-        expect(result[0]['Zip Code']).to eq('71707273')
-      end
-
-      it 'zip_code from the supporter does not change' do
-        expect(supporter.reload.attributes['zip_code']).to eq('4002-8922')
-      end
-    end
-
     let(:csv) do
       CSV.parse(Format::Csv.from_array(QueryRecurringDonations::for_export_enumerable(@nonprofit.id, {:active_and_not_failed => true, include_stripe_customer_id: true, :root_url => 'https://localhost:8080/'}).to_a), headers: true)
     end

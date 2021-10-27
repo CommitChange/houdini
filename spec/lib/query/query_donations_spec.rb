@@ -72,66 +72,6 @@ describe QueryDonations do
       export = vector_to_hash(campaign_export)
       expect(export.map{|i| i['Campaign Creator Email']}).to match_array([profile_email, profile_email, profile_email1, profile_email2])
     end
-
-    # we need to remove this context when we remove the address attributes from supporters table
-    context 'when looking at the supporter address' do
-      before do
-        supporter.save!
-
-        # Update directly on the database to avoid updating primary_address
-        Supporter.where(id: supporter.id).update_all(address: 'Some street', city: 'Aguas Claras', country: 'Brazil', state_code: 'DF', zip_code: '4002-8922')
-      end
-
-      it 'points to the primary_address.address instead of the supporter address' do
-        result = campaign_export
-        address_index = result.first.find_index('Address')
-        expect(result.second[address_index]).to eq('That street right there')
-      end
-      
-      it 'address from the supporter does not change' do
-        expect(supporter.reload.attributes['address']).to eq('Some street')
-      end
-
-      it 'points to the primary_address.city instead of the supporter city' do
-        result = campaign_export
-        city_index = result.first.find_index('City')
-        expect(result.second[city_index]).to eq('Appleton')
-      end
-
-      it 'city from the supporter does not change' do
-        expect(supporter.reload.attributes['city']).to eq('Aguas Claras')
-      end
-
-      it 'points to the primary_address.country instead of the supporter country' do
-        result = campaign_export
-        country_index = result.first.find_index('Country')
-        expect(result.second[country_index]).to eq('United States')
-      end
-      
-      it 'country from the supporter does not change' do
-        expect(supporter.reload.attributes['country']).to eq('Brazil')
-      end
-
-      it 'points to the primary_address.state_code instead of the supporter state_code' do
-        result = campaign_export
-        state_code_index = result.first.find_index('State')
-        expect(result.second[state_code_index]).to eq('WI')
-      end
-
-      it 'state_code from the supporter does not change' do
-        expect(supporter.reload.attributes['state_code']).to eq('DF')
-      end
-
-      it 'points to the primary_address.zip_code instead of the supporter zip_code' do
-        result = campaign_export
-        zip_code_index = result.first.find_index('Postal Code')
-        expect(result.second[zip_code_index]).to eq('71707273')
-      end
-
-      it 'zip_code from the supporter does not change' do
-        expect(supporter.reload.attributes['zip_code']).to eq('4002-8922')
-      end
-    end
   end
 
   ## move to common area
