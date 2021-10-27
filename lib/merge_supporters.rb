@@ -14,6 +14,13 @@
         .where("supporter_id IN ($ids)", ids: old_supporter_ids).timestamps.execute
     end
 
+    old_supporters.joins(:addresses).each do |supp|
+      supp.addresses.each do |addr|
+        addr.supporter = new_supporter
+        addr.save!
+      end
+    end
+
     old_supporters.joins(:cards).each do |supp|
       supp.cards.each do |card|
         card.holder = new_supporter
@@ -92,7 +99,7 @@
         # Get all column data from every supporter
         all_data = Psql.execute(
           Qexpr.new.from(:supporters)
-          .select(:email, :name, :phone, :address, :city, :state_code, :zip_code, :organization, :country, :created_at)
+          .select(:email, :name, :phone, :organization, :created_at)
           .where("id IN ($ids)", ids: ids)
           .order_by("created_at ASC")
         )

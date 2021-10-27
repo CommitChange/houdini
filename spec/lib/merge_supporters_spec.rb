@@ -3,8 +3,8 @@ require "rails_helper"
 describe MergeSupporters do
 
   let(:np) {force_create(:nonprofit)}
-  let(:old_supporter1) { force_create(:supporter, nonprofit: np) }
-  let(:old_supporter2) { force_create(:supporter, nonprofit: np) }
+  let(:old_supporter1) { force_create(:supporter, :with_primary_address, nonprofit: np) }
+  let(:old_supporter2) { force_create(:supporter, :with_two_addresses, nonprofit: np) }
   let(:old_supporter3) { force_create(:supporter, nonprofit: np) }
   let(:card) { force_create(:card, holder: old_supporter1) }
   around(:each) do |e|
@@ -156,6 +156,18 @@ describe MergeSupporters do
       old_supporters = Supporter.where('supporters.id IN (?)',[old_supporter1.id, old_supporter2.id])
       MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
       expect(card.reload.holder).to eq(new_supporter.reload)
+    end
+
+    it 'updates the addresses information on the supporter' do
+      old_supporters = Supporter.where('supporters.id IN (?)',[old_supporter1.id, old_supporter2.id])
+      MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
+      expect(new_supporter.reload.addresses.count).to eq(3)
+    end
+
+    it 'updates the supporter_addresses to point to the new supporter' do
+      old_supporters = Supporter.where('supporters.id IN (?)',[old_supporter1.id, old_supporter2.id])
+      MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
+      expect(SupporterAddress.where(supporter_id: new_supporter.id).count).to eq(3)
     end
   end
 
