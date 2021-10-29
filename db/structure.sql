@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.7 (Ubuntu 12.7-0ubuntu0.20.10.1)
--- Dumped by pg_dump version 13.4 (Ubuntu 13.4-0ubuntu0.21.04.1)
+-- Dumped from database version 13.4
+-- Dumped by pg_dump version 13.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1003,6 +1003,40 @@ CREATE SEQUENCE public.events_id_seq
 --
 
 ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
+
+
+--
+-- Name: export_formats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.export_formats (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    date_format character varying,
+    show_currency boolean DEFAULT true NOT NULL,
+    custom_columns_and_values jsonb,
+    nonprofit_id integer NOT NULL
+);
+
+
+--
+-- Name: export_formats_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.export_formats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: export_formats_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.export_formats_id_seq OWNED BY public.export_formats.id;
 
 
 --
@@ -2019,6 +2053,40 @@ CREATE SEQUENCE public.payouts_id_seq
 --
 
 ALTER SEQUENCE public.payouts_id_seq OWNED BY public.payouts.id;
+
+
+--
+-- Name: periodic_reports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.periodic_reports (
+    id integer NOT NULL,
+    active boolean DEFAULT false NOT NULL,
+    report_type character varying NOT NULL,
+    period character varying NOT NULL,
+    user_id integer,
+    nonprofit_id integer
+);
+
+
+--
+-- Name: periodic_reports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.periodic_reports_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: periodic_reports_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.periodic_reports_id_seq OWNED BY public.periodic_reports.id;
 
 
 --
@@ -3060,6 +3128,13 @@ ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.event
 
 
 --
+-- Name: export_formats id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.export_formats ALTER COLUMN id SET DEFAULT nextval('public.export_formats_id_seq'::regclass);
+
+
+--
 -- Name: exports id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3253,6 +3328,13 @@ ALTER TABLE ONLY public.payments ALTER COLUMN id SET DEFAULT nextval('public.pay
 --
 
 ALTER TABLE ONLY public.payouts ALTER COLUMN id SET DEFAULT nextval('public.payouts_id_seq'::regclass);
+
+
+--
+-- Name: periodic_reports id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.periodic_reports ALTER COLUMN id SET DEFAULT nextval('public.periodic_reports_id_seq'::regclass);
 
 
 --
@@ -3586,6 +3668,14 @@ ALTER TABLE ONLY public.events
 
 
 --
+-- Name: export_formats export_formats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.export_formats
+    ADD CONSTRAINT export_formats_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: exports exports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3823,6 +3913,14 @@ ALTER TABLE ONLY public.cards
 
 ALTER TABLE ONLY public.payments
     ADD CONSTRAINT payments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: periodic_reports periodic_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.periodic_reports
+    ADD CONSTRAINT periodic_reports_pkey PRIMARY KEY (id);
 
 
 --
@@ -4218,6 +4316,13 @@ CREATE INDEX index_events_on_nonprofit_id_and_deleted_and_published ON public.ev
 
 
 --
+-- Name: index_export_formats_on_nonprofit_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_export_formats_on_nonprofit_id ON public.export_formats USING btree (nonprofit_id);
+
+
+--
 -- Name: index_exports_on_nonprofit_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4313,6 +4418,20 @@ CREATE INDEX index_offsite_payments_on_payment_id ON public.offsite_payments USI
 --
 
 CREATE INDEX index_offsite_payments_on_supporter_id ON public.offsite_payments USING btree (supporter_id);
+
+
+--
+-- Name: index_periodic_reports_on_nonprofit_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_periodic_reports_on_nonprofit_id ON public.periodic_reports USING btree (nonprofit_id);
+
+
+--
+-- Name: index_periodic_reports_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_periodic_reports_on_user_id ON public.periodic_reports USING btree (user_id);
 
 
 --
@@ -4705,11 +4824,35 @@ ALTER TABLE ONLY public.fee_structures
 
 
 --
+-- Name: periodic_reports fk_rails_8f03e9aed1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.periodic_reports
+    ADD CONSTRAINT fk_rails_8f03e9aed1 FOREIGN KEY (nonprofit_id) REFERENCES public.nonprofits(id);
+
+
+--
 -- Name: supporter_addresses fk_rails_bd7fbee619; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.supporter_addresses
     ADD CONSTRAINT fk_rails_bd7fbee619 FOREIGN KEY (supporter_id) REFERENCES public.supporters(id);
+
+
+--
+-- Name: periodic_reports fk_rails_d5610dd8f8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.periodic_reports
+    ADD CONSTRAINT fk_rails_d5610dd8f8 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: export_formats fk_rails_f7fae488f3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.export_formats
+    ADD CONSTRAINT fk_rails_f7fae488f3 FOREIGN KEY (nonprofit_id) REFERENCES public.nonprofits(id);
 
 
 --
@@ -5811,4 +5954,8 @@ INSERT INTO schema_migrations (version) VALUES ('20211004130610');
 INSERT INTO schema_migrations (version) VALUES ('20211004173137');
 
 INSERT INTO schema_migrations (version) VALUES ('20211004173808');
+
+INSERT INTO schema_migrations (version) VALUES ('20211021173546');
+
+INSERT INTO schema_migrations (version) VALUES ('20211025145718');
 

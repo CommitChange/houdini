@@ -135,7 +135,6 @@ Commitchange::Application.routes.draw do
 		get(:recurring_donation_stats, {on: :member})
     get(:search, {on: :collection})
 		get(:dashboard_todos, {on: :member})
-		put(:verify_identity, {on: :member})
 
 
 		resources(:roles, {only: [:create, :destroy]})
@@ -226,8 +225,11 @@ Commitchange::Application.routes.draw do
   # Events
   get '/events' => 'events#index'
   get '/events/:event_slug' => 'events#show'
-	post "/webhooks/stripe/receive" => "webhooks/stripe#receive",  format: :json
-	post "/webhooks/stripe/receive_connect" => "webhooks/stripe#receive_connect",  format: :json	 
+
+	defaults format: :json do
+		post "/webhooks/stripe/receive" => "webhooks/stripe#receive"
+		post "/webhooks/stripe/receive_connect" => "webhooks/stripe#receive_connect"
+	end
   
 
 	# Nonprofits
