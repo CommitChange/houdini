@@ -32,7 +32,7 @@
 		<%= render 'nonprofits/supporters/fieldset', cssClass: 'col-right-4', profile: profile, name: 'phone', placeholder: 'Phone' %>
 	</section>
 
-	<% if @nonprofit.autocomplete_supporter_address && @nonprofit.feature_flag_autocomplete_supporter_address %>
+	<% if @nonprofit.autocomplete_supporter_address? %>
 	  <%= render 'supporters/autocomplete_address_fields', profile: profile %>
 	<% else %>
 	  <%= render 'supporters/manual_address_fields', profile: profile %>
