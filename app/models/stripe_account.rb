@@ -30,47 +30,40 @@ class StripeAccount < ActiveRecord::Base
   end
 
   def future_requirements
-    Requirements.new(object['future_requirements'])
+    Requirements.new(object['future_requirements'] || {})
   end
 
-  def future_deadline_with_requirements
-    return nil if future_requirements.current_deadline.nil?
-    [
-      future_requirements.currently_due,
-      future_requirements.past_due,
-      future_requirements.eventually_due,
-      future_requirements.pending_verification
-  ].none?{| i| i.none?}
-
+  # the distinct union of the current pending_verification and the future pending_verification values
+  def pending_verification 
+    (requirements.pending_verification + future_requirements.pending_verification).uniq
   end
+  
 
   # describes a deadline where additional requirements are needed to be completed
   # future_requirements can have a current_deadline and not have any additional requirements so
   # we don't consider that a deadline here.
   def deadline
+    deadlines = []
+    if requirements.current_deadline 
+      deadlines.push(requirements.current_deadline)
+    end
+    if future_requirements.current_deadline && future_requirements.any_requirements_other_than_external_account?(
+      include_eventually_due: true, include_pending_verification: true
+    )
+      deadlines.push(future_requirements.current_deadline)
+    end
 
-    requirements.current_deadline
-    # if [future_requirements
-    # [requirements.current_deadline, future_requirements.current_deadline].select{|i| !i.nil?}.min
-    # requirements.current_deadline
+    deadlines.min
   end
 
+  # these are validation requirements which may come in the future but haven't yet
   def needs_more_validation_info
-    validation_arrays = [self.currently_due, self.past_due, self.eventually_due].map{|i| i || []}
-    validation_arrays.any? do |i| 
-      !i.none? && !i.all? do |j| 
-        j.starts_with?('external_account')
-      end
-    end
+    requirements.any_requirements_other_than_external_account?(include_eventually_due: true)
   end
 
+  # these are validation requirements which must be done by a given deadline
   def needs_immediate_validation_info
-    validation_arrays = [self.currently_due, self.past_due].map{|i| i || []}
-    deadline || validation_arrays.any? do |i| 
-      !i.none? && !i.all? do |j| 
-        j.starts_with?('external_account')
-      end
-    end
+    deadline || requirements.any_requirements_other_than_external_account?
   end
 
   private 
@@ -132,6 +125,30 @@ class StripeAccount < ActiveRecord::Base
   
     def eventually_due
       @requirements['eventually_due'] || []
+    end
+
+    def any_requirements_other_than_external_account?(opts={})
+
+      defaults = {
+        include_eventually_due: false,
+        include_pending_verification: false, 
+      }
+
+      opts = defaults.merge(opts)
+      requirement_arrays = [past_due, currently_due]
+      if opts[:include_eventually_due]
+        requirement_arrays.push(eventually_due)
+      end
+
+      if opts[:include_pending_verification]
+        requirement_arrays.push(pending_verification)
+      end
+
+      requirement_arrays.any? do |i|
+          !i.none? && !i.all? do |j|
+            j.starts_with?('external_account')
+          end
+        end
     end
   
     def pending_verification
