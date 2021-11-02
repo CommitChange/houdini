@@ -5,7 +5,6 @@ RSpec.describe StripeAccount, :type => :model do
   before(:each) do
     StripeMock.start
   end
-
   describe "account should be pending" do
     let(:sa) do 
       create(:stripe_account, :with_pending)
@@ -96,16 +95,8 @@ RSpec.describe StripeAccount, :type => :model do
 
 
   describe '.without_future_requirements' do 
-    let(:json) do
-      event =StripeMock.mock_webhook_event('account.updated.without-future-requirements')
-      event['data']['object']
-    end
-
     let!(:sa) do 
-      sa = StripeAccount.new
-      sa.object = json
-      sa.save!
-      sa
+      create(:stripe_account, :without_future_requirements)
     end
 
     it { expect(StripeAccount.without_future_requirements.count).to eq 1}
@@ -113,16 +104,9 @@ RSpec.describe StripeAccount, :type => :model do
   end
 
   describe '.with_future_requirements' do 
-    let(:json) do
-      event =StripeMock.mock_webhook_event('account.updated.with-pending')
-      event['data']['object']
-    end
 
     let!(:sa) do 
-      sa = StripeAccount.new
-      sa.object = json
-      sa.save!
-      sa
+      create(:stripe_account, :with_pending)
     end
 
     it { expect(StripeAccount.without_future_requirements.count).to eq 0}
@@ -130,20 +114,8 @@ RSpec.describe StripeAccount, :type => :model do
   end
 
   describe '#future_requirements' do
-    let(:json) do
-      event =StripeMock.mock_webhook_event('account.updated.with-pending')
-      event['data']['object']
-    end
-
-    let(:sa) do 
-      sa = StripeAccount.new
-      sa.object = json
-      sa.save!
-      sa
-    end
-
     subject(:future_requirements) {
-      sa.future_requirements
+      create(:stripe_account, :with_pending).future_requirements
     }
 
     it do 

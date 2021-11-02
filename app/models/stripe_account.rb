@@ -33,8 +33,26 @@ class StripeAccount < ActiveRecord::Base
     Requirements.new(object['future_requirements'])
   end
 
+  def future_deadline_with_requirements
+    return nil if future_requirements.current_deadline.nil?
+    [
+      future_requirements.currently_due,
+      future_requirements.past_due,
+      future_requirements.eventually_due,
+      future_requirements.pending_verification
+  ].none?{| i| i.none?}
+
+  end
+
+  # describes a deadline where additional requirements are needed to be completed
+  # future_requirements can have a current_deadline and not have any additional requirements so
+  # we don't consider that a deadline here.
   def deadline
+
     requirements.current_deadline
+    # if [future_requirements
+    # [requirements.current_deadline, future_requirements.current_deadline].select{|i| !i.nil?}.min
+    # requirements.current_deadline
   end
 
   def needs_more_validation_info
