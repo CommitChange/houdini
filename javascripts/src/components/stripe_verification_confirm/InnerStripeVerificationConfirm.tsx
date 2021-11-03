@@ -4,7 +4,6 @@ import AccountLinkContext, { AccountLinkContextData } from '../stripe_account_ve
 import GetAccountLink from '../stripe_account_verification/GetAccountLink';
 import Spinner from '../common/Spinner';
 import ReturnLocation from '../stripe_account_verification/return_location';
-import ProgressBarAndStatus from '../common/ProgressBarAndStatus';
 
 
 

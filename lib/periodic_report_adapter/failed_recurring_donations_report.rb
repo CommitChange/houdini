@@ -3,11 +3,11 @@ class PeriodicReportAdapter::FailedRecurringDonationsReport < PeriodicReportAdap
   def initialize(options)
     @nonprofit_id = options[:nonprofit_id]
     @period = options[:period]
-    @user_id = options[:user_id]
+    @user_ids = options[:users].pluck(:id)
   end
 
   def run
-    ExportRecurringDonations::initiate_export(@nonprofit_id, params, @user_id, false)
+    ExportRecurringDonations::initiate_export(@nonprofit_id, params, @user_ids, false)
   end
 
   private
@@ -22,8 +22,8 @@ class PeriodicReportAdapter::FailedRecurringDonationsReport < PeriodicReportAdap
 
   def last_month
     {
-      :started_at => (Time.current - 1.month).beginning_of_month,
-      :end_date => Time.current.beginning_of_month
+      :from_date => (Time.current - 1.month).beginning_of_month,
+      :before_date => Time.current.beginning_of_month
     }
   end
 end
