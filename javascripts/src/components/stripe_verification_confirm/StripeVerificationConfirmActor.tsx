@@ -31,6 +31,7 @@ interface StripeVerificationConfirmActorState {
   lastStatus?:'completed'|'needmore'|'still_pending'|'unknown_error'
   disabledReason?:string
   needBankAccount?:boolean
+  deadline?:number|null
 }
 
 class StripeVerificationConfirmActor extends React.Component<FullStripeVerificationConfirmActorProps , StripeVerificationConfirmActorState> {
@@ -56,8 +57,9 @@ class StripeVerificationConfirmActor extends React.Component<FullStripeVerificat
       const stillPending = stripeValidated.verification_status === 'pending'
 
       const needBankAccount = !stripeValidated.payouts_enabled
+      const deadline = stripeValidated.deadline
 
-      this.setState({needBankAccount})
+      this.setState({needBankAccount, deadline})
       if (stillPending)
       {
         this.setState({disabledReason: stripeValidated.disabled_reason})
