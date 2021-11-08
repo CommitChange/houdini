@@ -1508,7 +1508,8 @@ CREATE TABLE public.misc_event_infos (
     event_id integer,
     hide_cover_fees_option boolean,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    custom_get_tickets_button_label character varying
 );
 
 
@@ -1842,7 +1843,8 @@ CREATE TABLE public.nonprofits (
     card_failure_message_bottom text,
     fields_needed text,
     autocomplete_supporter_address boolean DEFAULT false,
-    currency character varying(255) DEFAULT 'usd'::character varying
+    currency character varying(255) DEFAULT 'usd'::character varying,
+    feature_flag_autocomplete_supporter_address boolean DEFAULT false
 );
 
 
@@ -6001,9 +6003,13 @@ INSERT INTO schema_migrations (version) VALUES ('20211004173137');
 
 INSERT INTO schema_migrations (version) VALUES ('20211004173808');
 
+INSERT INTO schema_migrations (version) VALUES ('20211019205925');
+
 INSERT INTO schema_migrations (version) VALUES ('20211021173546');
 
 INSERT INTO schema_migrations (version) VALUES ('20211025145718');
 
 INSERT INTO schema_migrations (version) VALUES ('20211101221537');
+
+INSERT INTO schema_migrations (version) VALUES ('20211104195053');
 

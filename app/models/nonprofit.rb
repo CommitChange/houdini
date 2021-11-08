@@ -74,6 +74,7 @@ class Nonprofit < ActiveRecord::Base
   has_many :cards, as: :holder
   has_many :supporter_cards, through: :supporters, source: :cards, class_name: 'Card'
   has_many :periodic_reports
+  has_many :export_formats
 
   has_one :bank_account, -> { where("COALESCE(bank_accounts.deleted, false) = false") }, dependent: :destroy
   has_one :billing_subscription, dependent: :destroy
@@ -242,6 +243,10 @@ class Nonprofit < ActiveRecord::Base
       status: vetted
     })
     ret
+  end
+
+  def autocomplete_supporter_address?
+    !!(feature_flag_autocomplete_supporter_address && autocomplete_supporter_address)
   end
 
   concerning :FeeCalculation do

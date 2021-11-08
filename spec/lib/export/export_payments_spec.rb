@@ -272,6 +272,122 @@ describe ExportPayments do
         expect(row["Anonymous?"]).to eq "true"
       end
     end
+
+    context 'when export_format' do
+      around(:each) do |e|
+        Timecop.freeze(2021, 10, 26) do
+          e.run
+        end
+      end
+
+      before do
+        Payment.find_each do |p|
+          p.kind = 'RecurringDonation'
+          p.date = Time.zone.now
+          p.save!
+        end
+      end
+
+      context 'when there is an export_format for that export' do
+        let(:export_format) do
+          nonprofit.export_formats.create(
+            name: 'CiviCRM format',
+            date_format: 'MM/DD/YYYY',
+            show_currency: false,
+            custom_columns_and_values: {
+              'payments.kind' => {
+                'custom_values' => {
+                  'RecurringDonation' => 'Recurring Donation'
+                },
+                'custom_name' => 'Kind of Payment'
+              }
+            }
+          )
+        end
+
+        let(:export_result) { ExportPayments.for_export_enumerable(nonprofit.id, { export_format_id: export_format.id }).to_a }
+
+        subject do
+          CSV.parse(
+            Format::Csv.from_array(
+              export_result
+            ),
+            headers:true
+          ).first.to_h
+        end
+
+        it 'changes the default "type" column for "Kind of Payment"' do
+          expect(subject.include?('Kind Of Payment')).to be_truthy
+        end
+
+        it 'customizes the payment.kind RecurringDonation value to be Recurring Donation' do
+          expect(subject['Kind Of Payment']).to eq('Recurring Donation')
+        end
+
+        it 'does not show currency on payments.gross_amount' do
+          expect(subject['Gross Amount'].include?('$')).to be_falsy
+        end
+
+        it 'does not show currency on payments.fee_total' do
+          expect(subject['Fee Total'].include?('$')).to be_falsy
+        end
+
+        it 'does not show currency on payments.net_amount' do
+          expect(subject['Net Amount'].include?('$')).to be_falsy
+        end
+
+        it 'follows the desired date format' do
+          expect(subject['Date']).to eq('10/26/2021')
+        end
+
+        context 'when the export_format does not specify any custom values or names' do
+          it 'does not change any header' do
+            export_format.custom_columns_and_values = nil
+            export_format.save!
+            headers = MockHelpers.payment_export_headers
+            expect(export_result[0]).to eq(headers)
+          end
+        end
+      end
+
+      context 'when there is not an export_format for that export, relies on our default format' do
+        let(:export_result) { ExportPayments.for_export_enumerable(nonprofit.id, { }).to_a }
+
+        subject do
+          CSV.parse(
+            Format::Csv.from_array(
+              export_result
+            ),
+            headers:true
+          ).first.to_h
+        end
+
+        it 'does not change any header' do
+          headers = MockHelpers.payment_export_headers
+          expect(export_result[0]).to eq(headers)
+        end
+
+        it 'reflects payment.kind RecurringDonation to be the same as our database' do
+          expect(subject['Type']).to eq('RecurringDonation')
+        end
+
+        it 'shows currency on payments.gross_amount' do
+          expect(subject['Gross Amount'].include?('$')).to be_truthy
+        end
+
+        it 'shows currency on payments.fee_total' do
+          expect(subject['Fee Total'].include?('$')).to be_truthy
+        end
+
+        it 'shows currency on payments.net_amount' do
+          expect(subject['Net Amount'].include?('$')).to be_truthy
+        end
+
+        it 'shows our default date format' do
+          expect(subject['Date']).to eq('2021-10-26 00:00:00 ')
+        end
+      end
+    end
   end
 end
 

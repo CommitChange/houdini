@@ -84,6 +84,16 @@
 	<script>
 	appl.def('ticketPaymentCard', ticketPaymentCard)
 	</script>
+
+	<script>
+	 	document.querySelectorAll('#autocompleteAddressInVS').forEach((input) => {
+			window.googleAutocomplete.createAutocompleteInput({input, placeChangedCallbacks:[(place) => appl.def('autocomplete.data', place)]});
+		 })
+
+		 appl.def('resetAutocompleteData', () => {
+			 appl.def('autocomplete.data', null)
+		 })
+	</script>
 <% end %>
 
 <%= content_for :head do %>
@@ -116,7 +126,7 @@
           <!--= on 'click' show_new_tickets -->
           <span class='cornerHoles--top'></span>
           <hr class='doubleLines'></hr>
-          <span class='getTickets-text'>Get Tickets</span>
+          <span class='getTickets-text'><%= @event&.get_tickets_button_label %></span>
           <hr class='doubleLines'></hr>
           <span class='cornerHoles--bottom'></span>
         </a>
