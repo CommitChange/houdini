@@ -1,7 +1,5 @@
 
 name: Main build
-env: 
-  ruby: '2.4.10'
 on: 
   pull_request:
     types: [opened, reopened, synchronize]
@@ -15,6 +13,7 @@ jobs:
         matrix:
           os: [ubuntu-20.04]
           node: [14.6.0]
+          ruby: ['2.4.10', '2.5.9']
       steps:
         - uses: actions/checkout@v2
         - uses: dorny/paths-filter@v2
@@ -62,7 +61,7 @@ jobs:
             cache: 'npm'
         - uses: ruby/setup-ruby@v1
           with:
-            ruby-version: ${{ env.ruby }}
+            ruby-version: ${{ matrix.ruby }}
             bundler-cache: true
         - run: bin/setup
         - if: steps.changes.outputs.ruby == 'true'
