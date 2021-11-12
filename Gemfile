@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.4.10'
+#ruby '2.4.10'
 gem 'rake'
 gem 'rails', '~> 4.0'
 
