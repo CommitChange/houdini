@@ -53,7 +53,7 @@ jobs:
         - name: Setup PostgreSQL with PostgreSQL extensions and unprivileged user
           uses: Daniel-Marynicz/postgresql-action@0.1.0
           with:
-            postgres_image_tag: 11-alpine
+            postgres_image_tag: 12-alpine
             postgres_user: admin
             postgres_password: password
         - uses: actions/setup-node@v2
@@ -68,6 +68,9 @@ jobs:
         - if: steps.changes.outputs.ruby == 'true'
           name: run spec
           run: bin/rake spec
-        - run: npm ci
+        - if: steps.changes.outputs.ruby == 'true'
+          run: script/compile-assets.sh
         - if: steps.changes.outputs.js == 'true'
-          run: npm run jest
+          run: npm run build
+        - if: steps.changes.outputs.js == 'true'
+          run: npx jest

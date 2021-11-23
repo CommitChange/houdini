@@ -4,6 +4,8 @@ ruby '2.4.10'
 gem 'rake'
 gem 'rails', '~> 4.0'
 
+gem 'date', '~> 2.0.2'
+
 # https://stripe.com/docs/api
 gem 'stripe', '~> 4'
 
@@ -116,8 +118,8 @@ group :test do
 end
 
 # Gems used for asset compilation
-gem 'sass'
-gem 'sass-rails'
+gem 'sassc'
+gem 'sassc-rails'
 
 # make logging less terrible in rails
 gem 'lograge'
