@@ -124,19 +124,19 @@ class Supporter < ActiveRecord::Base
   end
 
   def address
-    self&.primary_address&.address || nil
+    self.primary_address&.address
   end
 
   def address=(address)
     if primary_address.present?
       primary_address.update_attributes(address: address)
-    else
+    elsif address.present?
       self.addresses.build(address: address)
     end
   end
 
   def city
-    self&.primary_address&.city || nil
+    self.primary_address&.city
   end
 
   def city=(city)
@@ -148,7 +148,7 @@ class Supporter < ActiveRecord::Base
   end
 
   def state_code
-    self&.primary_address&.state_code || nil
+    self.primary_address&.state_code
   end
 
   def state_code=(state_code)
@@ -160,19 +160,19 @@ class Supporter < ActiveRecord::Base
   end
 
   def country
-    self&.primary_address&.country || nil
+    self.primary_address&.country
   end
 
   def country=(country)
     if primary_address.present?
       primary_address.update_attributes(country: country)
-    else
+    elsif country.present?
       self.addresses.build(country: country)
     end
   end
 
   def zip_code
-    self&.primary_address&.zip_code || nil
+    self.primary_address&.zip_code
   end
 
   def zip_code=(zip_code)
@@ -189,7 +189,7 @@ class Supporter < ActiveRecord::Base
       assign_attributes(address_line2: nil, address: self.address + " " + self.address_line2)
     end
     address_field_attributes.each do |addr_attribute, addr_value|
-      self[addr_attribute] = nil if addr_value.blank?
+      self.primary_address[addr_attribute] = nil if self.primary_address.present? && self.primary_address[addr_attribute].blank?
     end
   end
 
@@ -209,20 +209,32 @@ class Supporter < ActiveRecord::Base
   end
 
   def update_primary_address
-    if self.changes.slice(*ADDRESS_FIELDS).any? #changed an address field
-      if filled_address_fields?
-        if primary_address.nil?
-          self.addresses.build(address_field_attributes)
-        else
-          primary_address.update(address_field_attributes)
-        end
-      elsif primary_address.present?
-        prim_addr = primary_address
-        self.update(primary_address: nil)
-        self.addresses.delete(prim_addr)
-        prim_addr.destroy
+    if filled_address_fields?
+      if primary_address.nil?
+        self.addresses.build(address_field_attributes)
+      else
+        primary_address.update(address_field_attributes)
       end
+    elsif primary_address.present? && empty_new_address_fields?
+      delete_primary_address
     end
+  end
+
+  def empty_new_address_fields?
+    return false if address.present?
+    return false if city.present?
+    return false if state_code.present?
+    return false if country.present?
+    return false if zip_code.present?
+    true
+  end
+
+  def delete_primary_address
+    self.primary_address.update(supporter_id: nil)
+    prim_addr = self.primary_address
+    self.addresses.delete(prim_addr)
+    self.update(primary_address: nil)
+    prim_addr.destroy
   end
 
   def set_address_to_primary_if_needed(new_address)
