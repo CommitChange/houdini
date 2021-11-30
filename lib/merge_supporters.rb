@@ -14,13 +14,6 @@
         .where("supporter_id IN ($ids)", ids: old_supporter_ids).timestamps.execute
     end
 
-    old_supporters.joins(:addresses).each do |supp|
-      supp.addresses.each do |addr|
-        addr.supporter = new_supporter
-        addr.save!
-      end
-    end
-
     old_supporters.joins(:cards).each do |supp|
       supp.cards.each do |card|
         card.holder = new_supporter

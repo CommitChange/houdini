@@ -4,7 +4,7 @@ describe MergeSupporters do
 
   let(:np) {force_create(:nonprofit)}
   let(:old_supporter1) { force_create(:supporter, :with_primary_address, nonprofit: np) }
-  let(:old_supporter2) { force_create(:supporter, :with_two_addresses, nonprofit: np) }
+  let(:old_supporter2) { force_create(:supporter, :with_primary_address, nonprofit: np) }
   let(:old_supporter3) { force_create(:supporter, nonprofit: np) }
   let(:card) { force_create(:card, holder: old_supporter1) }
   around(:each) do |e|
@@ -158,16 +158,10 @@ describe MergeSupporters do
       expect(card.reload.holder).to eq(new_supporter.reload)
     end
 
-    it 'updates the addresses information on the supporter' do
+    it 'doesnt copy any address' do
       old_supporters = Supporter.where('supporters.id IN (?)',[old_supporter1.id, old_supporter2.id])
       MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
-      expect(new_supporter.reload.addresses.count).to eq(3)
-    end
-
-    it 'updates the supporter_addresses to point to the new supporter' do
-      old_supporters = Supporter.where('supporters.id IN (?)',[old_supporter1.id, old_supporter2.id])
-      MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
-      expect(SupporterAddress.where(supporter_id: new_supporter.id).count).to eq(3)
+      expect(new_supporter.reload.addresses.count).to eq(0)
     end
   end
 
@@ -242,6 +236,28 @@ describe MergeSupporters do
             expect(result[:json].custom_field_joins.pluck(:value)).to eq(['foo'])
           end
         end
+      end
+    end
+
+    context 'when the new supporter is given an addresss' do
+      subject do
+        MergeSupporters.selected(
+          {
+            name: 'Penelope Schultz',
+            nonprofit_id: 3333333,
+            address: 'Avenida Parque'
+          }.with_indifferent_access,
+          [old_supporter1.id, old_supporter2.id],
+          np.id,
+          nil
+        )
+      end
+      it 'assigns a primary_address_id' do
+        expect(subject[:json][:primary_address_id]).to be_present
+      end
+
+      it 'does not assign an address directly to the supporter' do
+        expect(subject[:json][:address]).to be_nil
       end
     end
   end
