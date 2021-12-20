@@ -129,7 +129,7 @@ class Supporter < ActiveRecord::Base
 
   def address=(address)
     if primary_address.present?
-      primary_address.update_attributes(address: address)
+      primary_address.address = address
     elsif address.present?
       self.addresses.build(address: address)
     end
@@ -141,7 +141,7 @@ class Supporter < ActiveRecord::Base
 
   def city=(city)
     if primary_address.present?
-      primary_address.update_attributes(city: city)
+      primary_address.city = city
     else
       self.addresses.build(city: city)
     end
@@ -153,7 +153,7 @@ class Supporter < ActiveRecord::Base
 
   def state_code=(state_code)
     if primary_address.present?
-      primary_address.update_attributes(state_code: state_code)
+      primary_address.state_code = state_code
     else
       self.addresses.build(state_code: state_code)
     end
@@ -165,7 +165,7 @@ class Supporter < ActiveRecord::Base
 
   def country=(country)
     if primary_address.present?
-      primary_address.update_attributes(country: country)
+      primary_address.country = country
     elsif country.present?
       self.addresses.build(country: country)
     end
@@ -177,7 +177,7 @@ class Supporter < ActiveRecord::Base
 
   def zip_code=(zip_code)
     if primary_address.present?
-      primary_address.update_attributes(zip_code: zip_code)
+      primary_address.zip_code = zip_code
     else
       self.addresses.build(zip_code: zip_code)
     end
@@ -221,12 +221,7 @@ class Supporter < ActiveRecord::Base
   end
 
   def empty_new_address_fields?
-    return false if address.present?
-    return false if city.present?
-    return false if state_code.present?
-    return false if country.present?
-    return false if zip_code.present?
-    true
+    address.blank? && city.blank? && state_code.blank? && country.blank? && zip_code.blank?
   end
 
   def delete_primary_address

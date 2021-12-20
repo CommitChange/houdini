@@ -19,7 +19,7 @@ module UpdateSupporter
 
   def self.general_info(supporter_id, data)
     supporter = Supporter.find(supporter_id)
-    supporter.update_attributes(data)
+    supporter.update(data)
   end
 
 end
