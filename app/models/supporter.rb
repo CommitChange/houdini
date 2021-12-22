@@ -1,5 +1,7 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 class Supporter < ActiveRecord::Base
+  include Model::Houidable
+  setup_houid :supp, :houid
 
   include Model::Houidable
   setup_houid :supp, :houid
@@ -100,6 +102,16 @@ class Supporter < ActiveRecord::Base
     self.profile.get_profile_picture(size)
   end
 
+  ModernParams = Struct.new(:to_param)
+
+  # When you use a routing helper like `api_new_nonprofit_supporter``, you need to provide objects which have a `#to_param`
+  # method. By default that's set to the value of `#id`. In our case, for the api objects, we want the id to instead be
+  # the value of `#houid`. We can't override `to_param` though because we may use route helpers which expect `#to_param` to 
+  # return the value of `#id`. This is the hacky workaround.
+  def to_modern_param
+    ModernParams.new(houid)
+  end
+
 
   # Supporters can be merged many times. This finds the last
   # supporter after following merged_into until it gets a nil
@@ -123,7 +135,6 @@ class Supporter < ActiveRecord::Base
   def full_address
     Format::Address.full_address(self.address, self.city, self.state_code)
   end
-
 
   private
   def cleanup_address

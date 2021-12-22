@@ -10,7 +10,7 @@ RSpec.describe Transaction, type: :model do
   end
 
   describe 'houid is created' do
-    subject { Transaction.new(supporter:create(:supporter))}
+    subject { Transaction.create(supporter:create(:supporter))}
     it {is_expected.to have_attributes(houid: match_houid('trx'))}
   end
 end
