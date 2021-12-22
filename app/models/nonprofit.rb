@@ -3,6 +3,9 @@ class Nonprofit < ActiveRecord::Base
   include Model::Houidable
   setup_houid :np, :houid
 
+  include Model::Houidable
+  setup_houid :np, :houid
+
   Categories = ["Public Benefit", "Human Services", "Education", "Civic Duty", "Human Rights", "Animals", "Environment", "Health", "Arts, Culture, Humanities", "International", "Children", "Religion", "LGBTQ", "Women's Rights", "Disaster Relief", "Veterans"]
 
   attr_accessible \
@@ -148,6 +151,16 @@ class Nonprofit < ActiveRecord::Base
     h = super(options)
     h[:url] = self.url
     h
+  end
+
+  ModernParams = Struct.new(:to_param)
+
+  # When you use a routing helper like `api_nonprofit_supporter``, you need to provide objects which have a `#to_param`
+  # method. By default that's set to the value of `#id`. In our case, for the api objects, we want the id to instead be
+  # the value of `#houid`. We can't override `to_param` though because we may use route helpers which expect `#to_param` to 
+  # return the value of `#id`. This is the hacky workaround.
+  def to_modern_param
+    ModernParams.new(houid)
   end
 
   def url
