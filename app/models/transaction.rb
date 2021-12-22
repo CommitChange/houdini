@@ -21,6 +21,10 @@ class Transaction < ApplicationRecord
 	def set_created_if_needed
 		write_attribute(:created, Time.now) unless read_attribute(:created)
 	end
+
+	def to_param
+		persisted? && houid
+	end
 end
 
 
