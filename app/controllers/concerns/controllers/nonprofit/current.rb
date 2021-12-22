@@ -8,14 +8,15 @@ module Controllers::Nonprofit::Current
 		private
 
 		def current_nonprofit
-			@nonprofit = current_nonprofit_without_exception
-			raise ActionController::RoutingError, 'Nonprofit not found' if @nonprofit.nil?
-
-			@nonprofit
+			Nonprofit.find_by(houid:params[:nonprofit_id])
 		end
 
 		def current_nonprofit_without_exception
-			FetchNonprofit.with_params params, administered_nonprofit
+			begin
+				current_nonprofit
+			rescue
+				false
+			end
 		end
 	end
 end

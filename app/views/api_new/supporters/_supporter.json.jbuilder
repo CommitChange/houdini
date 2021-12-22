@@ -19,6 +19,6 @@ json.supporter_addresses [supporter] do |supp|
   json.country supp.country
 end
 
-#json.url api_new_nonprofit_supporter_url(supporter.nonprofit, supporter.to_modern_param)
+#json.url api_new_nonprofit_supporter_url(supporter.nonprofit.to_modern_param, supporter.to_modern_param)
 
-json.nonprofit supporter.nonprofit.id
+json.nonprofit supporter.nonprofit.houid
