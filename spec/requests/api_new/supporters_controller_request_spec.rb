@@ -13,13 +13,13 @@ describe ApiNew::SupportersController, type: :request do
 	end
   describe 'routing for' do
    describe 'api_new_nonprofit_supporter_path' do 
-    subject {api_new_nonprofit_supporter_path(nonprofit, supporter.to_modern_param)}
-    it {is_expected.to eq "/api_new/nonprofits/#{nonprofit.id}/supporters/#{supporter.houid}"}
+    subject {api_new_nonprofit_supporter_path(nonprofit.to_modern_param, supporter.to_modern_param)}
+    it {is_expected.to eq "/api_new/nonprofits/#{nonprofit.houid}/supporters/#{supporter.houid}"}
    end
 
    describe 'api_new_nonprofit_supporter_path' do 
-    subject {api_new_nonprofit_supporter_url(nonprofit, supporter.to_modern_param)}
-    it {is_expected.to eq "http://www.example.com/api_new/nonprofits/#{nonprofit.id}/supporters/#{supporter.houid}"}
+    subject {api_new_nonprofit_supporter_url(nonprofit.to_modern_param, supporter.to_modern_param)}
+    it {is_expected.to eq "http://www.example.com/api_new/nonprofits/#{nonprofit.houid}/supporters/#{supporter.houid}"}
    end
   end
 
@@ -28,7 +28,7 @@ describe ApiNew::SupportersController, type: :request do
 		context 'when logged in'do
       before do
 				sign_in user
-				get "/api_new/nonprofits/#{nonprofit.id}/supporters/#{supporter.houid}"
+				get "/api_new/nonprofits/#{nonprofit.houid}/supporters/#{supporter.houid}"
 			end
 
 			it {
@@ -56,7 +56,7 @@ describe ApiNew::SupportersController, type: :request do
 				}
 
 				it {
-					is_expected.to include('nonprofit' => nonprofit.id)
+					is_expected.to include('nonprofit' => nonprofit.houid)
 				}
 
 				it {
@@ -110,13 +110,13 @@ describe ApiNew::SupportersController, type: :request do
 
 				# it {
 				# 	is_expected.to include('url' =>
-				# 			a_string_matching(%r{http://www\.example\.com/api_new/nonprofits/#{nonprofit.id}/supporters/#{supporter.houid}}))
+				# 			a_string_matching(%r{http://www\.example\.com/api_new/nonprofits/#{nonprofit.houid}/supporters/#{supporter.houid}}))
 				# }
 			end
 
     end
     it 'returns unauthorized when not logged in' do
-			get "/api_new/nonprofits/#{nonprofit.id}/supporters/#{supporter.houid}"
+			get "/api_new/nonprofits/#{nonprofit.houid}/supporters/#{supporter.houid}"
 			expect(response).to have_http_status(:unauthorized)
 		end
   end

@@ -29,7 +29,7 @@ RSpec.describe '/api_new/supporters/show.json.jbuilder', type: :view do
 	}
 
 	it {
-		is_expected.to include('nonprofit' => nonprofit.id)
+		is_expected.to include('nonprofit' => nonprofit.houid)
 	}
 
 	it {
@@ -83,6 +83,6 @@ RSpec.describe '/api_new/supporters/show.json.jbuilder', type: :view do
 
 	# it {
 	# 	is_expected.to include('url' =>
-	# 		a_string_matching(%r{http://test\.host/api_new/nonprofits/#{nonprofit.id}/supporters/#{supporter.houid}}))
+	# 		a_string_matching(%r{http://test\.host/api_new/nonprofits/#{nonprofit.houid}/supporters/#{supporter.houid}}))
 	# }
 end
