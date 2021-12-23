@@ -11,16 +11,21 @@ class Transaction < ApplicationRecord
 	belongs_to :supporter
 	has_one :nonprofit, through: :supporter
 
+	has_many :transaction_assignments, inverse_of: 'trx'
+	has_one :subtransaction
+	has_many :subtransaction_payments, through: :subtransaction
+
 	validates :supporter, presence: true
 
 	def amount_as_money
-    Amount.new(amount||0, nonprofit.currency)
+    subtransaction.amount_as_money
   end
 
-	private 
-	def set_created_if_needed
-		write_attribute(:created, Time.now) unless read_attribute(:created)
+	def amount
+		subtransaction.amount
 	end
+
+	private
 
 	def to_param
 		persisted? && houid
