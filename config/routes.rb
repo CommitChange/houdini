@@ -16,6 +16,7 @@ Commitchange::Application.routes.draw do
     namespace :api_new do
       resources :nonprofits, only: [] do
         resources :supporters, only: [:show]
+				resources :transactions, only: [:index, :show]
       end
     end
   end
