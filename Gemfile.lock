@@ -260,6 +260,18 @@ GEM
       activesupport (>= 4.2.0)
     jmespath (1.4.0)
     json (1.8.6)
+    kaminari (1.2.1)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.2.1)
+      kaminari-activerecord (= 1.2.1)
+      kaminari-core (= 1.2.1)
+    kaminari-actionview (1.2.1)
+      actionview
+      kaminari-core (= 1.2.1)
+    kaminari-activerecord (1.2.1)
+      activerecord
+      kaminari-core (= 1.2.1)
+    kaminari-core (1.2.1)
     kdtree (0.3)
     lograge (0.3.6)
       actionpack (>= 3)
@@ -521,6 +533,7 @@ DEPENDENCIES
   httparty
   i18n-js
   jbuilder
+  kaminari
   lograge
   memcachier
   mini_magick
