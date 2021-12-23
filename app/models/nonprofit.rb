@@ -110,6 +110,8 @@ class Nonprofit < ActiveRecord::Base
 
   geocoded_by :full_address
 
+  has_many :transactions, through: :supporters
+
 
  
 
