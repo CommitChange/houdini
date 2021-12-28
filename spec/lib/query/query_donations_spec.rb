@@ -79,10 +79,7 @@ describe QueryDonations do
         supporter.save!
 
         # Update directly on the database to avoid updating primary_address
-        Qx.update(:supporters)
-          .set(address: 'Some street', city: 'Aguas Claras', country: 'Brazil', state_code: 'DF', zip_code: '4002-8922')
-          .where(id: supporter.id)
-          .execute
+        Supporter.where(id: supporter.id).update_all(address: 'Some street', city: 'Aguas Claras', country: 'Brazil', state_code: 'DF', zip_code: '4002-8922')
       end
 
       it 'points to the primary_address.address instead of the supporter address' do
