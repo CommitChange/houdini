@@ -10,6 +10,7 @@ class SubtransactionPayment < ApplicationRecord
 	has_one :trx, class_name: 'Transaction', foreign_key: 'transaction_id', through: :subtransaction
 	has_one :supporter, through: :subtransaction
 	has_one :nonprofit, through: :subtransaction
+	belongs_to :legacy_payment, class_name: 'Payment'
 
 	delegated_type :paymentable, types: %w[
 		OfflineTransactionCharge

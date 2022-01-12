@@ -6,7 +6,7 @@
 module ApiNew
 	# A controller for interacting with a nonprofit's supporters
 	class SupportersController < ApiNew::ApiController
-		include Controllers::Nonprofit::Current
+		include Controllers::ApiNew::Nonprofit::Current
 		include Controllers::Nonprofit::Authorization
 		before_action :authenticate_nonprofit_user!
 

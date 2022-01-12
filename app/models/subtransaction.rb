@@ -20,8 +20,4 @@ class Subtransaction < ApplicationRecord
 	def amount_as_money
 		Amount.new(amount, currency)
 	end
-
-	def amount
-		subtransaction_payments.map{|i| i.gross_amount}.sum
-	end
 end
