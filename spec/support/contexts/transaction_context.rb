@@ -32,14 +32,14 @@ shared_examples 'an example with a single payment' do
 
 			it {
 				is_expected.to include('net_amount' => {
-					'cents' => 3700,
+					'cents' => 4000-expected_fees,
 					'currency' => 'usd'
 				})
 			}
 
 			it {
 				is_expected.to include('fee_total' => {
-					'cents' => 300,
+					'cents' => expected_fees,
 					'currency' => 'usd'
 				})
 			}
@@ -64,6 +64,9 @@ shared_examples 'an example with a single payment' do
 end
 
 shared_context 'with json results for transaction_for_donation' do
+
+	let(:expected_fees) { 300}
+
 	around do |ex|
 		Timecop.freeze(2020, 5, 4) do
 			ex.run
@@ -144,7 +147,7 @@ shared_context 'with json results for transaction_for_donation' do
 		it {
 			is_expected.to include(
 			'net_amount' => {
-				'cents' => 3700,
+				'cents' => 4000-expected_fees,
 				'currency' => 'usd'
 			})
 		}

@@ -6,9 +6,9 @@
 # rubocop:disable Metrics/BlockLength, Metrics/AbcSize
 class OfflineTransactionCharge < ApplicationRecord
 	include Model::SubtransactionPaymentable
-	belongs_to :payment
+	has_one :legacy_payment, class_name: 'Payment', through: :subtransaction_payment
 
-	delegate :gross_amount, :net_amount, :fee_total, to: :payment
+	delegate :gross_amount, :net_amount, :fee_total, to: :legacy_payment
 	delegate :currency, to: :nonprofit
 
 	def gross_amount_as_money
@@ -24,7 +24,7 @@ class OfflineTransactionCharge < ApplicationRecord
 	end
 
 	def created
-		payment.date
+		legacy_payment.date
 	end
 
 	concerning :JBuilder do

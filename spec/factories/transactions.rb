@@ -13,7 +13,7 @@ FactoryBot.define do
 		supporter { create(:supporter_with_fv_poverty) }
 		subtransaction { build(
 			:subtransaction, subtransaction_payments: [
-				build(:subtransaction_payment, paymentable: build(:offline_transaction_charge, payment: transaction_assignments.first.assignable.legacy_donation.payment))
+				build(:subtransaction_payment, paymentable: build(:offline_transaction_charge), legacy_payment: transaction_assignments.first.assignable.legacy_donation.payment)
 			]
 		)}
 

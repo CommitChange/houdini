@@ -12,18 +12,16 @@ class Transaction < ApplicationRecord
 	has_one :nonprofit, through: :supporter
 
 	has_many :transaction_assignments, inverse_of: 'trx'
+	has_many :donations, through: :transaction_assignments, source: :assignable, source_type: 'ModernDonation', inverse_of: 'trx'
+
 	has_one :subtransaction
 	has_many :subtransaction_payments, through: :subtransaction
 
 	validates :supporter, presence: true
 
 	def amount_as_money
-    subtransaction.amount_as_money
+    Amount.new(amount||0, nonprofit.currency)
   end
-
-	def amount
-		subtransaction.amount
-	end
 
 	private
 
