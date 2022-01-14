@@ -413,6 +413,7 @@ GEM
     rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
+    rspec-json_expectations (2.2.0)
     rspec-mocks (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
@@ -563,6 +564,7 @@ DEPENDENCIES
   redis-actionpack
   rest-client
   rspec
+  rspec-json_expectations
   rspec-rails
   ruby-prof (= 0.15.9)
   ruby2_keywords

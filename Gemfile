@@ -113,6 +113,7 @@ group :development, :ci, :test do
   gem 'simplecov', '~> 0.16.1', require: false
   gem 'byebug'
   gem 'shoulda-matchers'
+  gem 'rspec-json_expectations'
 end
 
 group :test do
