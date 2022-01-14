@@ -16,5 +16,3 @@ end
 json.fee_total do
 	json.partial! '/api_new/common/amount', amount: paymentable.fee_total_as_money
 end
-
-json.created paymentable.created.to_i

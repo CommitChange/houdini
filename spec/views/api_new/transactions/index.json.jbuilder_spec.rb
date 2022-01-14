@@ -5,6 +5,13 @@
 require 'rails_helper'
 
 RSpec.describe '/api_new/transactions/index.json.jbuilder', type: :view do
+
+	around do |ex|
+		Timecop.freeze(2020, 5, 4) do
+			ex.run
+		end
+	end
+
 	def base_path(nonprofit_id, transaction_id)
 		"/api_new/nonprofits/#{nonprofit_id}/transactions/#{transaction_id}"
 	end
@@ -17,24 +24,27 @@ RSpec.describe '/api_new/transactions/index.json.jbuilder', type: :view do
 		view.lookup_context.prefixes = view.lookup_context.prefixes.drop(1)
 		assign(:transactions, Kaminari.paginate_array([transaction]).page)
 		render
-		JSON.parse(rendered)
+		rendered
 	end
+
+	include_context 'with json results for transaction_for_donation'
 
 	let(:transaction) { create(:transaction_for_donation) }
 	let(:supporter) { transaction.supporter }
 	let(:nonprofit) { transaction.nonprofit }
 
-	it { expect(json['data'].count).to eq 1 }
-
-	describe 'details of the first item' do
-		subject(:first) do
-			json['data'].first
-		end
-
-		let(:item) { first}
-
-		include_context 'with json results for transaction_for_donation'
-	end
+	it {
+		is_expected.to include_json(
+			'first_page' => true, 
+			last_page: true,
+			current_page: 1, 
+			requested_size: 25, 
+			total_count: 1,
+			data: [
+				generate_transaction_for_donation_json
+			]
+		)
+	}
 
 	# describe 'paging' do
 	# 	subject(:json) do
