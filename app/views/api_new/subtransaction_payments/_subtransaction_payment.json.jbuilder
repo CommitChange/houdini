@@ -5,6 +5,7 @@
 json.type 'payment'
 
 json.id subtransaction_payment.paymentable.houid
+json.created subtransaction_payment.paymentable.created.to_i
 
 json.supporter subtransaction_payment.supporter.houid
 json.nonprofit subtransaction_payment.nonprofit.houid

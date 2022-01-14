@@ -10,6 +10,13 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
   def create_offsite_base_path(nonprofit_id)
     "/nonprofits/#{nonprofit_id}/donations/create_offsite"
   end
+
+	around do |ex|
+		Timecop.freeze(2020, 5, 4) do
+			ex.run
+		end
+	end
+
   describe 'POST /create_offsite' do
     let(:supporter) {create(:supporter_with_fv_poverty)}
     let(:nonprofit) { supporter.nonprofit}
@@ -32,15 +39,18 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
       subject(:transaction_result) do 
         
         get "/api_new/nonprofits/#{nonprofit.houid}/transactions/#{transaction.houid}"
-        JSON.parse(response.body)
+       response.body
       end
 
       describe 'result' do
         include_context 'with json results for transaction_for_donation' do 
-          let(:item) { transaction_result}
 
           let(:expected_fees) { 0 }
         end
+
+        it {
+          is_expected.to include_json(generate_transaction_for_donation_json)
+        }
       end
     end
 

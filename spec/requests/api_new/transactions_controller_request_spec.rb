@@ -5,6 +5,12 @@
 require 'rails_helper'
 
 RSpec.describe ApiNew::TransactionsController, type: :request do
+	around do |ex|
+		Timecop.freeze(2020, 5, 4) do
+			ex.run
+		end
+	end
+
 	let(:nonprofit) { transaction_for_donation.nonprofit }
 	let(:user) { create(:user) }
 	let(:supporter) { transaction_for_donation.supporter }
@@ -25,108 +31,10 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 		"http://www.example.com#{index_base_path(nonprofit_id)}"
 	end
 
-	# describe 'GET /:id' do
-	# 	let(:transaction) { transaction_for_donation }
-
-	# 	def base_path(nonprofit_id, transaction_id)
-	# 		index_base_path(nonprofit_id) + "/#{transaction_id}"
-	# 	end
-
-	# 	def base_url(nonprofit_id, transaction_id)
-	# 		"http://www.example.com#{base_path(nonprofit_id, transaction_id)}"
-	# 	end
-
-	# 	context 'with nonprofit user' do
-	# 		subject do
-	# 			JSON.parse(response.body)
-	# 		end
-
-	# 		before do
-	# 			user.roles.create(name: 'nonprofit_associate', host: nonprofit)
-	# 			sign_in user
-	# 			get base_path(
-	# 				nonprofit.id,
-	# 				transaction.id
-	# 			)
-	# 		end
-
-	# 		it {
-	# 			expect(response).to have_http_status(:success)
-	# 		}
-
-	# 		include_context 'with json results for transaction_for_donation'
-	# 	end
-
-	# 	context 'with no user' do
-	# 		it 'returns unauthorized' do
-	# 			get base_path(
-	# 				nonprofit.id,
-	# 				transaction.id
-	# 			)
-	# 			expect(response).to have_http_status(:unauthorized)
-	# 		end
-	# 	end
-	# end
-
-	# describe 'GET /:id/subtransaction' do
-	# 	def subtransaction_path(nonprofit_id, transaction_id)
-	# 		"/api/nonprofits/#{nonprofit_id}/transactions/#{transaction_id}/subtransaction"
-	# 	end
-
-	# 	def subtransaction_url(nonprofit_id, transaction_id)
-	# 		"http://www.example.com#{subtransaction_path(nonprofit_id, transaction_id)}"
-	# 	end
-
-	# 	def payment_path(nonprofit_id, transaction_id, payment_id)
-	# 		"#{subtransaction_path(nonprofit_id, transaction_id)}/payments/#{payment_id}"
-	# 	end
-
-	# 	def payment_url(nonprofit_id, transaction_id, payment_id)
-	# 		"http://www.example.com#{payment_path(nonprofit_id, transaction_id, payment_id)}"
-	# 	end
-
-	# 	let(:transaction) { transaction_for_donation }
-	# 	let(:subtransaction) { transaction.subtransaction }
-	# 	let(:supporter) { subtransaction.supporter }
-
-	# 	let(:nonprofit) { subtransaction.nonprofit }
-
-	# 	context 'with nonprofit user' do
-	# 		subject(:json) do
-	# 			JSON.parse(response.body)
-	# 		end
-
-	# 		before do
-	# 			user.roles.create(name: 'nonprofit_associate', host: nonprofit)
-	# 			sign_in user
-	# 			get subtransaction_path(
-	# 				nonprofit.id,
-	# 				transaction.id
-	# 			)
-	# 		end
-
-	# 		it {
-	# 			expect(response).to have_http_status(:success)
-	# 		}
-
-	# 		include_context 'with json results for subtransaction on transaction_for_donation'
-	# 	end
-
-	# 	context 'with no user' do
-	# 		it 'returns unauthorized' do
-	# 			get subtransaction_path(
-	# 				nonprofit.id,
-	# 				transaction.id
-	# 			)
-	# 			expect(response).to have_http_status(:unauthorized)
-	# 		end
-	# 	end
-	# end
-
 	describe 'GET /' do
 		context 'with nonprofit user' do
 			subject(:json) do
-				JSON.parse(response.body)
+				response.body
 			end
 
 			before do
@@ -139,16 +47,16 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 				expect(response).to have_http_status(:success)
 			}
 
-			it { expect(json['data'].count).to eq 1 }
+			# it { expect(json['data'].count).to eq 1 }
 
 			describe 'for transaction_for_donation' do
-				subject(:first) do
-					json['data'].first
-				end
+				# subject(:first) do
+				# 	json['data'].first
+				# end
 
-				let(:item) {
-					first
-				}
+				# let(:item) {
+				# 	first
+				# }
 
 				def base_path(nonprofit_id, transaction_id)
 					index_base_path(nonprofit_id) + "/#{transaction_id}"
@@ -160,13 +68,18 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 					"http://www.example.com#{base_path(nonprofit_id, transaction_id)}"
 				end
 				include_context 'with json results for transaction_for_donation'
+				it {
+					is_expected.to include_json(
+						first_page: true, 
+						last_page: true, 
+						current_page: 1,
+						requested_size: 25, 
+						total_count: 1,
+						data: [generate_transaction_for_donation_json]
+						
+				)}
 			end
 
-			it { is_expected.to include('first_page' => true) }
-			it { is_expected.to include('last_page' =>  true) }
-			it { is_expected.to include('current_page' => 1) }
-			it { is_expected.to include('requested_size' => 25) }
-			it { is_expected.to include('total_count' => 1) }
 		end
 
 		context 'with no user' do
