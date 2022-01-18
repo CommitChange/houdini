@@ -65,9 +65,9 @@ module Model::Houidable
 								def generate_houid
 									houid_prefix.to_s + "_" + SecureRandom.alphanumeric(22)
 								end
-			                                        
-			                                        def to_houid
-								  self.send(houid_attribute)
+
+								def to_houid
+									self.send(houid_attribute)
 								end
 								
 								private 
