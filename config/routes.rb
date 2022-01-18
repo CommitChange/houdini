@@ -18,6 +18,9 @@ Commitchange::Application.routes.draw do
         resources :supporters, only: [:show]
 				resources :transactions, only: [:index, :show]
       end
+			resources :users, only: [] do
+				get :current, {on: :collection}
+			end
     end
   end
 
