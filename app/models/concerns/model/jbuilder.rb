@@ -4,6 +4,13 @@
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 module Model::Jbuilder
 	extend ActiveSupport::Concern
+
+	included do
+		def request_expansions(*expansions) 
+			Controllers::ApiNew::JbuilderExpansions.set_expansions(*expansions)
+		end
+	end
+
 	class_methods do
 		#
 		# Builder expansions address a common issue when using Jbuilder for generated JSON for object events work with `#init_builder`

@@ -3,9 +3,4 @@
 # License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 
-class ApplicationRecord < ActiveRecord::Base
-  self.abstract_class = true
-
-  include Model::Jbuilder
-  include Model::Houidable
-end
+json.partial! event_entity, as: :object, __expand: request_expansions('parent')
