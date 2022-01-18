@@ -88,6 +88,10 @@ class User < ActiveRecord::Base
 		false
 	end
 
+	def api_safe_roles
+		roles.where(host_type: "Nonprofit").nonprofit_admins
+	end
+
 	def as_json(options={})
 		h = super(options)
 		h[:unconfirmed_email] = self.unconfirmed_email
