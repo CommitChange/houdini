@@ -31,6 +31,10 @@ class ETapImportContact < ActiveRecord::Base
     where("row @> '{\"Account Number\": \"#{account_id}\"}'").first
   end
 
+  def journal_entries
+    e_tap_import.e_tap_import_journal_entries.by_account(row['Account Number'])
+  end
+
   def create_or_update_CUSTOM(known_supporter=nil)
     
     custom_fields_to_save = self.to_custom_fields;
