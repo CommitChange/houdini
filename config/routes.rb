@@ -15,6 +15,7 @@ Commitchange::Application.routes.draw do
 	defaults format: :json do # they're APIs, you have to use JSON
     namespace :api_new do
       resources :nonprofits, only: [] do
+				resources :object_events, only: [:index]
         resources :supporters, only: [:show]
 				resources :transactions, only: [:index, :show]
       end

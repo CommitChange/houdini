@@ -84,19 +84,26 @@ module InsertDonation
         })
       ]).returning('*')
     ).first
-    off_t = trx.build_subtransaction(
-      subtransactable: OfflineTransaction.new(amount: data['amount']), 
-      subtransaction_payments:[
-        SubtransactionPayment.new(
+    offline_transaction_charge_payment = SubtransactionPayment.new(
           legacy_payment: Payment.find(result['payment']['id']),
           paymentable: OfflineTransactionCharge.new
           )
+    off_t = trx.build_subtransaction(
+      subtransactable: OfflineTransaction.new(amount: data['amount']), 
+      subtransaction_payments:[
+        offline_transaction_charge_payment
         ],
       created: data['date']
       );
     trx.save!
     don.save!
     off_t.save!
+
+    trx.publish_created
+    # don.publish_created
+    # off_t.publish_created
+    offline_transaction_charge_payment.publish_created
+
     result['activity'] = InsertActivities.for_offsite_donations([result['payment']['id']])
     return {status: 200, json: result}
   end

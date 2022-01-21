@@ -17,11 +17,25 @@ class Transaction < ApplicationRecord
 	has_one :subtransaction
 	has_many :subtransaction_payments, through: :subtransaction
 
+	has_many :object_events, as: :event_entity
+
 	validates :supporter, presence: true
 
 	def amount_as_money
     Amount.new(amount||0, nonprofit.currency)
   end
+
+	def publish_created
+		object_events.create( event_type: 'transaction.created')
+	end
+
+	def publish_updated
+		object_events.create( event_type: 'transaction.updated')
+	end
+
+	def publish_deleted
+		object_events.create( event_type: 'transaction.deleted')
+	end
 
 	private
 
