@@ -84,7 +84,43 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 
 		context 'with no user' do
 			it 'returns unauthorized' do
-				get index_base_path(nonprofit.id)
+				get index_base_path(nonprofit.houid)
+				expect(response).to have_http_status(:unauthorized)
+			end
+		end
+	end
+
+	describe 'GET /:transaction_id' do
+		def show_base_path(nonprofit_id, transaction_id)
+			index_base_path(nonprofit_id) + "/" + transaction_id
+		end
+
+		context 'with nonprofit user' do
+			subject(:json) do
+				response.body
+			end
+
+			before do
+				user.roles.create(name: 'nonprofit_associate', host: nonprofit)
+				sign_in user
+				get show_base_path(nonprofit.houid, transaction_for_donation.houid)
+			end
+
+			it {
+				expect(response).to have_http_status(:success)
+			}
+			include_context 'with json results for transaction_for_donation' do 
+				let(:transaction) {transaction_for_donation}
+			end			
+
+			it {
+				is_expected.to include_json(generate_transaction_for_donation_json)
+			}
+		end
+
+		context 'with no user' do
+			it 'returns unauthorized' do
+				get show_base_path(nonprofit.id, transaction_for_donation.houid)
 				expect(response).to have_http_status(:unauthorized)
 			end
 		end
