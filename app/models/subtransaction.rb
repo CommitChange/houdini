@@ -16,6 +16,7 @@ class Subtransaction < ApplicationRecord
 
 	delegated_type :subtransactable, types: %w[OfflineTransaction]
 
+	delegate :to_houid, to: :subtransactable
 
 	def amount_as_money
 		Amount.new(amount, currency)

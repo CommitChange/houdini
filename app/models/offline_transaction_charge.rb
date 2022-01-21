@@ -27,6 +27,18 @@ class OfflineTransactionCharge < ApplicationRecord
 		legacy_payment.date
 	end
 
+	def publish_created
+		object_events.create( event_type: 'offline_transaction_charge.created')
+	end
+
+	def publish_updated
+		object_events.create( event_type: 'offline_transaction_charge.updated')
+	end
+
+	def publish_deleted
+		object_events.create( event_type: 'offline_transaction_charge.deleted')
+	end
+
 	concerning :JBuilder do
 		included do
 			setup_houid :offtrxchrg, :houid

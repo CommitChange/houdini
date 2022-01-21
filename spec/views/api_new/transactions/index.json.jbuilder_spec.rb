@@ -12,6 +12,7 @@ RSpec.describe '/api_new/transactions/index.json.jbuilder', type: :view do
 		end
 	end
 
+	include Controllers::ApiNew::JbuilderExpansions
 	def base_path(nonprofit_id, transaction_id)
 		"/api_new/nonprofits/#{nonprofit_id}/transactions/#{transaction_id}"
 	end
@@ -23,6 +24,7 @@ RSpec.describe '/api_new/transactions/index.json.jbuilder', type: :view do
 	subject(:json) do
 		view.lookup_context.prefixes = view.lookup_context.prefixes.drop(1)
 		assign(:transactions, Kaminari.paginate_array([transaction]).page)
+		assign(:__expand, Controllers::ApiNew::JbuilderExpansions::ExpansionRequest.new('supporter', 'transaction_assignments', 'payments', 'subtransaction.payments'))
 		render
 		rendered
 	end

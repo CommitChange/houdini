@@ -47,16 +47,7 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 				expect(response).to have_http_status(:success)
 			}
 
-			# it { expect(json['data'].count).to eq 1 }
-
 			describe 'for transaction_for_donation' do
-				# subject(:first) do
-				# 	json['data'].first
-				# end
-
-				# let(:item) {
-				# 	first
-				# }
 
 				def base_path(nonprofit_id, transaction_id)
 					index_base_path(nonprofit_id) + "/#{transaction_id}"
