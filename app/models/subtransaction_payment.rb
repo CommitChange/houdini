@@ -20,6 +20,6 @@ class SubtransactionPayment < ApplicationRecord
 		StripeRefund
 	]
 
-	delegate :gross_amount, :fee_total, :net_amount, to: :paymentable
+	delegate :gross_amount, :fee_total, :net_amount, :publish_created, :publish_updated, :publish_deleted, :to_houid, to: :paymentable
 
 end

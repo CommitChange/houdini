@@ -6,11 +6,9 @@ json.id transaction.houid
 
 json.object 'transaction'
 
-json.supporter do 
-	json.partial! transaction.supporter, as: :supporter
-end
+handle_expansion(:supporter, transaction.supporter, {json: json, __expand: __expand})
 
-json.nonprofit transaction.nonprofit.houid
+handle_expansion(:nonprofit, transaction.nonprofit, {json: json, __expand: __expand})
 
 json.created transaction.created.to_i
 
@@ -18,16 +16,14 @@ json.amount do
 	json.partial! '/api_new/common/amount', amount: transaction.amount_as_money
 end
 
-json.subtransaction do 
-	json.partial! transaction&.subtransaction, as: :subtransaction
+handle_expansion(:subtransaction, transaction.subtransaction, {json: json, __expand: __expand})
+
+handle_array_expansion(:transaction_assignments, transaction.transaction_assignments, {json: json, __expand: __expand, item_as: :transaction_assignment}) do |tra, opts|
+	handle_item_expansion(tra, opts)
 end
 
-json.transaction_assignments transaction.transaction_assignments do |tra|
-	json.partial!  tra, as: :transaction_assignment
-end
-
-json.payments transaction.subtransaction_payments do |subt_p|
-	json.partial! subt_p, as: :subtransaction_payment
+handle_array_expansion(:payments, transaction.subtransaction_payments, {json: json, __expand: __expand, item_as: :subtransaction_payment}) do |py, opts|
+	handle_item_expansion(py, opts)
 end
 
 #json.url api_nonprofit_transaction_url(transaction.nonprofit, transaction)

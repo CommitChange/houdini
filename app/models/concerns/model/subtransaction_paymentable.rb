@@ -14,5 +14,7 @@ module Model::SubtransactionPaymentable
 		has_one :nonprofit, through: :subtransaction_payment
 
 		has_one :subtransaction, through: :subtransaction_payment
+
+		has_many :object_events, as: :event_entity
 	end
 end

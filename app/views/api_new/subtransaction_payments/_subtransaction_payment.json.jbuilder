@@ -5,12 +5,11 @@
 json.type 'payment'
 
 json.id subtransaction_payment.paymentable.houid
-json.created subtransaction_payment.paymentable.created.to_i
+json.created subtransaction_payment.created.to_i
 
-json.supporter subtransaction_payment.supporter.houid
-json.nonprofit subtransaction_payment.nonprofit.houid
-json.transaction subtransaction_payment.trx.houid
+handle_expansion(:supporter, subtransaction_payment.supporter, {json: json, __expand: __expand})
+handle_expansion(:nonprofit, subtransaction_payment.nonprofit,  {json: json, __expand: __expand})
+handle_expansion(:transaction, subtransaction_payment.trx, {json: json, __expand: __expand})
+handle_expansion(:subtransaction, subtransaction_payment.subtransaction, {json: json, __expand: __expand})
 
-json.subtransaction subtransaction_payment.subtransaction.subtransactable.houid
-
-json.partial! subtransaction_payment.paymentable, as: :paymentable
+json.partial! subtransaction_payment.paymentable, as: :paymentable, __expand: __expand

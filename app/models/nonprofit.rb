@@ -1,7 +1,5 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 class Nonprofit < ActiveRecord::Base
-  include Model::Houidable
-  setup_houid :np, :houid
 
   include Model::Houidable
   setup_houid :np, :houid
@@ -112,6 +110,7 @@ class Nonprofit < ActiveRecord::Base
 
   has_many :transactions, through: :supporters
 
+  has_many :associated_object_events, class_name: 'ObjectEvent'
 
  
 
