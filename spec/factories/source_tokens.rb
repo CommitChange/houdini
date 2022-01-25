@@ -1,5 +1,12 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 FactoryBot.define do
   factory :source_token do
+
+    token {SecureRandom.uuid}
+    max_uses { 1 }
+    expiration { Time.current  + 10.minutes }
+    factory :source_token_for_supporter_for_fv_poverty do
+      tokenizable { build(:card, holder: create(:supporter_with_fv_poverty)) }
+    end
   end
 end

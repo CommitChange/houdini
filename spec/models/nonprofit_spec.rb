@@ -17,6 +17,12 @@ RSpec.describe Nonprofit, type: :model do
   it {is_expected.to have_many(:supporter_cards).class_name('Card').through(:supporters).source(:cards)}
 
   describe 'with cards' do
+    around(:each) do |ex|
+      StripeMock.start
+      ex.run
+      StripeMock.stop
+    end
+
     before(:each) do
       @nonprofit = create(:nonprofit_with_cards)
 

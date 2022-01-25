@@ -58,7 +58,12 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 				def base_url(nonprofit_id, transaction_id)
 					"http://www.example.com#{base_path(nonprofit_id, transaction_id)}"
 				end
-				include_context 'with json results for transaction_for_donation'
+				include_context 'with json results for transaction_for_donation' do
+					let(:subtransaction_houid) {:offlinetrx}
+          let(:subtransaction_object) {'offline_transaction'}
+          let(:charge_houid) { :offtrxchrg}
+					let(:expected_fees) { -300 }
+				end
 				it {
 					is_expected.to include_json(
 						first_page: true, 
@@ -102,6 +107,10 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 			}
 			include_context 'with json results for transaction_for_donation' do 
 				let(:transaction) {transaction_for_donation}
+				let(:subtransaction_houid) {:offlinetrx}
+				let(:subtransaction_object) {'offline_transaction'}
+				let(:charge_houid) { :offtrxchrg}
+				let(:expected_fees) { -300}
 			end			
 
 			it {

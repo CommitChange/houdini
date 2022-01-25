@@ -29,7 +29,12 @@ RSpec.describe '/api_new/transactions/index.json.jbuilder', type: :view do
 		rendered
 	end
 
-	include_context 'with json results for transaction_for_donation'
+	include_context 'with json results for transaction_for_donation' do 
+		let(:subtransaction_houid) { :offlinetrx }
+		let(:subtransaction_object) { 'offline_transaction'}
+		let(:charge_houid) { :offtrxchrg }
+		let(:expected_fees) { -300}
+	end
 
 	let(:transaction) { create(:transaction_for_donation) }
 	let(:supporter) { transaction.supporter }
