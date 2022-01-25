@@ -14,7 +14,7 @@ class Subtransaction < ApplicationRecord
 
 	has_many :subtransaction_payments # rubocop:disable Rails/HasManyOrHasOneDependent
 
-	delegated_type :subtransactable, types: %w[OfflineTransaction]
+	delegated_type :subtransactable, types: %w[OfflineTransaction, StripeTransaction]
 
 	delegate :to_houid, to: :subtransactable
 

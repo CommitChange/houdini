@@ -5,7 +5,7 @@
 
 shared_context 'with json results for transaction_for_donation' do
 
-	let(:expected_fees) { 300}
+	let(:expected_fees) { -300}
 
 	around do |ex|
 		Timecop.freeze(2020, 5, 4) do
@@ -28,9 +28,9 @@ shared_context 'with json results for transaction_for_donation' do
 				id: supporter.houid
 			},
 			subtransaction: {
-				'id' => match_houid('offlinetrx'),
+				'id' => match_houid(subtransaction_houid),
 				'type' => 'subtransaction',
-				'object' => 'offline_transaction',
+				'object' => subtransaction_object,
 				supporter: supporter.houid,
 				nonprofit: nonprofit.houid,
 				transaction: transaction.houid,
@@ -40,7 +40,7 @@ shared_context 'with json results for transaction_for_donation' do
 					'currency' => 'usd'
 				},
 				'net_amount' => {
-					'cents' => 4000-expected_fees,
+					'cents' => 4000+expected_fees,
 					'currency' => 'usd'
 				},
 				payments: [
@@ -49,7 +49,7 @@ shared_context 'with json results for transaction_for_donation' do
 						nonprofit: nonprofit.houid,
 						'created' => Time.current.to_i,
 						transaction: transaction.houid,
-						subtransaction: match_houid('offlinetrx'),
+						subtransaction: match_houid(subtransaction_houid),
 						'fee_total' => {
 							'cents' => expected_fees,
 							'currency' => 'usd'
@@ -59,10 +59,10 @@ shared_context 'with json results for transaction_for_donation' do
 							'currency' => 'usd'
 						},
 						'net_amount' => {
-							'cents' => 4000-expected_fees,
+							'cents' => 4000+expected_fees,
 							'currency' => 'usd'
 						},
-						'id' => match_houid('offtrxchrg'),
+						'id' => match_houid(charge_houid),
 						type: 'payment'
 					}
 				]
@@ -73,7 +73,7 @@ shared_context 'with json results for transaction_for_donation' do
 					nonprofit: nonprofit.houid,
 					'created' => Time.current.to_i,
 					transaction: transaction.houid,
-					subtransaction: match_houid('offlinetrx'),
+					subtransaction: match_houid(subtransaction_houid),
 					'fee_total' => {
 						'cents' => expected_fees,
 						'currency' => 'usd'
@@ -83,10 +83,10 @@ shared_context 'with json results for transaction_for_donation' do
 						'currency' => 'usd'
 					},
 					'net_amount' => {
-						'cents' => 4000-expected_fees,
+						'cents' => 4000+expected_fees,
 						'currency' => 'usd'
 					},
-					'id' => match_houid('offtrxchrg'),
+					'id' => match_houid(charge_houid),
 					type: 'payment'
 				}
 			],
