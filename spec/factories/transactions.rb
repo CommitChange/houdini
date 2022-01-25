@@ -18,14 +18,30 @@ FactoryBot.define do
 		)}
 
 		transaction_assignments { 
-		ta = [
-			build(:transaction_assignment, assignable: build(:modern_donation, legacy_donation: build(:donation, supporter: supporter, amount: 4000, nonprofit:nonprofit, 
-					payment: build(:payment, gross_amount: 4000, fee_total: -300, net_amount: 3700, nonprofit: nonprofit, supporter: supporter, date: Time.current)
-				))
-			)
-		]
+			ta = [
+				build(:transaction_assignment, 
+					assignable: 
+						build(:modern_donation, 
+							legacy_donation: 
+								build(:donation, 
+									supporter: supporter,
+									amount: 4000,
+									nonprofit:nonprofit, 
+									designation: 'Designation 1',
+									payment: build(:payment,
+										gross_amount: 4000,
+										fee_total: -300,
+										net_amount: 3700,
+										nonprofit: nonprofit,
+										supporter: supporter,
+										date: Time.current
+									),
+								)
+						)
+				)
+			]
 
-	ta
-	}
+			ta
+		}
 	end
 end

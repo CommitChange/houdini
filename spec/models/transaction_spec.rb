@@ -5,6 +5,8 @@
 require 'rails_helper'
 
 RSpec.describe Transaction, type: :model do
+  it_behaves_like 'an houidable entity', :trx
+
   describe 'validation' do
     it {is_expected.to validate_presence_of(:supporter)}
   end

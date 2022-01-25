@@ -4,10 +4,10 @@
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 require 'rails_helper'
 
-RSpec.describe StripeTransactionDisputeReversal, type: :model do
-  it_behaves_like 'subtransaction paymentable', :stripedisprvrs
+RSpec.describe OfflineTransactionCharge, type: :model do
+	it_behaves_like 'subtransaction paymentable', :offtrxchrg
 
-  it {
+	it {
     is_expected.to(have_one(:legacy_payment)
       .class_name('Payment')
       .through(:subtransaction_payment)

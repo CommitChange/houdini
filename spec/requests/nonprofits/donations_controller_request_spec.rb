@@ -30,13 +30,16 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
         post create_offsite_base_path(nonprofit.id), {donation: {
           amount: 4000,
           supporter_id: supporter.id,
-          nonprofit_id: nonprofit.id
+          nonprofit_id: nonprofit.id,
+          designation: "Designation 1",
+          dedication: {note: "My mom", type:"honor"}.to_json
         }}
       end
 
-      let(:transaction) { payment_id = JSON.parse(response.body)['payment']['id']
+      let(:transaction) { 
+        payment_id = JSON.parse(response.body)['payment']['id']
         Payment.find(payment_id).trx
-    }
+      }
 
       subject(:transaction_result) do 
         
@@ -65,42 +68,46 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
         end
 
         it {
-            is_expected.to include_json(
-              data: [
-                {
-                  id: match_houid('evt'),
-                  type: 'transaction.created',
-                  created: be_a(Numeric),
-                  object: 'object_event',
-                  data: {
-                    object: {
-                      'id' => transaction.houid,
-                      'supporter' => transaction.supporter.houid,
+          is_expected.to include_json(
+            data: [
+              {
+                id: match_houid('evt'),
+                type: 'transaction.created',
+                created: be_a(Numeric),
+                object: 'object_event',
+                data: {
+                  object: {
+                    'id' => transaction.houid,
+                    'supporter' => transaction.supporter.houid,
 
-                      'subtransaction' => {
-                        'id' => match_houid(:offlinetrx),
-                        'amount' => {'cents' => 4000, 'currency' => 'usd'},
-                        'payments' => [
-                          {
-                            'id' => match_houid(:offtrxchrg),
-                            'gross_amount' => {'cents' => 4000, 'currency' => 'usd'},
-                            'fee_total' => {'cents' => 0, 'currency' => 'usd'},
-                            'net_amount' => {'cents' => 4000, 'currency' => 'usd'}
-                          }
-                        ]
-                      },
-                      'transaction_assignments' => [
+                    'subtransaction' => {
+                      'id' => match_houid(:offlinetrx),
+                      'amount' => {'cents' => 4000, 'currency' => 'usd'},
+                      'payments' => [
                         {
-                          'id' => match_houid('don')
+                          'id' => match_houid(:offtrxchrg),
+                          'gross_amount' => {'cents' => 4000, 'currency' => 'usd'},
+                          'fee_total' => {'cents' => 0, 'currency' => 'usd'},
+                          'net_amount' => {'cents' => 4000, 'currency' => 'usd'}
                         }
                       ]
-                    }
+                    },
+                    'transaction_assignments' => [
+                      {
+                        'id' => match_houid('don'),
+                        designation: 'Designation 1',
+                        dedication: {
+                          note: "My mom",
+                          type: "honor"
+                        }
+                      }
+                    ]
                   }
-                }   
-              ]
-             )
-            
-          }
+                }
+              }   
+            ]
+          )
+        }
         
       end 
     end
@@ -129,7 +136,9 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
         post create_stripe_base_path(nonprofit.id), {donation: {
           amount: 4000,
           supporter_id: supporter.id,
-          nonprofit_id: nonprofit.id
+          nonprofit_id: nonprofit.id,
+          designation: "Designation 1",
+          dedication: {note: "My mom", type:"honor"}.to_json
         }, token: token.token, amount: 4000}
         response
       }
@@ -199,7 +208,13 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
                           },
                           'transaction_assignments' => [
                             {
-                              'id' => match_houid('don')
+                              'id' => match_houid('don'),
+                              designation: 'Designation 1',
+                              legacy_id: transaction.donations.first.legacy_id,
+                              dedication: {
+                                note: "My mom",
+                                type: "honor"
+                              }
                             }
                           ]
                         }
@@ -244,12 +259,76 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
                               'amount' => {'cents' => 4000, 'currency' => 'usd'},
                               'transaction_assignments' => [
                                 {
-                                  'id' => match_houid('don')
+                                  'id' => match_houid('don'),
+                                  designation: 'Designation 1',
+                                  legacy_id: transaction.donations.first.legacy_id,
+                                  dedication: {
+                                    note: "My mom",
+                                    type: "honor"
+                                  }
                                 }
                               ]
                             }
                           }
                         }
+                      }
+                    }   
+                  ]
+                ) 
+              }
+            end
+
+            describe 'donation.created' do
+              let(:donation) { transaction.donations.first}
+              subject(:donation_event) do
+                sign_in user
+                get "/api_new/nonprofits/#{nonprofit.houid}/object_events", event_entity: donation.to_houid
+                response.body
+              end
+
+              it {
+                is_expected.to include_json(
+                  data: [
+                    {
+                      id: match_houid('evt'),
+                      type: 'donation.created',
+                      created: be_a(Numeric),
+                      object: 'object_event',
+                      data: {
+                        object: {
+                          'id' => donation.to_houid,
+                          'supporter' => donation.supporter.houid,
+                          object: 'donation',
+                          'amount' => {'cents' => 4000, 'currency' => 'usd'},
+                          designation: 'Designation 1',
+                          legacy_id: donation.legacy_id,
+                          dedication: {
+                            note: "My mom",
+                            type: "honor"
+                          },
+                          # created: be_a(Numeric),
+                          transaction: {
+                            subtransaction: {
+                              id: match_houid(:stripetrx),
+                              'amount' => {'cents' => 4000, 'currency' => 'usd'},
+                              payments: [{id: match_houid(:stripechrg)}],
+                              transaction: match_houid(:trx)
+                            },
+                            'transaction_assignments' => [
+                              {
+                                'id' => match_houid('don'),
+                                designation: 'Designation 1',
+                                legacy_id: donation.legacy_id,
+                                dedication: {
+                                  note: "My mom",
+                                  type: "honor"
+                                }
+                              }
+                            ]
+                          },
+                          
+                        }
+                        
                       }
                     }   
                   ]
