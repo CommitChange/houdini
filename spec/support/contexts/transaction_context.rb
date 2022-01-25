@@ -101,7 +101,7 @@ shared_context 'with json results for transaction_for_donation' do
 						'cents' => 4000,
 						'currency' => 'usd'
 					},
-					'designation'=> nil,
+					'designation'=> "Designation 1",
 					id: match_houid('don')
 				}
 			]

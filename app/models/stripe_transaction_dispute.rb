@@ -8,8 +8,6 @@ class StripeTransactionDispute < ApplicationRecord
 	has_one :legacy_payment, class_name: 'Payment', through: :subtransaction_payment
 
 	delegate :gross_amount, :net_amount, :fee_total, to: :legacy_payment
-
-	delegate :currency, to: :nonprofit
  
 	def gross_amount_as_money
 		Amount.new(gross_amount || 0, currency)
@@ -27,10 +25,9 @@ class StripeTransactionDispute < ApplicationRecord
 		legacy_payment.date
 	end
 
-
-	def stripe_id
-		legacy_payment.dispute.stripe_dispute_id
-	end
+	# def stripe_id
+	# 	legacy_payment.dispute.stripe_dispute_id
+	# end
 
 	def publish_created
 		object_events.create( event_type: 'stripe_transaction_dispute.created')

@@ -9,8 +9,6 @@ class StripeTransactionRefund < ApplicationRecord
 	has_one :legacy_payment, class_name: 'Payment', through: :subtransaction_payment
 
 	delegate :gross_amount, :net_amount, :fee_total, to: :legacy_payment
-
-	delegate :currency, to: :nonprofit
  
 	def gross_amount_as_money
 		Amount.new(gross_amount || 0, currency)

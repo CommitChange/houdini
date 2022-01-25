@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ObjectEvent, type: :model do
+  it_behaves_like 'an houidable entity', :evt
 
   around(:each) {|ex|
     Timecop.freeze(Time.new(2020, 5, 4)) do 

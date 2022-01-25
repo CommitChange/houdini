@@ -3,9 +3,6 @@ class Supporter < ActiveRecord::Base
   include Model::Houidable
   setup_houid :supp, :houid
 
-  include Model::Houidable
-  setup_houid :supp, :houid
-
   ADDRESS_FIELDS = ['address', 'city', 'state_code', 'country', 'zip_code']
 
   before_validation :cleanup_address
