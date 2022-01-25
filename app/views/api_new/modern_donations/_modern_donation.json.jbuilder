@@ -6,7 +6,7 @@
 json.object 'donation'
 
 
-json.(assignable, :designation)
+json.(assignable, :designation, :legacy_id, :dedication, :comment)
 
 json.amount do
 	json.partial! '/api_new/common/amount', amount: assignable.amount_as_money

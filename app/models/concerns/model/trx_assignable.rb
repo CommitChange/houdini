@@ -14,5 +14,7 @@ module Model::TrxAssignable
 		has_one :nonprofit, through: :transaction_assignment
 		
 		delegate :currency, to: :nonprofit
+
+		has_many :object_events, as: :event_entity
 	end
 end

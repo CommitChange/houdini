@@ -9,10 +9,12 @@ module Model::Subtransactable
 		include Model::Houidable
 
 		has_one :subtransaction, as: :subtransactable, dependent: :nullify
-		has_one :trx, through: :subtransaction
+		has_one :trx, through: :subtransaction, class_name: 'Transaction'
 		has_one :supporter, through: :trx
 		has_one :nonprofit, through: :trx
 
 		has_many :subtransaction_payments, through: :subtransaction
+
+		delegate :currency, to: :nonprofit
 	end
 end

@@ -16,5 +16,7 @@ module Model::SubtransactionPaymentable
 		has_one :subtransaction, through: :subtransaction_payment
 
 		has_many :object_events, as: :event_entity
+
+		delegate :currency, to: :nonprofit
 	end
 end

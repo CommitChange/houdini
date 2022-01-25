@@ -4,6 +4,6 @@
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 require 'rails_helper'
 
-RSpec.describe StripeTransaction, type: :model do
-	it_behaves_like 'subtransactable', :stripetrx
+RSpec.describe OfflineTransaction, type: :model do
+	it_behaves_like 'subtransactable', :offlinetrx
 end

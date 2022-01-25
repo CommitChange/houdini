@@ -4,12 +4,13 @@
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 json.type 'trx_assignment'
 
-json.id transaction_assignment.assignable.houid
+json.id transaction_assignment.to_houid
+#json.created transaction_assignment.acreated.to_i
 
-json.supporter transaction_assignment.supporter.houid
-json.nonprofit transaction_assignment.nonprofit.houid
-json.transaction transaction_assignment.trx.houid
+handle_expansion(:supporter, transaction_assignment.supporter, {json: json, __expand: __expand})
+handle_expansion(:nonprofit, transaction_assignment.nonprofit,  {json: json, __expand: __expand})
+handle_expansion(:transaction, transaction_assignment.trx, {json: json, __expand: __expand})
 
 
-json.partial! transaction_assignment.assignable, as: :assignable
+json.partial! transaction_assignment.assignable, as: :assignable, __expand: __expand
 

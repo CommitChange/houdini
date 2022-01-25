@@ -7,10 +7,6 @@ class StripeTransaction < ApplicationRecord
 	setup_houid :stripetrx, :houid
 	delegate :created, to: :subtransaction
 
-	# def net_amount
-	# 	subtransaction_payments.sum(&:net_amount)
-	# end
-
 	def amount_as_money
 		Amount.new(amount || 0, nonprofit.currency)
 	end

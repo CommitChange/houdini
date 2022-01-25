@@ -59,7 +59,7 @@ module InsertDonation
     stripe_t.save!
     stripe_t.subtransaction_payments.each(&:publish_created)
     #stripe_t.publish_created
-   # don.publish_created
+    don.publish_created
     trx.publish_created
     result['activity'] = InsertActivities.for_one_time_donations([result['payment'].id])
     JobQueue.queue(JobTypes::DonationPaymentCreateJob, result['donation'].id, result['payment'].id, entities[:supporter_id].locale)
@@ -120,7 +120,7 @@ module InsertDonation
     off_t.save!
 
     trx.publish_created
-    # don.publish_created
+    don.publish_created
     # off_t.publish_created
     offline_transaction_charge_payment.publish_created
 
