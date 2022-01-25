@@ -16,8 +16,10 @@ class SubtransactionPayment < ApplicationRecord
 		OfflineTransactionCharge
 		OfflineTransactionDispute
 		OfflineTransactionRefund
-		StripeCharge
-		StripeRefund
+		StripeTransactionCharge
+		StripeTransactionRefund
+		StripeTransactionDispute
+		StripeTransactionDisputeReversal
 	]
 
 	delegate :gross_amount, :fee_total, :net_amount, :publish_created, :publish_updated, :publish_deleted, :to_houid, to: :paymentable

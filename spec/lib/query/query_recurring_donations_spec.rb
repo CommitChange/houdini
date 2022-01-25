@@ -234,6 +234,11 @@ describe QueryRecurringDonations do
   end
 
   describe '.for_export_enumerable' do
+    around(:each) do |ex|
+      StripeMock.start
+      ex.run
+      StripeMock.stop
+    end
     before :each do
       @nonprofit = force_create(:nonprofit, name: "npo1");
       @supporters = [ force_create(:supporter, name: "supporter-0", nonprofit: @nonprofit),

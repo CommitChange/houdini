@@ -22,7 +22,7 @@ handle_array_expansion(:transaction_assignments, transaction.transaction_assignm
 	handle_item_expansion(tra, opts)
 end
 
-handle_array_expansion(:payments, transaction.subtransaction_payments, {json: json, __expand: __expand, item_as: :subtransaction_payment}) do |py, opts|
+handle_array_expansion(:payments, transaction.payments, {json: json, __expand: __expand, item_as: :subtransaction_payment}) do |py, opts|
 	handle_item_expansion(py, opts)
 end
 
