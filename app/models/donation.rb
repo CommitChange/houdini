@@ -1,4 +1,9 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# Donation represents:
+# * information about a one-time contribution
+# * information about a set of recurring donations
+# 
+# The fact that it does both is very confusing.
 class Donation < ActiveRecord::Base
 
 	before_save :set_anonymous
@@ -41,7 +46,7 @@ class Donation < ActiveRecord::Base
 	has_one :payment
 	has_one :offsite_payment
 	has_one :tracking
-	has_one :modern_donation
+	has_many :modern_donations
 	belongs_to :supporter
 	belongs_to :card
 	belongs_to :direct_debit_detail
