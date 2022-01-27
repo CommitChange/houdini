@@ -35,6 +35,14 @@ class ETapImportContact < ActiveRecord::Base
     e_tap_import.e_tap_import_journal_entries.by_account(row['Account Number'])
   end
 
+  def self.find_by_account_name(account_name, account_email, original_account_id)
+    query = where("row @> '{\"Account Name\": \"#{account_name}\"}' OR row @> '{\"Email\": \"#{account_email}\"}' OR row @> '{\"Email Address 2\": \"#{account_email}\"}' OR row @> '{\"Email Address 3\": \"#{account_email}\"}'")
+    if account_email.blank?
+      query = where("row @> '{\"Account Name\": \"#{account_name}\"}'")
+    end
+    query.where("NOT row @> '{\"Account Number\": \"#{original_account_id}\"}'").first
+  end
+
   def create_or_update_CUSTOM(known_supporter=nil)
     
     custom_fields_to_save = self.to_custom_fields;
