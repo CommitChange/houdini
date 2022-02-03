@@ -126,7 +126,7 @@ RSpec.describe Supporter, type: :model do
             end
 
             it 'removes the primary address from the supporter' do
-              expect(supporter.primary_address).to be_nil
+              expect(supporter.reload.primary_address).to be_nil
             end
 
             it 'deletes the empty primary address from the database' do

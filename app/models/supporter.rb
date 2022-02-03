@@ -216,20 +216,12 @@ class Supporter < ActiveRecord::Base
         primary_address.update(address_field_attributes)
       end
     elsif primary_address.present? && empty_new_address_fields?
-      delete_primary_address
+      primary_address.destroy
     end
   end
 
   def empty_new_address_fields?
     address.blank? && city.blank? && state_code.blank? && country.blank? && zip_code.blank?
-  end
-
-  def delete_primary_address
-    self.primary_address.update(supporter_id: nil)
-    prim_addr = self.primary_address
-    self.addresses.delete(prim_addr)
-    self.update(primary_address: nil)
-    prim_addr.destroy
   end
 
   def set_address_to_primary_if_needed(new_address)
