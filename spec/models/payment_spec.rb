@@ -133,4 +133,12 @@ RSpec.describe Payment, :type => :model do
       expect(create(:fv_poverty_payment, :anonymous_through_supporter,  :anonymous_through_donation)).to be_consider_anonymous
     end
   end
+
+  it {
+    is_expected.to have_one(:subtransaction_payment).with_foreign_key('legacy_payment_id')
+  }
+
+  it {
+    is_expected.to have_one(:trx).class_name('Transaction').through(:subtransaction_payment)
+  }
 end
