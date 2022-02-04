@@ -39,7 +39,7 @@ class Payment < ActiveRecord::Base
 
 	has_one :subtransaction_payment, foreign_key: 'legacy_payment_id'
 
-	has_one :trx, class_name: Transaction, through: :subtransaction_payment
+	has_one :trx, class_name: 'Transaction', through: :subtransaction_payment
 	
 	has_many :activities, :as => :attachment do
 		def create(attributes=nil, options={}, &block)
