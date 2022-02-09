@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.7 (Ubuntu 12.7-0ubuntu0.20.10.1)
--- Dumped by pg_dump version 13.5 (Ubuntu 13.5-0ubuntu0.21.10.1)
+-- Dumped from database version 13.4
+-- Dumped by pg_dump version 13.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2301,6 +2301,42 @@ ALTER SEQUENCE public.profiles_id_seq OWNED BY public.profiles.id;
 
 
 --
+-- Name: reassignments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.reassignments (
+    id integer NOT NULL,
+    item_id integer,
+    item_type character varying,
+    e_tap_import_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    source_supporter_id integer,
+    target_supporter_id integer
+);
+
+
+--
+-- Name: reassignments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.reassignments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: reassignments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.reassignments_id_seq OWNED BY public.reassignments.id;
+
+
+--
 -- Name: recaptcha_rejections; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3546,6 +3582,13 @@ ALTER TABLE ONLY public.profiles ALTER COLUMN id SET DEFAULT nextval('public.pro
 
 
 --
+-- Name: reassignments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reassignments ALTER COLUMN id SET DEFAULT nextval('public.reassignments_id_seq'::regclass);
+
+
+--
 -- Name: recaptcha_rejections id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4165,6 +4208,14 @@ ALTER TABLE ONLY public.periodic_reports_users
 
 
 --
+-- Name: reassignments reassignments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reassignments
+    ADD CONSTRAINT reassignments_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: recaptcha_rejections recaptcha_rejections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4697,6 +4748,13 @@ CREATE INDEX index_periodic_reports_on_user_id ON public.periodic_reports USING 
 
 
 --
+-- Name: index_reassignments_on_e_tap_import_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reassignments_on_e_tap_import_id ON public.reassignments USING btree (e_tap_import_id);
+
+
+--
 -- Name: index_recurring_donations_on_donation_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5075,6 +5133,14 @@ ALTER TABLE ONLY public.supporters
 
 ALTER TABLE ONLY public.fee_coverage_detail_bases
     ADD CONSTRAINT fk_rails_13c8ce7956 FOREIGN KEY (fee_era_id) REFERENCES public.fee_eras(id);
+
+
+--
+-- Name: reassignments fk_rails_268392b346; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reassignments
+    ADD CONSTRAINT fk_rails_268392b346 FOREIGN KEY (e_tap_import_id) REFERENCES public.e_tap_imports(id);
 
 
 --
@@ -6232,4 +6298,6 @@ INSERT INTO schema_migrations (version) VALUES ('20211119224854');
 INSERT INTO schema_migrations (version) VALUES ('20211210185111');
 
 INSERT INTO schema_migrations (version) VALUES ('20211222175658');
+
+INSERT INTO schema_migrations (version) VALUES ('20220209203456');
 
