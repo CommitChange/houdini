@@ -1,5 +1,5 @@
 class ETapImportContact < ActiveRecord::Base
-  attr_accessible :row
+  attr_accessible :row, :nonprofit
   belongs_to :e_tap_import
   has_one :nonprofit, through: :e_tap_import
   
