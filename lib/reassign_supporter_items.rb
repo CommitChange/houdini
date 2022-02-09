@@ -4,7 +4,7 @@ module ReassignSupporterItems
         badly_assigned_items = find_badly_assigned_items(etap_import)
         ActiveRecord::Base.transaction do
             badly_assigned_items.each do |items|
-                reassign_items(items[:supp_through_contact], items[:journal_entries_to_items_with_wrong_supporter], etap_import)
+                reassign_journal_entries(items[:supp_through_contact], items[:journal_entries_to_items_with_wrong_supporter], etap_import)
             end
         end
         remaining_badly_assigned_items = find_badly_assigned_items(etap_import)
@@ -29,19 +29,39 @@ module ReassignSupporterItems
         end.compact
     end
 
-    def self.reassign_items(correct_supporter, journal_entries_to_items_with_wrong_supporter, etap_import)
+    def self.reassign_journal_entries(correct_supporter, journal_entries_to_items_with_wrong_supporter, etap_import)
         return if correct_supporter.blank?
 
         journal_entries_to_items_with_wrong_supporter.each do |journal_entry|
-            activity = Activity.find_by(attachment_id: journal_entry.item.id, supporter: journal_entry.item.supporter)
-            # etap_import.create_reassignment(item: journal_entry.item, source_supporter: journal_entry.item.supporter, target_supporter: correct_supporter)
-            journal_entry.item.supporter = correct_supporter
-            journal_entry.item.save!
-            if activity.present?
-                # etap_import.create_reassignment(item: activity, source_supporter: activity.supporter, target_supporter: correct_supporter)
-                activity.supporter = correct_supporter
-                activity.save!
-            end
+            reassign_item(correct_supporter, journal_entry.item, etap_import)
         end
+    end
+
+    def self.reassign_item(correct_supporter, item, etap_import)
+        activity = Activity.find_by(attachment_id: item.id, supporter: item.supporter)
+        etap_import.reassignments.create(item: item, source_supporter: item.supporter, target_supporter: correct_supporter)
+        item.supporter = correct_supporter
+        item.save!
+        if activity.present?
+            etap_import.reassignments.create(item: activity, source_supporter: activity.supporter, target_supporter: correct_supporter)
+            activity.supporter = correct_supporter
+            activity.save!
+        end
+    end
+
+    def self.revert_reassignments_from_supporter(supporter)
+        reassignments = Reassignment.where(target_supporter: supporter)
+        reassignments.each do |reassignment|
+            reassign_item(reassignment.source_supporter, reassignment.item, reassignment.e_tap_import)
+        end
+        reassignments.destroy_all
+    end
+
+    def self.revert_all_reassignments(etap_import)
+        reassignments = Reassignment.where(e_tap_import: etap_import)
+        reassignments.each do |reassignment|
+            reassign_item(reassignment.source_supporter, reassignment.item, reassignment.e_tap_import)
+        end
+        reassignments.destroy_all
     end
 end
