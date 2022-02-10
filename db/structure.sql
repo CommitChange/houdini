@@ -2047,7 +2047,8 @@ CREATE TABLE public.payment_dupe_statuses (
     payment_id integer,
     matched boolean DEFAULT false,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    matched_with_offline integer[] DEFAULT '{}'::integer[]
 );
 
 
@@ -6353,4 +6354,6 @@ INSERT INTO schema_migrations (version) VALUES ('20220118224945');
 INSERT INTO schema_migrations (version) VALUES ('20220119193044');
 
 INSERT INTO schema_migrations (version) VALUES ('20220209203456');
+
+INSERT INTO schema_migrations (version) VALUES ('20220210021725');
 
