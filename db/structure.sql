@@ -5184,14 +5184,6 @@ ALTER TABLE ONLY public.fee_coverage_detail_bases
 
 
 --
--- Name: reassignments fk_rails_268392b346; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.reassignments
-    ADD CONSTRAINT fk_rails_268392b346 FOREIGN KEY (e_tap_import_id) REFERENCES public.e_tap_imports(id);
-
-
---
 -- Name: fee_structures fk_rails_55f7b67177; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6356,4 +6348,6 @@ INSERT INTO schema_migrations (version) VALUES ('20220119193044');
 INSERT INTO schema_migrations (version) VALUES ('20220209203456');
 
 INSERT INTO schema_migrations (version) VALUES ('20220210021725');
+
+INSERT INTO schema_migrations (version) VALUES ('20220210231629');
 
