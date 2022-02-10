@@ -350,7 +350,7 @@ describe QuerySupporters do
           supporter_1 = force_create(:supporter, nonprofit_id: np.id, name: 'Cacau', address: 'Clear Waters Avenue 106', zip_code: '32101')
           supporter_2 = force_create(:supporter, nonprofit_id: np.id, name: 'Penelope', address: 'Clear WatersAvenue 106', zip_code: '32101')
 
-          expect(subject).to match_array([[supporter_1.id, supporter_2.id]])
+          expect(subject.first).to match_array([supporter_1.id, supporter_2.id])
         end
       end
 
