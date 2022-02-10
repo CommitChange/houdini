@@ -19,7 +19,15 @@ describe ReassignSupporterItems do
             it 'returns an empty array' do
                 InsertCustomFieldJoins.find_or_create(nonprofit.id, [supporter.id], [['E-Tapestry Id #', '12345' ]])
                 create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, supporter_id: supporter.id, row: row)
+                item = etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: supporter.supporter_notes.create(content: 'Some note')).item
                 expect(described_class.perform(etap_import)).to eq([])
+            end
+
+            it 'does not reassign' do
+                InsertCustomFieldJoins.find_or_create(nonprofit.id, [supporter.id], [['E-Tapestry Id #', '12345' ]])
+                create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, supporter_id: supporter.id, row: row)
+                item = etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: supporter.supporter_notes.create(content: 'Some note')).item
+                expect { described_class.perform(etap_import) }.not_to change { item.supporter }
             end
         end
 
@@ -27,7 +35,7 @@ describe ReassignSupporterItems do
             it 'reassigns the item to the correct supporter' do
                 InsertCustomFieldJoins.find_or_create(nonprofit.id, [supporter.id], [['E-Tapestry Id #', '12345' ]])
                 create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, row: row)
-                item = etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: other_supporter.supporter_notes.create(content: 'Some note')).item
+                item = etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: other_supporter.donations.create(amount: 100, supporter: other_supporter, nonprofit: nonprofit)).item
 
                 expect { described_class.perform(etap_import) }.to change { item.reload.supporter }.from(other_supporter).to(supporter)
             end
@@ -36,7 +44,8 @@ describe ReassignSupporterItems do
                 InsertCustomFieldJoins.find_or_create(nonprofit.id, [supporter.id], [['E-Tapestry Id #', '12345' ]])
                 create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, row: row)
                 item = etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: other_supporter.supporter_notes.create(content: 'Some note')).item
-                activity = Activity.find_by(attachment_id: item.id, supporter: other_supporter)
+                activity = Activity.where(attachment_type: 'SupporterEmail', attachment_id: item.id).first
+
 
                 expect { described_class.perform(etap_import) }.to change { activity.reload.supporter }.from(other_supporter).to(supporter)
             end
@@ -44,7 +53,7 @@ describe ReassignSupporterItems do
             it 'returns an empty array' do
                 InsertCustomFieldJoins.find_or_create(nonprofit.id, [supporter.id], [['E-Tapestry Id #', '12345' ]])
                 create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, row: row)
-                etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: other_supporter.supporter_notes.create(content: 'Some note'))
+                etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: other_supporter.donations.create(amount: 100, supporter: other_supporter, nonprofit: nonprofit))
 
                 expect(described_class.perform(etap_import)).to eq([])
             end
@@ -62,7 +71,7 @@ describe ReassignSupporterItems do
                 InsertCustomFieldJoins.find_or_create(nonprofit.id, [supporter.id], [['E-Tapestry Id #', '12345' ]])
                 create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, row: row)
                 item = etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: other_supporter.supporter_notes.create(content: 'Some note')).item
-                activity = Activity.find_by(attachment_id: item.id, supporter: other_supporter)
+                activity = Activity.where(attachment_type: 'SupporterEmail', attachment_id: item.id).first
 
                 described_class.perform(etap_import)
                 expect(etap_import.reassignments.last.attributes.except('id', 'created_at', 'updated_at')).to match({source_supporter_id: other_supporter.id, target_supporter_id: supporter.id, item_id: activity.id, item_type: 'Activity', e_tap_import_id: etap_import.id}.stringify_keys)
@@ -102,7 +111,7 @@ describe ReassignSupporterItems do
                         e_tap_import_contact = create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, row: { 'Email' => 'cacau@cacau.com', 'Account Number' => '54321'})
                         create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, row: row)
                         item = etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: other_supporter.supporter_notes.create(content: 'Some note')).item
-                        activity = Activity.find_by(attachment_id: item.id, supporter: other_supporter)
+                        activity = Activity.where(attachment_type: 'SupporterEmail', attachment_id: item.id).first
 
                         expect { described_class.perform(etap_import) }.to change { activity.reload.supporter }.from(other_supporter).to(supporter)
                     end
@@ -128,10 +137,10 @@ describe ReassignSupporterItems do
                         e_tap_import_contact = create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, row: { 'Email' => 'cacau@cacau.com', 'Account Number' => '54321'})
                         create(:e_tap_import_contact, nonprofit: nonprofit, e_tap_import: etap_import, row: row)
                         item = etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: other_supporter.supporter_notes.create(content: 'Some note')).item
-                        activity = Activity.find_by(attachment_id: item.id, supporter: other_supporter)
+                        activity = Activity.where(attachment_type: 'SupporterEmail', attachment_id: item.id).first
 
                         described_class.perform(etap_import)
-                        expect(etap_import.reassignments.last.attributes.except('id', 'created_at', 'updated_at')).to match({source_supporter_id: other_supporter.id, target_supporter_id: supporter.id, item_id: activity.id, item_type: 'Activity', e_tap_import_id: etap_import.id}.stringify_keys)
+                        expect(etap_import.reassignments.find_by(item: activity).attributes.except('id', 'created_at', 'updated_at')).to match({source_supporter_id: other_supporter.id, target_supporter_id: supporter.id, item_id: activity.id, item_type: 'Activity', e_tap_import_id: etap_import.id}.stringify_keys)
                     end
                 end
 

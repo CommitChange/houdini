@@ -2,8 +2,8 @@
 module ReassignSupporterItems
     def self.perform(etap_import)
         badly_assigned_items = find_badly_assigned_items(etap_import)
-        ActiveRecord::Base.transaction do
-            badly_assigned_items.each do |items|
+        badly_assigned_items.each do |items|
+            ActiveRecord::Base.transaction do
                 reassign_journal_entries(items[:supp_through_contact], items[:journal_entries_to_items_with_wrong_supporter], etap_import)
             end
         end
@@ -38,15 +38,25 @@ module ReassignSupporterItems
     end
 
     def self.reassign_item(correct_supporter, item, etap_import)
-        activity = Activity.find_by(attachment_id: item.id, supporter: item.supporter)
+        activities = find_activities(item)
         etap_import.reassignments.create(item: item, source_supporter: item.supporter, target_supporter: correct_supporter)
         item.supporter = correct_supporter
         item.save!
-        if activity.present?
+        activities.each do |activity|
             etap_import.reassignments.create(item: activity, source_supporter: activity.supporter, target_supporter: correct_supporter)
             activity.supporter = correct_supporter
             activity.save!
         end
+    end
+
+    def self.find_activities(item)
+        attachment_type = item.class.name
+        if item.is_a?(SupporterNote)
+            attachment_type = 'SupporterEmail'
+        elsif item.is_a?(Donation) || item.is_a?(RecurringDonation) || item.is_a?(Refund) || item.is_a?(OffsitePayment)
+            attachment_type = 'Payment'
+        end
+        Activity.where(attachment_type: attachment_type, attachment_id: item.id)
     end
 
     def self.revert_reassignments_from_supporter(supporter)
