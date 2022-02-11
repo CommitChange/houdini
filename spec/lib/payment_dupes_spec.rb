@@ -280,6 +280,40 @@ describe PaymentDupes do
                 expect(target_payment.reload.donation.designation).to eq('A designation')
             end
 
+            it 'deletes the related activities' do
+                donation = InsertDonation.offsite({supporter_id: supporter.id, nonprofit_id: nonprofit.id, 'supporter_id' => supporter.id, 'nonprofit_id' => nonprofit.id, 'date' => Time.now.to_s, 'amount' => 100})
+                source_payment = Payment.find(donation[:json]["payment"]["id"])
+                activity = Activity.where(attachment_id: source_payment.id, attachment_type: 'Payment').first
+
+                target_donation = nonprofit.donations.create(comment: 'Some comment', amount: 100, supporter: supporter)
+                target_donation.save!
+                target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: 'Donation', supporter: supporter, gross_amount: 100)
+                target_payment.save!
+
+                etap_import.e_tap_import_journal_entries.create(row: { 'Account Number' => '123' })
+                etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
+
+                described_class.remove_payment_dupes(nonprofit, ['A designation that should become a comment'])
+                expect { activity.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            end
+
+            it 'deletes the offsite_payment' do
+                donation = InsertDonation.offsite({supporter_id: supporter.id, nonprofit_id: nonprofit.id, 'supporter_id' => supporter.id, 'nonprofit_id' => nonprofit.id, 'date' => Time.now.to_s, 'amount' => 100})
+                source_payment = Payment.find(donation[:json]["payment"]["id"])
+                offsite = source_payment.offsite_payment
+
+                target_donation = nonprofit.donations.create(comment: 'Some comment', amount: 100, supporter: supporter)
+                target_donation.save!
+                target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: 'Donation', supporter: supporter, gross_amount: 100)
+                target_payment.save!
+
+                etap_import.e_tap_import_journal_entries.create(row: { 'Account Number' => '123' })
+                etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
+
+                described_class.remove_payment_dupes(nonprofit, ['A designation that should become a comment'])
+                expect { offsite.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            end
+
             context 'when the designation is one that should be a comment' do
                 it 'copies the designation as a comment' do
                     source_donation = nonprofit.donations.create(designation: 'A designation that should become a comment', amount: 100, supporter: supporter)
@@ -396,6 +430,40 @@ describe PaymentDupes do
                     described_class.remove_payment_dupes(nonprofit, ['A designation that should become a comment'])
                     expect(target_payment.reload.payment_dupe_status.matched_with_offline).to eq([source_payment.id])
                 end
+
+                it 'deletes the related activities' do
+                    donation = InsertDonation.offsite({supporter_id: supporter.id, nonprofit_id: nonprofit.id, 'supporter_id' => supporter.id, 'nonprofit_id' => nonprofit.id, 'date' => Time.now.to_s, 'amount' => 100})
+                    source_payment = Payment.find(donation[:json]["payment"]["id"])
+                    activity = Activity.where(attachment_id: source_payment.id, attachment_type: 'Payment').first
+
+                    target_donation = nonprofit.donations.create(comment: 'Some comment', amount: 100, supporter: supporter)
+                    target_donation.save!
+                    target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: 'Ticket', supporter: supporter, gross_amount: 100)
+                    target_payment.save!
+
+                    etap_import.e_tap_import_journal_entries.create(row: { 'Account Number' => '123' })
+                    etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
+
+                    described_class.remove_payment_dupes(nonprofit, ['A designation that should become a comment'])
+                    expect { activity.reload }.to raise_error(ActiveRecord::RecordNotFound)
+                end
+
+                it 'deletes the offsite_payment' do
+                    donation = InsertDonation.offsite({supporter_id: supporter.id, nonprofit_id: nonprofit.id, 'supporter_id' => supporter.id, 'nonprofit_id' => nonprofit.id, 'date' => Time.now.to_s, 'amount' => 100})
+                    source_payment = Payment.find(donation[:json]["payment"]["id"])
+                    offsite = source_payment.offsite_payment
+
+                    target_donation = nonprofit.donations.create(comment: 'Some comment', amount: 100, supporter: supporter)
+                    target_donation.save!
+                    target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: 'Ticket', supporter: supporter, gross_amount: 100)
+                    target_payment.save!
+
+                    etap_import.e_tap_import_journal_entries.create(row: { 'Account Number' => '123' })
+                    etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
+
+                    described_class.remove_payment_dupes(nonprofit, ['A designation that should become a comment'])
+                    expect { offsite.reload }.to raise_error(ActiveRecord::RecordNotFound)
+                end
             end
 
             context 'when the payment kind is a recurring donation' do
@@ -421,6 +489,58 @@ describe PaymentDupes do
                     described_class.remove_payment_dupes(nonprofit, ['A designation that should become a comment'])
                     expect { source_payment.reload }.to raise_error(ActiveRecord::RecordNotFound)
                     expect { source_payment_2.reload }.to raise_error(ActiveRecord::RecordNotFound)
+                end
+
+                it 'deletes the offsite_payment' do
+                    donation = InsertDonation.offsite({supporter_id: supporter.id, nonprofit_id: nonprofit.id, 'supporter_id' => supporter.id, 'nonprofit_id' => nonprofit.id, 'date' => Time.now.to_s, 'amount' => 100})
+                    source_payment = Payment.find(donation[:json]["payment"]["id"])
+                    offsite = source_payment.offsite_payment
+
+                    donation_2 = InsertDonation.offsite({supporter_id: supporter.id, nonprofit_id: nonprofit.id, 'supporter_id' => supporter.id, 'nonprofit_id' => nonprofit.id, 'date' => (Time.now - 2.days).to_s, 'amount' => 100})
+                    source_payment_2 = Payment.find(donation_2[:json]["payment"]["id"])
+                    offsite_2 = source_payment_2.offsite_payment
+
+                    target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
+                    target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: 'RecurringDonation', supporter: supporter, gross_amount: 100)
+
+                    target_donation_2 = nonprofit.donations.create(amount: 100, supporter: supporter)
+                    target_payment_2 = target_donation_2.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: 'RecurringDonation', supporter: supporter, gross_amount: 100)
+
+                    etap_import.e_tap_import_journal_entries.create(row: { 'Account Number' => '123' })
+                    etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
+
+                    etap_import.e_tap_import_journal_entries.create(row: { 'Account Number' => '123' })
+                    etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment_2).save!
+
+                    described_class.remove_payment_dupes(nonprofit, ['A designation that should become a comment'])
+                    expect { offsite.reload }.to raise_error(ActiveRecord::RecordNotFound)
+                    expect { offsite_2.reload }.to raise_error(ActiveRecord::RecordNotFound)
+                end
+
+                it 'deletes the activities' do
+                    donation = InsertDonation.offsite({supporter_id: supporter.id, nonprofit_id: nonprofit.id, 'supporter_id' => supporter.id, 'nonprofit_id' => nonprofit.id, 'date' => Time.now.to_s, 'amount' => 100})
+                    source_payment = Payment.find(donation[:json]["payment"]["id"])
+                    activity = Activity.where(attachment_id: source_payment.id, attachment_type: 'Payment').first
+
+                    donation_2 = InsertDonation.offsite({supporter_id: supporter.id, nonprofit_id: nonprofit.id, 'supporter_id' => supporter.id, 'nonprofit_id' => nonprofit.id, 'date' => (Time.now - 2.days).to_s, 'amount' => 100})
+                    source_payment_2 = Payment.find(donation_2[:json]["payment"]["id"])
+                    activity_2 = Activity.where(attachment_id: source_payment_2.id, attachment_type: 'Payment').first
+
+                    target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
+                    target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: 'RecurringDonation', supporter: supporter, gross_amount: 100)
+
+                    target_donation_2 = nonprofit.donations.create(amount: 100, supporter: supporter)
+                    target_payment_2 = target_donation_2.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: 'RecurringDonation', supporter: supporter, gross_amount: 100)
+
+                    etap_import.e_tap_import_journal_entries.create(row: { 'Account Number' => '123' })
+                    etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
+
+                    etap_import.e_tap_import_journal_entries.create(row: { 'Account Number' => '123' })
+                    etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment_2).save!
+
+                    described_class.remove_payment_dupes(nonprofit, ['A designation that should become a comment'])
+                    expect { activity.reload }.to raise_error(ActiveRecord::RecordNotFound)
+                    expect { activity_2.reload }.to raise_error(ActiveRecord::RecordNotFound)
                 end
 
                 it 'creates a payment dupe status' do

@@ -77,6 +77,8 @@ module PaymentDupes
                     reasons = []
                     ActiveRecord::Base.transaction do
                         if online.kind == 'Ticket'
+                            Activity.where(attachment_id: offsite.id, attachment_type: 'Payment').destroy_all
+                            offsite&.offsite_payment&.destroy
                             offsite.destroy
                             deleted_payments << offsite.id
                             if online.payment_dupe_status.present?
@@ -139,7 +141,11 @@ module PaymentDupes
                                         # deletes matching offsites here
                                         p = Payment.find(temp_offsite_matches.first)
                                         d = p.donation
-                                        d.payments.where(kind: 'OffsitePayment').destroy_all
+                                        d.payments.where(kind: 'OffsitePayment').each do |op|
+                                            Activity.where(attachment_id: op.id, attachment_type: 'Payment').destroy_all
+                                            op&.offsite_payment&.destroy
+                                            op.destroy
+                                        end
                                         d.destroy
                                     else
                                         raise ActiveRecord::Rollback
@@ -148,7 +154,9 @@ module PaymentDupes
                                     copy_comment(offsite, online)
                                     copy_dedication(offsite, online)
                                     copy_designation(offsite, online, designations_to_become_comments)
+                                    Activity.where(attachment_id: offsite.id, attachment_type: 'Payment').destroy_all
                                     offsite.donation.destroy
+                                    offsite&.offsite_payment&.destroy
                                     offsite.destroy
                                     deleted_payments << offsite.id.to_s
                                     if online.payment_dupe_status.present?
