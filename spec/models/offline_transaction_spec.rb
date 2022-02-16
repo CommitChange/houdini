@@ -5,5 +5,5 @@
 require 'rails_helper'
 
 RSpec.describe OfflineTransaction, type: :model do
-	it_behaves_like 'subtransactable', :offlinetrx
+	it_behaves_like 'subtransactable', :offlinetrx, :offline_transaction_for_testing_payment_extensions
 end

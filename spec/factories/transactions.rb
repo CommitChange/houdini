@@ -45,4 +45,27 @@ FactoryBot.define do
 			ta
 		}
 	end
+
+	factory :transaction_for_testing_payment_extensions, class: "Transaction" do
+		transient do
+			currency {'fake'}
+			payments {[
+				build(:subtransaction_payment, 
+					gross_amount: 101,
+					fee_total: -1),
+				build(:subtransaction_payment,
+				gross_amount: 202,
+				fee_total: -2),
+				build(:subtransaction_payment,
+					gross_amount: 404,
+					fee_total: -4)
+			] }
+		end
+
+		nonprofit { build(:nonprofit, currency: currency)}
+		subtransaction {
+			build(:subtransaction, subtransaction_payments: payments)
+		}
+		
+	end
 end
