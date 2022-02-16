@@ -16,7 +16,7 @@ class ModernDonation < ApplicationRecord
 	# about a recurring donation as well. No, this isn't great.
 	belongs_to :legacy_donation, class_name: 'Donation', foreign_key: :donation_id
 
-	delegate :designation, :dedication, :comment, :amount, to: :legacy_donation
+	delegate :designation, :dedication, :comment, to: :legacy_donation
 
 	as_money :amount
 
