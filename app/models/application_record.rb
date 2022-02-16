@@ -8,4 +8,5 @@ class ApplicationRecord < ActiveRecord::Base
 
   include Model::Jbuilder
   include Model::Houidable
+  include Model::AsMoneyable
 end
