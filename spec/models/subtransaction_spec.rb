@@ -6,6 +6,8 @@ require 'rails_helper'
 
 RSpec.describe Subtransaction, type: :model do
 
+  it_behaves_like 'a class with payments extension', :subtransaction_payments, :subtransaction_for_testing_payment_extensions
+
   it {
     is_expected.to(belong_to(:trx)
       .class_name('Transaction')

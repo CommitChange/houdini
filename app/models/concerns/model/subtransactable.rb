@@ -13,7 +13,7 @@ module Model::Subtransactable
 		has_one :supporter, through: :trx
 		has_one :nonprofit, through: :trx
 
-		has_many :subtransaction_payments, through: :subtransaction
+		has_many :subtransaction_payments, -> {  extending ModelExtensions::PaymentsExtension }, through: :subtransaction
 
 		delegate :currency, to: :nonprofit
 	end

@@ -15,7 +15,7 @@ class Transaction < ApplicationRecord
 	has_many :donations, through: :transaction_assignments, source: :assignable, source_type: 'ModernDonation', inverse_of: 'trx'
 
 	has_one :subtransaction
-	has_many :payments, through: :subtransaction, source: :subtransaction_payments, class_name: 'SubtransactionPayment'
+	has_many :payments, -> {  extending ModelExtensions::PaymentsExtension }, through: :subtransaction, source: :subtransaction_payments, class_name: 'SubtransactionPayment'
 
 	has_many :object_events, as: :event_entity
 
