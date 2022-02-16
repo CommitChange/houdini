@@ -14,6 +14,11 @@ class Subtransaction < ApplicationRecord
 
 	has_many :subtransaction_payments # rubocop:disable Rails/HasManyOrHasOneDependent
 
+	# get payments in reverse chronological order
+	def ordered_payments
+		subtransaction_payments.ordered_query
+	end
+
 	delegated_type :subtransactable, types: %w[OfflineTransaction, StripeTransaction]
 
 	delegate :to_houid, to: :subtransactable

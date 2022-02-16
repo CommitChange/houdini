@@ -3,9 +3,8 @@
 # License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 
-json.id subtransaction.subtransactable.houid
+json.id subtransaction.to_houid
 json.type 'subtransaction'
-
 
 json.created subtransaction.created.to_i
 
@@ -13,7 +12,7 @@ handle_expansion(:supporter, subtransaction.supporter, {json: json, __expand: __
 handle_expansion(:nonprofit, subtransaction.nonprofit,  {json: json, __expand: __expand})
 handle_expansion(:transaction, subtransaction.trx, {json: json, __expand: __expand})
 
-handle_array_expansion(:payments, subtransaction.subtransaction_payments, {json:json, __expand: __expand, item_as: :subtransaction_payment}) do |py, opts|
+handle_array_expansion(:payments, subtransaction.ordered_payments, {json:json, __expand: __expand, item_as: :subtransaction_payment}) do |py, opts|
 	handle_item_expansion(py, opts)
 end
 
