@@ -49,9 +49,30 @@ if Rails.version < '5'
           if respond_to?(setter)
             public_send(setter, v)
           else
-            raise UnknownAttributeError.new(self, k.to_s)
+            raise ActiveModel::Errors::UnknownAttributeError.new(self, k.to_s)
           end
         end
+    end
+    class Errors
+      # Raised when unknown attributes are supplied via mass assignment.
+      #
+      #   class Person
+      #     include ActiveModel::AttributeAssignment
+      #     include ActiveModel::Validations
+      #   end
+      #
+      #   person = Person.new
+      #   person.assign_attributes(name: 'Gorby')
+      #   # => ActiveModel::UnknownAttributeError: unknown attribute 'name' for Person.
+      class UnknownAttributeError < NoMethodError
+        attr_reader :record, :attribute
+
+        def initialize(record, attribute)
+          @record = record
+          @attribute = attribute
+          super("unknown attribute '#{attribute}' for #{@record.class}.")
+        end
+      end
     end
   end
 else
