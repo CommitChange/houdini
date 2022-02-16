@@ -21,6 +21,11 @@ class Transaction < ApplicationRecord
 
 	validates :supporter, presence: true
 
+	# get payments in reverse chronological order
+	def ordered_payments
+		payments.ordered_query
+	end
+
 	def amount_as_money
     Amount.new(amount||0, nonprofit.currency)
   end
