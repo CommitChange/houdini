@@ -23,7 +23,5 @@ class Subtransaction < ApplicationRecord
 
 	delegate :to_houid, to: :subtransactable
 
-	def amount_as_money
-		Amount.new(amount, currency)
-	end
+	as_money :amount
 end

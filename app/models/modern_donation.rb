@@ -18,6 +18,7 @@ class ModernDonation < ApplicationRecord
 
 	delegate :designation, :dedication, :comment, :amount, to: :legacy_donation
 
+	as_money :amount
 
 	def dedication
 		begin
@@ -30,10 +31,6 @@ class ModernDonation < ApplicationRecord
 	# REMEMBER: multiple ModernDonations could have the same legacy_id
 	def legacy_id
 		legacy_donation.id
-	end
-
-	def amount_as_money
-		Amount.new(amount, currency)
 	end
 
 	def publish_created

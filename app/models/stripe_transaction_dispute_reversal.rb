@@ -12,17 +12,7 @@ class StripeTransactionDisputeReversal < ApplicationRecord
 
 	delegate :currency, to: :nonprofit
 	 
-	def gross_amount_as_money
-		Amount.new(gross_amount || 0, currency)
-	end
-
-	def net_amount_as_money
-		Amount.new(net_amount || 0, currency)
-	end
-
-	def fee_total_as_money
-		Amount.new(fee_total || 0, currency)
-	end
+	as_money :gross_amount, :net_amount, :fee_total
 
 	def created
 		legacy_payment.date

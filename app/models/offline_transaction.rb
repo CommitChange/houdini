@@ -6,17 +6,10 @@
 class OfflineTransaction < ApplicationRecord
 	include Model::Subtransactable
 	delegate :created, to: :subtransaction
-
-	def amount_as_money
-		Amount.new(amount || 0, nonprofit.currency)
-	end
+	as_money :amount, :net_amount
 
 	def net_amount
 		subtransaction_payments.map{|i| i.net_amount}.sum
-	end
-
-	def net_amount_as_money
-		Amount.new(net_amount || 0, nonprofit.currency)
 	end
 
 	concerning :JBuilder do
