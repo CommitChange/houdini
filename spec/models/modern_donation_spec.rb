@@ -13,10 +13,6 @@ RSpec.describe ModernDonation, type: :model do
   }
 
   it {
-    is_expected.to delegate_method(:amount).to(:legacy_donation)
-  }
-
-  it {
     is_expected.to(belong_to(:legacy_donation)
       .class_name('Donation')
       .with_foreign_key('donation_id')

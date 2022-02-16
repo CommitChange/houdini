@@ -21,7 +21,8 @@ FactoryBot.define do
 			ta = [
 				build(:transaction_assignment, 
 					assignable: 
-						build(:modern_donation, 
+						build(:modern_donation,
+							amount: 4000,
 							legacy_donation: 
 								build(:donation, 
 									supporter: supporter,
