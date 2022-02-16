@@ -12,7 +12,7 @@ class Subtransaction < ApplicationRecord
 
 	belongs_to :subtransactable, polymorphic: true
 
-	has_many :subtransaction_payments # rubocop:disable Rails/HasManyOrHasOneDependent
+	has_many :subtransaction_payments, -> {  extending ModelExtensions::PaymentsExtension } # rubocop:disable Rails/HasManyOrHasOneDependent
 
 	# get payments in reverse chronological order
 	def ordered_payments

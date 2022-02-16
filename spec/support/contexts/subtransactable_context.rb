@@ -3,10 +3,12 @@
 # License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 
-shared_examples 'subtransactable' do |prefix|
+shared_examples 'subtransactable' do |prefix, factory_for_payment_extension_testing|
 
   it_behaves_like "an houidable entity", prefix, :houid
 
+  it_behaves_like 'a class with payments extension', :subtransaction_payments, factory_for_payment_extension_testing
+  
   it {
     is_expected.to have_one(:subtransaction).dependent(:nullify)
   }
