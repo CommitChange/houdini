@@ -19,6 +19,25 @@ shared_examples 'subtransaction paymentable' do |prefix|
   }
 
   it {
+    is_expected.to(have_one(:legacy_payment)
+      .class_name('Payment')
+      .through(:subtransaction_payment)
+    )
+  }
+
+  it {
+    is_expected.to delegate_method(:gross_amount).to(:legacy_payment)
+  }
+
+  it {
+    is_expected.to delegate_method(:net_amount).to(:legacy_payment)
+  }
+
+  it {
+    is_expected.to delegate_method(:fee_total).to(:legacy_payment)
+  }
+
+  it {
     is_expected.to have_one(:supporter).through(:subtransaction_payment)
   }
 
