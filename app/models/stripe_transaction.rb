@@ -6,12 +6,9 @@ class StripeTransaction < ApplicationRecord
 	include Model::Subtransactable
 	setup_houid :stripetrx, :houid
 	delegate :created, to: :subtransaction
+	delegate :net_amount, to: :subtransaction_payments
 
 	as_money :amount, :net_amount
-
-	def net_amount
-		subtransaction_payments.map{|i| i.net_amount}.sum
-	end
 
 	def publish_created
 		#object_events.create( event_type: 'stripe_transaction.created')
