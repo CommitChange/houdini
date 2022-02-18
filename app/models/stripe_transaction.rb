@@ -10,6 +10,13 @@ class StripeTransaction < ApplicationRecord
 
 	as_money :amount, :net_amount
 
+	# Handle a completed refund from a legacy Refund object
+	def process_refund(refund)
+		refund = self.subtransaction.subtransaction_payments.create!(paymentable:StripeTransactionRefund.new, subtransaction: subtransaction, legacy_payment: refund.payment)
+		update!(amount: 	subtransaction_payments.gross_amount)
+		refund
+	end
+
 	def publish_created
 		#object_events.create( event_type: 'stripe_transaction.created')
 	end

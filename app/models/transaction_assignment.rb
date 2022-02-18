@@ -10,6 +10,6 @@ class TransactionAssignment < ApplicationRecord
   has_one :supporter, through: :trx
   has_one :nonprofit, through: :trx
 
-  delegate :to_houid, to: :assignable
+  delegate :to_houid, :publish_updated, to: :assignable
 
 end

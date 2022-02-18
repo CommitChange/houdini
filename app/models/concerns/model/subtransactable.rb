@@ -16,5 +16,12 @@ module Model::Subtransactable
 		has_many :subtransaction_payments, -> {  extending ModelExtensions::PaymentsExtension }, through: :subtransaction
 
 		delegate :currency, to: :nonprofit
+
+		# Handle a completed refund from a legacy Refund object
+		# Implement this in your specific subtransaction class if you want to use it.
+		def process_refund(refund)
+			raise NotImplementedError, 
+				"You need to implement 'process_refund' in your specific subtransaction class"
+		end
 	end
 end
