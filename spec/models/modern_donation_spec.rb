@@ -3,6 +3,7 @@ require 'rails_helper'
 
 RSpec.describe ModernDonation, type: :model do
   it_behaves_like 'trx assignable', :don
+  it_behaves_like 'an object with as_money attributes', :amount
 
   it {
     is_expected.to delegate_method(:designation).to(:legacy_donation)

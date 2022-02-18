@@ -61,7 +61,7 @@ FactoryBot.define do
 					fee_total: -4)
 			] }
 		end
-
+		amount { 707 }
 		nonprofit { build(:nonprofit, currency: currency)}
 		subtransaction {
 			build(:subtransaction, subtransaction_payments: payments)

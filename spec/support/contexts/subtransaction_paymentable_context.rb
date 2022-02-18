@@ -5,6 +5,7 @@
 
 shared_examples 'subtransaction paymentable' do |prefix|
   it_behaves_like "an houidable entity", prefix, :houid
+  it_behaves_like 'an object with as_money attributes', :gross_amount, :net_amount, :fee_total
 
   it {
     is_expected.to have_one(:subtransaction_payment).dependent(:destroy)
