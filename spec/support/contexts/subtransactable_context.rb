@@ -9,6 +9,8 @@ shared_examples 'subtransactable' do |prefix, factory_for_payment_extension_test
 
   it_behaves_like 'a class with payments extension', :subtransaction_payments, factory_for_payment_extension_testing
   
+  it_behaves_like 'an object with as_money attributes', :amount, :net_amount
+  
   it {
     is_expected.to have_one(:subtransaction).dependent(:nullify)
   }
