@@ -11,7 +11,7 @@ class Transaction < ApplicationRecord
 	belongs_to :supporter
 	has_one :nonprofit, through: :supporter
 
-	has_many :transaction_assignments, inverse_of: 'trx'
+	has_many :transaction_assignments,  -> {  extending ModelExtensions::TransactionAssignment::RefundExtension }, inverse_of: 'trx'
 	has_many :donations, through: :transaction_assignments, source: :assignable, source_type: 'ModernDonation', inverse_of: 'trx'
 
 	has_one :subtransaction
@@ -37,6 +37,45 @@ class Transaction < ApplicationRecord
 	# def dedication
 	# 	donation&.dedication
 	# end
+
+	concerning :Refunds do
+		# Handle a completed refund from a legacy Refund object
+		def process_refund(refund)
+			new_refund = save_refund(refund)
+			publish_after_refund(new_refund)
+		end
+
+		private 
+
+		# @param refund Refund a refund object
+		# @returns StripeTransactionPayment (with a StripeTransactionRefund) represents the new refund 
+		def save_refund(refund)
+			# add the refund to the subtransaction as a StripeTransactionRefund
+			new_refund = subtransaction.process_refund(refund)
+			# update the value of the transaction itself from the subtransaction
+			self.amount = subtransaction.subtransactable.amount
+			# refund means we need to adjust the values of the transaction_assignments
+			transaction_assignments.process_refund(refund)
+			# save everything
+			save!
+
+			new_refund
+		end
+
+		# @param refund StripeTransactionPayment (with a StripeTransactionRefund) represents the new refund 
+		def publish_after_refund(new_refund)
+			publish_updated
+			
+			subtransaction.publish_updated
+			# we want to publish that every payment has other than the new refund been updated
+			ordered_payments.select{|i| i != new_refund}.each(&:publish_updated)
+			# publish that the new_refund has been created
+			new_refund.publish_created
+
+			# publish that the transaction_assignments have been updated
+			transaction_assignments.first.publish_updated
+		end
+	end
 
 	def publish_created
 		object_events.create( event_type: 'transaction.created')

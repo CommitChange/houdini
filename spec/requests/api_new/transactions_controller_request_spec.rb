@@ -16,7 +16,7 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 	let(:supporter) { transaction_for_donation.supporter }
 
 	let(:transaction_for_donation) do
-		create(:transaction_for_donation)
+		create(:transaction_for_offline_donation)
 	end
 
 	before do
@@ -58,12 +58,7 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 				def base_url(nonprofit_id, transaction_id)
 					"http://www.example.com#{base_path(nonprofit_id, transaction_id)}"
 				end
-				include_context 'with json results for transaction_for_donation' do
-					let(:subtransaction_houid) {:offlinetrx}
-          let(:subtransaction_object) {'offline_transaction'}
-          let(:charge_houid) { :offtrxchrg}
-					let(:expected_fees) { -300 }
-				end
+				include_context 'json results for transaction expectations'
 				it {
 					is_expected.to include_json(
 						first_page: true, 
@@ -71,7 +66,34 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 						current_page: 1,
 						requested_size: 25, 
 						total_count: 1,
-						data: [generate_transaction_for_donation_json]
+						data: [
+							generate_transaction_json(
+
+					nonprofit_houid: nonprofit.houid,
+					supporter_houid: supporter.houid,
+					transaction_houid: transaction.houid,
+					subtransaction_expectation: {
+						object: 'offline_transaction',
+						houid: match_houid(:offlinetrx),
+						charge_payment: {
+							object: 'offline_transaction_charge',
+							houid: match_houid(:offtrxchrg),
+							gross_amount: 4000,
+							fee_total: 0
+						}
+					},
+
+					transaction_assignments: [
+						{
+							object: 'donation',
+							houid: match_houid(:don),
+							other_attributes: {
+								designation: "Designation 1"
+							}
+						}
+					]
+
+				)]
 						
 				)}
 			end
@@ -105,16 +127,34 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 			it {
 				expect(response).to have_http_status(:success)
 			}
-			include_context 'with json results for transaction_for_donation' do 
-				let(:transaction) {transaction_for_donation}
-				let(:subtransaction_houid) {:offlinetrx}
-				let(:subtransaction_object) {'offline_transaction'}
-				let(:charge_houid) { :offtrxchrg}
-				let(:expected_fees) { -300}
-			end			
-
+			include_context 'json results for transaction expectations'
 			it {
-				is_expected.to include_json(generate_transaction_for_donation_json)
+				is_expected.to include_json(generate_transaction_json(
+					nonprofit_houid: nonprofit.houid,
+					supporter_houid: supporter.houid,
+					transaction_houid: transaction_for_donation.houid,
+					subtransaction_expectation: {
+						object: 'offline_transaction',
+						houid: match_houid(:offlinetrx),
+						charge_payment: {
+							object: 'offline_transaction_charge',
+							houid: match_houid(:offtrxchrg),
+							gross_amount: 4000,
+							fee_total: 0
+						}
+					},
+
+					transaction_assignments: [
+						{
+							object: 'donation',
+							houid: match_houid(:don),
+							other_attributes: {
+								designation: "Designation 1"
+							}
+						}
+					]
+
+				))
 			}
 		end
 

@@ -48,16 +48,35 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
       end
 
       describe 'result' do
-        include_context 'with json results for transaction_for_donation' do 
-
-          let(:expected_fees) { 0 }
-          let(:subtransaction_houid) {:offlinetrx}
-          let(:subtransaction_object) {'offline_transaction'}
-          let(:charge_houid) { :offtrxchrg}
-        end
+        include_context 'json results for transaction expectations'
 
         it {
-          is_expected.to include_json(generate_transaction_for_donation_json)
+          is_expected.to include_json(generate_transaction_json(
+            nonprofit_houid: nonprofit.houid,
+            supporter_houid: supporter.houid,
+            transaction_houid: transaction.houid,
+            subtransaction_expectation: {
+              object: 'offline_transaction',
+              houid: match_houid(:offlinetrx),
+              charge_payment: {
+                object: 'offline_transaction_charge',
+                houid: match_houid(:offtrxchrg),
+                gross_amount: 4000,
+                fee_total: 0
+              }
+            },
+
+            transaction_assignments: [
+              {
+                object: 'donation',
+                houid: match_houid(:don),
+                other_attributes: {
+                  designation: "Designation 1"
+                }
+              }
+            ]
+
+          ))
         }
       end
 
@@ -160,16 +179,35 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
         end
 
         describe 'result' do
-          include_context 'with json results for transaction_for_donation' do 
-
-            let(:expected_fees) { -250 }
-            let(:subtransaction_houid) {:stripetrx}
-            let(:subtransaction_object) {'stripe_transaction'}
-            let(:charge_houid) { :stripechrg}
-          end
+          include_context 'json results for transaction expectations'
 
           it {
-            is_expected.to include_json(generate_transaction_for_donation_json)
+            is_expected.to include_json(generate_transaction_json(
+              nonprofit_houid: nonprofit.houid,
+              supporter_houid: supporter.houid,
+              transaction_houid: transaction.houid,
+              subtransaction_expectation: {
+                object: 'stripe_transaction',
+                houid: match_houid(:stripetrx),
+                charge_payment: {
+                  object: 'stripe_transaction_charge',
+                  houid: match_houid(:stripechrg),
+                  gross_amount: 4000,
+                  fee_total: -250
+                }
+              },
+
+              transaction_assignments: [
+                {
+                  object: 'donation',
+                  houid: match_houid(:don),
+                  other_attributes: {
+                    designation: "Designation 1"
+                  }
+                }
+              ]
+
+            ))
           }
 
           describe 'object events' do
@@ -190,34 +228,38 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
                       created: be_a(Numeric),
                       object: 'object_event',
                       data: {
-                        object: {
-                          'id' => transaction.houid,
-                          'supporter' => transaction.supporter.houid,
-
-                          'subtransaction' => {
-                            'id' => match_houid(:stripetrx),
-                            'amount' => {'cents' => 4000, 'currency' => 'usd'},
-                            'payments' => [
-                              {
-                                'id' => match_houid(:stripechrg),
-                                'gross_amount' => {'cents' => 4000, 'currency' => 'usd'},
-                                'fee_total' => {'cents' => -250, 'currency' => 'usd'},
-                                'net_amount' => {'cents' => 3750, 'currency' => 'usd'}
-                              }
-                            ]
+                        object: generate_transaction_json(
+                          expand: [],
+                          nonprofit_houid: nonprofit.houid,
+                          supporter_houid: supporter.houid,
+                          transaction_houid: transaction.houid,
+                          subtransaction_expectation: {
+                            object: 'stripe_transaction',
+                            houid: match_houid(:stripetrx),
+                            charge_payment: {
+                              object: 'stripe_transaction_charge',
+                              houid: match_houid(:stripechrg),
+                              gross_amount: 4000,
+                              fee_total: -250
+                            }
                           },
-                          'transaction_assignments' => [
+                
+                          transaction_assignments: [
                             {
-                              'id' => match_houid('don'),
-                              designation: 'Designation 1',
-                              legacy_id: transaction.donations.first.legacy_id,
-                              dedication: {
-                                note: "My mom",
-                                type: "honor"
+                              object: 'donation',
+                              houid: match_houid(:don),
+                              other_attributes: {
+                                designation: "Designation 1",
+                                legacy_id: transaction.donations.first.legacy_id,
+                                dedication: {
+                                  note: "My mom",
+                                  type: "honor"
+                                },
                               }
                             }
                           ]
-                        }
+        
+                        )
                       }
                     }   
                   ]
