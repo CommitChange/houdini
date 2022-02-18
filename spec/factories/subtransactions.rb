@@ -30,5 +30,66 @@ FactoryBot.define do
 					fee_total: -4)
 			] }
 		end
+
+		factory :subtransaction_for_offline_donation, class: "Subtransaction" do
+			transient do
+				nonprofit {supporter.nonprofit}
+				supporter { create(:supporter_with_fv_poverty)}
+				gross_amount { 4000}
+				fee_total { 0}
+				net_amount {gross_amount+ fee_total}
+			end
+			subtransactable {
+				build(:offline_transaction, amount: gross_amount)
+	
+			}
+	
+			subtransaction_payments {[ 
+				build(:subtransaction_payment_for_offline_transaction_charge,
+				subtransaction: @instance,
+					gross_amount: gross_amount, 
+				fee_total: fee_total, 
+				nonprofit:nonprofit, 
+				supporter:supporter)
+	
+			]}
+		end
+
+		factory :subtransaction_for_refund,  class: "Subtransaction" do
+			transient do
+				nonprofit {supporter.nonprofit}
+				supporter { build(:subtransaction_payment_for_offline_transaction_charge)}
+			# 	initial_payment { 	
+			# 		build(:subtransaction_payment, paymentable: 
+			# 		build(
+			# 			:stripe_transaction_charge, 
+	
+			# 			gross_amount: gross_amount, 
+			# 		fee_total: fee_total, 
+			# 		nonprofit:nonprofit, 
+			# 		supporter:supporter)
+			# 		)
+	
+			# }
+	
+				gross_amount { 4000}
+				fee_total { -300}
+				net_amount {gross_amount+ fee_total}
+			end
+			subtransactable {
+				build(:stripe_transaction, amount: gross_amount)
+	
+			}
+	
+			subtransaction_payments {[ 
+				association(:subtransaction_payment_for_refund_initial_charge,
+				subtransaction: @instance,
+					gross_amount: gross_amount, 
+				fee_total: fee_total, 
+				nonprofit:nonprofit, 
+				supporter:supporter)
+	
+			]}
+		end
 	end
 end

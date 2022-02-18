@@ -7,42 +7,67 @@ FactoryBot.define do
 		supporter { create(:supporter) }
 	end
 
-	factory :transaction_for_donation, class: "Transaction" do
+	factory :transaction_for_offline_donation, class: "Transaction" do
+		transient do
 
-		amount { 4000 }
+			offline_transaction_charge { subtransaction.subtransaction_payments.first}
+			payment {
+				offline_transaction_charge&.legacy_payment
+			}
+			gross_amount { 4000 }
+			fee_total { 0}
+			nonprofit { supporter.nonprofit}
+
+		end
+
+		amount { gross_amount }
+
 		supporter { create(:supporter_with_fv_poverty) }
-		subtransaction { build(
-			:subtransaction, subtransaction_payments: [
-				build(:subtransaction_payment, paymentable: build(:offline_transaction_charge), legacy_payment: transaction_assignments.first.assignable.legacy_donation.payment)
-			]
-		)}
+		subtransaction { build(:subtransaction_for_offline_donation,
+				supporter: supporter,
+				gross_amount: gross_amount, 
+				fee_total: fee_total)
+		}
 
 		transaction_assignments { 
 			ta = [
 				build(:transaction_assignment, 
 					assignable: 
 						build(:modern_donation,
-							amount: 4000,
 							legacy_donation: 
 								build(:donation, 
 									supporter: supporter,
-									amount: 4000,
+									amount: gross_amount,
 									nonprofit:nonprofit, 
 									designation: 'Designation 1',
-									payment: build(:payment,
-										gross_amount: 4000,
-										fee_total: -300,
-										net_amount: 3700,
-										nonprofit: nonprofit,
-										supporter: supporter,
-										date: Time.current
-									),
+									payment: payment,
 								)
 						)
 				)
 			]
 
 			ta
+		}
+	end
+
+	factory :transaction_for_refund, class: "Transaction" do
+		transient do
+
+			stripe_transaction_charge { subtransaction.subtransaction_payments.first}
+			payment {
+				stripe_transaction_charge&.legacy_payment
+			}
+			gross_amount { 4000 }
+			fee_total { -300}
+			nonprofit { supporter.nonprofit}
+
+		end
+
+		supporter { create(:supporter_with_fv_poverty) }
+		subtransaction { association :subtransaction_for_refund,
+				gross_amount: gross_amount, 
+				fee_total: fee_total,
+				supporter: supporter
 		}
 	end
 

@@ -33,7 +33,7 @@ RSpec.describe ModernDonation, type: :model do
       }
     end
 
-    context 'when legacy_donatoin has json parsable dedication' do 
+    context 'when legacy_donation has json parsable dedication' do 
       it {
         input_json = {note: "My mom", type: "honor"}
         expect(ModernDonation.new(legacy_donation:Donation.new(dedication: input_json.to_json)).dedication).to include_json **input_json
