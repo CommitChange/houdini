@@ -6,4 +6,8 @@ require 'rails_helper'
 
 RSpec.describe StripeTransaction, type: :model do
 	it_behaves_like 'subtransactable', :stripetrx, :stripe_transaction_for_testing_payment_extensions
+
+	it {
+		is_expected.to delegate_method(:net_amount).to(:subtransaction_payments)
+	}
 end
