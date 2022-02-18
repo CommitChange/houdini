@@ -9,6 +9,9 @@ RSpec.describe Transaction, type: :model do
 
   it_behaves_like 'a class with payments extension', :payments, :transaction_for_testing_payment_extensions
 
+  it_behaves_like 'an object with as_money attributes', :amount
+  
+
   it {
     is_expected.to(belong_to(:supporter))
   }
