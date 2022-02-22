@@ -135,6 +135,8 @@ class StripeDispute < ActiveRecord::Base
 
     transaction.dispute.original_payment.refund_total += gross_amount * -1
     transaction.dispute.original_payment.save!
+
+    transaction.dispute.original_payment.trx.process_dispute_withdrawal(dispute, transaction.payment)
     # notify folks of the withdrawal
     JobQueue.queue(JobTypes::DisputeFundsWithdrawnJob, dispute)
   end
@@ -156,6 +158,8 @@ class StripeDispute < ActiveRecord::Base
 
     transaction.dispute.original_payment.refund_total += gross_amount * -1
     transaction.dispute.original_payment.save!
+
+    transaction.dispute.original_payment.trx.process_dispute_reversal(dispute, transaction.payment)
     # add dispute payment activity
     transaction.payment.activities.create
     JobQueue.queue(JobTypes::DisputeFundsReinstatedJob, dispute)

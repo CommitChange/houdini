@@ -14,7 +14,7 @@ RSpec.describe Payment, :type => :model do
         specify { expect(activity_json['original_id']).to eq charge.payment.id}
         specify { expect(activity_json['original_kind']).to eq charge.payment.kind}
         specify { expect(activity_json['original_gross_amount']).to eq charge.payment.gross_amount}
-        specify { expect(activity_json['original_date']).to eq charge.payment.date}
+        specify { expect(activity_json['original_date'].to_time).to eq charge.payment.date}
       end
       
       describe "dispute.funds_withdrawn" do

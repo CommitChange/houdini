@@ -74,24 +74,20 @@ RSpec.describe DisputeMailer, :type => :mailer do
     before(:each) do
       StripeMock.start
     end
-    let(:nonprofit) { force_create(:nonprofit, name: "spec_nonprofit_full")}
+    let(:nonprofit) { transaction.nonprofit}
     let(:json) do
-      event =StripeMock.mock_webhook_event('charge.dispute.updated')
+      event = StripeMock.mock_webhook_event('charge.dispute.updated')
       event['data']['object']
     end
-    let(:supporter) { force_create(:supporter, nonprofit: nonprofit)}
-    let!(:charge) { force_create(:charge, supporter: supporter, 
-      stripe_charge_id: 'ch_1Y7vFYBCJIIhvMWmsdRJWSw5', nonprofit: nonprofit, payment:force_create(:payment,
-         supporter:supporter,
-        nonprofit: nonprofit,
-        gross_amount: 22500))}
+    let(:supporter) { transaction.supporter}
+    let!(:transaction) {  create(:transaction_for_stripe_dispute_of_80000)}
   
     let(:obj) { StripeDispute.create(object:json) }
     let(:dispute) { obj.dispute }
     let(:mail) { DisputeMailer.updated(dispute) }
 
     it "renders the headers" do
-      expect(mail.subject).to eq("Updated dispute dp_15RsQX2eZvKYlo2C0ERTYUIA for spec_nonprofit_full, evidence due on 2019-09-16 00:59:59 UTC")
+      expect(mail.subject).to eq("Updated dispute dp_15RsQX2eZvKYlo2C0ERTYUIA for Ending Poverty in the Fox Valley Inc., evidence due on 2019-09-16 00:59:59 UTC")
       expect(mail.to).to eq(["support@commitchange.com"])
       expect(mail.from).to eq(["support@commitchange.com"])
     end

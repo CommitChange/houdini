@@ -84,5 +84,38 @@ FactoryBot.define do
     	}
 
 		end
+
+		factory :subtransaction_payment_for_stripe_transaction_charge do
+			transient do
+				nonprofit {supporter.nonprofit}
+				supporter { create(:supporter_with_fv_poverty)}
+				gross_amount { 4000}
+				fee_total { 0}
+				net_amount {gross_amount+ fee_total}
+				stripe_charge_id { 'ch_1Y7zzfBCJIIhvMWmSiNWrPAC' }
+				date { Time.current}
+			end
+
+			paymentable {
+				build(
+					:stripe_transaction_charge)
+			}
+
+			legacy_payment {
+				build(:payment,
+					gross_amount: gross_amount,
+					fee_total: fee_total,
+					net_amount: net_amount,
+					nonprofit: nonprofit,
+					supporter: supporter,
+					date: date,
+					charge: build(:charge, supporter: supporter, nonprofit:nonprofit,
+						stripe_charge_id: stripe_charge_id, created_at: date)
+      	)
+    	}
+
+			created { date}
+			
+		end
 	end
 end

@@ -12,9 +12,21 @@ class StripeTransaction < ApplicationRecord
 
 	# Handle a completed refund from a legacy Refund object
 	def process_refund(refund)
-		refund = self.subtransaction.subtransaction_payments.create!(paymentable:StripeTransactionRefund.new, subtransaction: subtransaction, legacy_payment: refund.payment)
+		refund = self.subtransaction.subtransaction_payments.create!(paymentable:StripeTransactionRefund.new, subtransaction: subtransaction, legacy_payment: refund.payment, created: refund.payment.date)
 		update!(amount: 	subtransaction_payments.gross_amount)
 		refund
+	end
+
+	def process_dispute_withdrawal(dispute, new_withdrawal)
+		dispute_payment = self.subtransaction.subtransaction_payments.create!(paymentable:StripeTransactionDispute.new, subtransaction: subtransaction, legacy_payment: new_withdrawal, created: new_withdrawal.date)
+		update!(amount: 	subtransaction_payments.gross_amount)
+		dispute_payment
+	end
+
+	def process_dispute_reversal(dispute, new_reversal)
+		dispute_reversal_payment = self.subtransaction.subtransaction_payments.create!(paymentable:StripeTransactionDisputeReversal.new, subtransaction: subtransaction, legacy_payment: new_reversal, created: new_reversal.date)
+		update!(amount: 	subtransaction_payments.gross_amount)
+		dispute_reversal_payment
 	end
 
 	def publish_created
