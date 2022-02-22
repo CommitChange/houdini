@@ -55,6 +55,37 @@ FactoryBot.define do
 			]}
 		end
 
+		factory :subtransaction_for_stripe_donation, class: "Subtransaction" do
+			transient do
+				nonprofit {supporter.nonprofit}
+				supporter { create(:supporter_with_fv_poverty)}
+				gross_amount { 4000}
+				fee_total { 0}
+				net_amount {gross_amount+ fee_total}
+				stripe_charge_id { 'ch_1Y7zzfBCJIIhvMWmSiNWrPAC' }
+				date { Time.current }
+			end
+
+			created { date }
+			subtransactable {
+				build(:stripe_transaction, amount: gross_amount)
+	
+			}
+	
+			subtransaction_payments {[ 
+				build(:subtransaction_payment_for_stripe_transaction_charge,
+				subtransaction: @instance,
+					gross_amount: gross_amount, 
+				fee_total: fee_total, 
+				nonprofit:nonprofit, 
+				supporter:supporter,
+				stripe_charge_id: stripe_charge_id,
+				date: date
+				)
+				
+			]}
+		end
+
 		factory :subtransaction_for_refund,  class: "Subtransaction" do
 			transient do
 				nonprofit {supporter.nonprofit}

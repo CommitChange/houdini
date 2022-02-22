@@ -21,7 +21,12 @@ class Subtransaction < ApplicationRecord
 
 	delegated_type :subtransactable, types: %w[OfflineTransaction, StripeTransaction]
 
-	delegate :to_houid, :process_refund, :publish_updated, to: :subtransactable
+	delegate :to_houid,
+		:process_dispute_withdrawal,
+		:process_dispute_reversal,
+		:process_refund, 
+		:publish_updated, 
+			to: :subtransactable
 
 	as_money :amount
 end

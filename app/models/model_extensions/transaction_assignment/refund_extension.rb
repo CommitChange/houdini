@@ -11,8 +11,20 @@ module ModelExtensions::TransactionAssignment::RefundExtension
     proxy_association.owner.transaction_assignments
   end
 
-  # Handle a completed refund from a legacy Refund object
   def process_refund(refund)
+    correct_donation_amount
+  end
+
+  def process_dispute_withdrawal(dispute, new_withdrawal)
+    correct_donation_amount
+  end
+
+  def process_dispute_reversal(dispute, new_reversal)
+    correct_donation_amount
+  end
+
+  # Handle a completed refund from a legacy Refund object
+  def correct_donation_amount
     donation = assignments.select{|i| i.assignable.is_a? ModernDonation}.first.assignable
     donation.amount = trx.amount
     donation.save!

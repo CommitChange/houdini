@@ -23,5 +23,15 @@ module Model::Subtransactable
 			raise NotImplementedError, 
 				"You need to implement 'process_refund' in your specific subtransaction class"
 		end
+
+		def process_dispute_withdrawal(dispute, new_withdrawal)
+			raise NotImplementedError,
+				"You need to implement 'process_dispute_withdrawal' in your specific subtransaction class"
+		end
+
+		def process_dispute_reversal(dispute, new_reversal)
+			raise NotImplementedError,
+				"You need to implement 'process_dispute_reversal' in your specific subtransaction class"
+		end
 	end
 end
