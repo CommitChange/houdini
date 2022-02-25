@@ -171,7 +171,7 @@ module QuerySupporters
               .from(:payments)
               .join(Qx.select('id')
                         .from(:supporters)
-                        .where("supporters.nonprofit_id = $id and deleted != 'true'", id: np_id )
+                        .where("supporters.nonprofit_id = $id and supporters.deleted != 'true'", id: np_id )
                         .as("payments_to_supporters"),  "payments_to_supporters.id = payments.supporter_id"
               )
               .as("outer_from_payment_to_supporter")
@@ -492,12 +492,12 @@ UNION DISTINCT
 
   # Partial sql expression
   def self.dupes_expr(np_id)
-    Qx.select("ARRAY_AGG(id) AS ids")
+    Qx.select("ARRAY_AGG(supporters.id) AS ids")
       .from(:supporters)
       .left_outer_join('supporter_addresses', 'supporters.primary_address_id = supporter_addresses.id')
       .where("nonprofit_id=$id", id: np_id)
-      .and_where("NOT deleted")
-      .having('COUNT(id) > 1')
+      .and_where("NOT supporters.deleted")
+      .having('COUNT(supporters.id) > 1')
   end
 
   # Merge on exact supporter and email match
@@ -558,8 +558,8 @@ UNION DISTINCT
          AND name != ''\
          AND phone_index IS NOT NULL \
          AND phone_index != '' \
-         AND address IS NOT NULL \
-         AND address != ''"
+         AND supporter_addresses.address IS NOT NULL \
+         AND supporter_addresses.address != ''"
       )
       .group_by(group_by_clause)
       .execute(format: 'csv')[1..-1]
@@ -574,8 +574,8 @@ UNION DISTINCT
          AND phone_index != '' \
          AND email IS NOT NULL\
          AND email != ''\
-         AND address IS NOT NULL \
-         AND address != ''"
+         AND supporter_addresses.address IS NOT NULL \
+         AND supporter_addresses.address != ''"
       )
       .group_by(group_by_clause)
       .execute(format: 'csv')[1..-1]
@@ -586,8 +586,8 @@ UNION DISTINCT
     group_by_clause = strict_mode ? strict_address_match : loose_address_match
     dupes_expr(np_id)
       .and_where(
-        "address IS NOT NULL \
-         AND address != ''"
+        "supporter_addresses.address IS NOT NULL \
+         AND supporter_addresses.address != ''"
       )
       .group_by(group_by_clause)
       .execute(format: 'csv')[1..-1]
@@ -600,8 +600,8 @@ UNION DISTINCT
       .and_where(
         "name IS NOT NULL\
          AND name != ''\
-         AND address IS NOT NULL \
-         AND address != ''"
+         AND supporter_addresses.address IS NOT NULL \
+         AND supporter_addresses.address != ''"
       )
       .group_by(group_by_clause)
       .execute(format: 'csv')[1..-1]
@@ -623,11 +623,11 @@ UNION DISTINCT
   end
 
   def self.dupes_on_address_without_zip_code(np_id, strict_mode = true)
-    group_by_clause = strict_mode ? "btrim(lower(address), ' ')" : "regexp_replace (lower(address),'[^0-9a-z]','','g')"
+    group_by_clause = strict_mode ? "btrim(lower(supporter_addresses.address), ' ')" : "regexp_replace (lower(supporter_addresses.address),'[^0-9a-z]','','g')"
     dupes_expr(np_id)
       .and_where(
-        "address IS NOT NULL \
-         AND address != ''"
+        "supporter_addresses.address IS NOT NULL \
+         AND supporter_addresses.address != ''"
       )
       .group_by(group_by_clause)
       .execute(format: 'csv')[1..-1]
@@ -635,7 +635,7 @@ UNION DISTINCT
   end
 
   def self.strict_address_match
-    "btrim(lower(address), ' '), substring(zip_code from '(([0-9]+.*)*[0-9]+)')"
+    "btrim(lower(supporter_addresses.address), ' '), substring(supporter_addresses.zip_code from '(([0-9]+.*)*[0-9]+)')"
   end
 
   def self.strict_name_match
@@ -651,7 +651,7 @@ UNION DISTINCT
   end
 
   def self.loose_address_match
-    "regexp_replace (lower(address),'[^0-9a-z]','','g'), substring(zip_code from '(([0-9]+.*)*[0-9]+)')"
+    "regexp_replace (lower(supporter_addresses.address),'[^0-9a-z]','','g'), substring(supporter_addresses.zip_code from '(([0-9]+.*)*[0-9]+)')"
   end
 
   def self.loose_name_match
