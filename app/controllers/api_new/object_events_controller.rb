@@ -10,11 +10,13 @@ module ApiNew
 		include Controllers::Nonprofit::Authorization
 		before_action :authenticate_nonprofit_user!
 
+		has_scope :event_entity
+		has_scope :event_types, type: :array
 		# Gets the nonprofits supporters
 		# If not logged in, causes a 401 error
 		def index
-			@object_events = current_nonprofit
-				.associated_object_events.query(params.slice(:event_entity, :event_types))
+			@object_events = apply_scopes(current_nonprofit
+				.associated_object_events)
 				.order('created_at DESC').page(params[:page]).per(params[:per])
 		end
 	end
