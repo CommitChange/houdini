@@ -227,6 +227,26 @@ RSpec.shared_context :dispute_created_specs do
     end
   end
 
+  describe 'object events' do
+    include_context 'json results for transaction expectations'
+    describe 'transaction.updated' do
+      subject(:object_event_result) do
+        obj
+        ApiNew::ObjectEventsController.render('api_new/object_events/index', 
+        assigns: {
+          object_events: nonprofit.associated_object_events.event_types(['transaction.updated']).page
+        })
+      end
+
+      it {
+        # the transaction hasn't been updated so there's no need for an object event to be there
+        is_expected.to include_json(data:[])
+      }
+    end
+
+    
+  end
+
   specify { expect(original_payment.refund_total).to eq 0 }
 
   let(:valid_events) { [:created]}
@@ -377,6 +397,68 @@ RSpec.shared_context :dispute_funds_withdrawn_specs do
             ))
           }
     end
+  end
+
+  describe 'object events' do
+    include_context 'json results for transaction expectations'
+    describe 'transaction.updated' do
+      subject(:object_event_result) do
+        obj
+        ApiNew::ObjectEventsController.render('api_new/object_events/index', 
+        assigns: {
+          object_events: nonprofit.associated_object_events.event_types(['transaction.updated']).page
+        })
+      end
+
+      it {
+        
+        # the transaction hasn't been updated so there's no need for an object event to be there
+        is_expected.to include_json(data:[])
+      }
+    end
+
+    describe 'other changes' do
+      subject(:object_event_result) do
+        obj
+        ApiNew::ObjectEventsController.render('api_new/object_events/index', 
+        assigns: {
+          object_events: nonprofit.associated_object_events.event_types(['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created', 'donation.updated']).page
+        })
+      end
+
+      
+
+      it {
+        is_expected.to include_json(data:[
+          generate_object_event_json(type: 'stripe_transaction_charge.updated', data: a_kind_of(Object)),
+          generate_object_event_json(type: 'stripe_transaction_dispute.created', data: {
+              
+              nonprofit: nonprofit.houid,
+              supporter: supporter.houid,
+              transaction: transaction.houid,  
+              id: match_houid(:stripedisp),
+              fee_total: {cents: -1500} ,
+              gross_amount: {cents: -80000},
+              net_amount: {cents: -80000 + -1500}
+            }),
+          generate_object_event_json(type: 'donation.updated', 
+          data: {
+                          
+            nonprofit: nonprofit.houid,
+            supporter: supporter.houid,
+            transaction: {
+              id:transaction.houid,
+              amount: {cents: 0}
+            },
+              
+            id: match_houid(:don),
+            amount: {cents: 0}
+          })
+        ])
+      }
+    end
+
+    
   end
 
   specify { expect(original_payment.refund_total).to eq 80000 }
@@ -551,6 +633,92 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
     
             ))
           }
+    end
+
+    describe 'object events' do
+      include_context 'json results for transaction expectations'
+      describe 'transaction.updated' do
+        subject(:object_event_result) do
+          obj
+          ApiNew::ObjectEventsController.render('api_new/object_events/index', 
+          assigns: {
+            object_events: nonprofit.associated_object_events.event_types(['transaction.updated']).page
+          })
+        end
+  
+        it {
+          
+          # the transaction hasn't been updated so there's no need for an object event to be there
+          is_expected.to include_json(data:[])
+        }
+      end
+  
+      describe 'other changes' do
+        subject(:object_event_result) do
+          obj
+          ApiNew::ObjectEventsController.render('api_new/object_events/index', 
+          assigns: {
+            object_events: nonprofit.associated_object_events.event_types(['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created', 'donation.updated']).page
+          })
+        end
+  
+        
+  
+        it {
+          is_expected.to include_json(data:[
+            generate_object_event_json(type: 'stripe_transaction_dispute_reversal.created', data: 
+            {
+                
+              nonprofit: nonprofit.houid,
+              supporter: supporter.houid,
+              transaction: transaction.houid,  
+              id: match_houid(:stripedisprvrs),
+              fee_total: {cents: 1500} ,
+              gross_amount: {cents: 80000},
+              net_amount: {cents: 80000}
+            }),
+            generate_object_event_json(type: 'donation.updated', 
+            data: {
+                            
+              nonprofit: nonprofit.houid,
+              supporter: supporter.houid,
+              transaction: {
+                id:transaction.houid,
+                amount: {cents: 800}
+              },
+                
+              id: match_houid(:don),
+              amount: {cents: 800}
+            })
+            generate_object_event_json(type: 'stripe_transaction_charge.updated', data: a_kind_of(Object)),
+            generate_object_event_json(type: 'stripe_transaction_dispute.created', data: {
+                
+                nonprofit: nonprofit.houid,
+                supporter: supporter.houid,
+                transaction: transaction.houid,  
+                id: match_houid(:stripedisp),
+                fee_total: {cents: -1500} ,
+                gross_amount: {cents: -80000},
+                net_amount: {cents: -80000 + -1500}
+              }),
+            generate_object_event_json(type: 'donation.updated', 
+            data: {
+                            
+              nonprofit: nonprofit.houid,
+              supporter: supporter.houid,
+              transaction: {
+                id:transaction.houid,
+                amount: {cents: 0}
+              },
+                
+              id: match_houid(:don),
+              amount: {cents: 0}
+            })
+          ])
+        }
+      end
+  
+      
     end
   end
 

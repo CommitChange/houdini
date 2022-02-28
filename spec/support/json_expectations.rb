@@ -5,7 +5,9 @@
 
 module JsonExpectations
 end
-require_relative './json_expectations/transaction_expectation'
-require_relative './json_expectations/subtransaction_expectation'
+
+require_relative './json_expectations/object_event_expectation'
 require_relative './json_expectations/payment_expectation'
+require_relative './json_expectations/subtransaction_expectation'
+require_relative './json_expectations/transaction_expectation'
 require_relative './json_expectations/trx_assignment_expectation'

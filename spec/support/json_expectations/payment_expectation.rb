@@ -6,7 +6,7 @@
 class JsonExpectations::PaymentExpectation
   include ActiveModel::AttributeAssignment
   
-  attr_accessor :houid, :object,  :subtransaction_expectation, :gross_amount, :fee_total, :flatten
+  attr_accessor :houid, :object, :subtransaction_expectation, :gross_amount, :fee_total, :flatten
   attr_writer :created
 
   def initialize(new_attributes)
@@ -18,7 +18,7 @@ class JsonExpectations::PaymentExpectation
   end
 
   def transaction_expectation
-    subtransaction_expectation.transaction_expectation
+    @transaction_expectation || subtransaction_expectation.transaction_expectation
   end
   
   def nonprofit_houid
@@ -35,6 +35,10 @@ class JsonExpectations::PaymentExpectation
 
   def subtransaction_houid
     subtransaction_expectation.houid
+  end
+  
+  def transaction_expectation=(args={})
+    @transaction_expectation = ::JsonExpectations::TransactionExpectation.new(payments: args[:payments].merge(self), **args)
   end
 
   def created

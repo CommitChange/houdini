@@ -11,4 +11,12 @@ shared_context 'json results for transaction expectations' do
 		JsonExpectations::TransactionExpectation.new(args).output
 	end
 
+	def generate_object_event_json(args={})
+		JsonExpectations::ObjectEventExpectation.new(args).output
+	end
+
+	def generate_payment_json(args={})
+		JsonExpectations::PaymentExpectation.new(args).output
+	end
+
 end
