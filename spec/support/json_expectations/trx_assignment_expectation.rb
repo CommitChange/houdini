@@ -21,7 +21,7 @@ class JsonExpectations::TrxAssignmentExpectation
   end
 
   def amount
-    @transaction_expectation.gross_amount
+    transaction_expectation.gross_amount
   end
 
   def output

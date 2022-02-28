@@ -48,7 +48,7 @@ class JsonExpectations::SubtransactionExpectation
   end
 
   def created
-    @created || Time.current
+    charge_payment.created
   end
 
   def additional_payments

@@ -25,13 +25,14 @@ RSpec.describe Dispute, :type => :model do
       specify { expect(activity_json['original_id']).to eq charge.payment.id}
       specify { expect(activity_json['original_kind']).to eq charge.payment.kind}
       specify { expect(activity_json['original_gross_amount']).to eq charge.payment.gross_amount}
-      specify { expect(activity_json['original_date']).to eq charge.payment.date}
+      specify { expect(activity_json['original_date'].to_time).to eq charge.payment.date}
       specify { expect(activity_json['gross_amount']).to eq dispute.gross_amount}
     end
 
     describe "dispute.created" do
-      include_context :common_specs
       include_context :dispute_created_context
+      include_context :common_specs
+
       
       let(:obj) { StripeDispute.create(object:json) }
       let(:activity) { dispute.activities.build('DisputeCreated', Time.at(event_json.created))}
@@ -41,8 +42,9 @@ RSpec.describe Dispute, :type => :model do
     end
 
     describe "dispute.won" do
-      include_context :common_specs
       include_context :dispute_won_context
+      include_context :common_specs
+
       
       let(:obj) { StripeDispute.create(object:json) }
       let(:activity) { dispute.activities.build('DisputeWon', Time.at(event_json.created)) }

@@ -77,6 +77,58 @@ class Transaction < ApplicationRecord
 		end
 	end
 
+	concerning :Disputes do
+
+		concerning :Withdrawals do 
+			# Handle a completed dispute from a legacy Dispute object and Payment for a the withdrawal
+			def process_dispute_withdrawal(dispute, withdrawal_payment)
+				new_withdrawal = save_dispute_withdrawal(dispute, withdrawal_payment)
+				publish_after_dispute_withdrawal(new_withdrawal)
+			end
+
+			def save_dispute_withdrawal(dispute, withdrawal_payment)
+				new_withdrawal = subtransaction.process_dispute_withdrawal(dispute, withdrawal_payment)
+				self.amount = subtransaction.subtransactable.amount
+				transaction_assignments.process_dispute_withdrawal(dispute, withdrawal_payment)
+
+				save!
+
+				new_withdrawal
+			end
+
+			def publish_after_dispute_withdrawal(new_withdrawal)
+				subtransaction.publish_updated
+				ordered_payments.select{|i| i != new_withdrawal}.each(&:publish_updated)
+				new_withdrawal.publish_created
+				transaction_assignments.first.publish_updated
+			end
+		end
+		
+		concerning :Reversals do
+			def process_dispute_reversal(dispute, reversal_payment)
+				new_reversal = save_dispute_reversal(dispute, reversal_payment)
+				publish_after_dispute_reversal(new_reversal)
+			end
+	
+			def save_dispute_reversal(dispute, reversal_payment)
+				new_reversal = subtransaction.process_dispute_reversal(dispute, reversal_payment)
+				self.amount = subtransaction.subtransactable.amount
+				transaction_assignments.process_dispute_reversal(dispute, reversal_payment)
+	
+				save!
+	
+				new_reversal
+			end
+
+			def publish_after_dispute_reversal(new_reversal)
+				subtransaction.publish_updated
+				ordered_payments.select{|i| i != new_reversal}.each(&:publish_updated)
+				new_reversal.publish_created
+				transaction_assignments.first.publish_updated
+			end
+		end
+	end
+
 	def publish_created
 		object_events.create( event_type: 'transaction.created')
 	end
