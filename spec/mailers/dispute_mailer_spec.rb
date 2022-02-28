@@ -84,7 +84,7 @@ RSpec.describe DisputeMailer, :type => :mailer do
       stripe_charge_id: 'ch_1Y7vFYBCJIIhvMWmsdRJWSw5', nonprofit: nonprofit, payment:force_create(:payment,
          supporter:supporter,
         nonprofit: nonprofit,
-        gross_amount: 22500))}
+        gross_amount: 80000))}
   
     let(:obj) { StripeDispute.create(object:json) }
     let(:dispute) { obj.dispute }
