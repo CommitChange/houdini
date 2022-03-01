@@ -80,7 +80,7 @@ RSpec.describe DisputeMailer, :type => :mailer do
       event['data']['object']
     end
     let(:supporter) { transaction.supporter}
-    let!(:transaction) {  create(:transaction_for_stripe_dispute_of_80000)}
+    let!(:transaction) {  create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC)}
   
     let(:obj) { StripeDispute.create(object:json) }
     let(:dispute) { obj.dispute }

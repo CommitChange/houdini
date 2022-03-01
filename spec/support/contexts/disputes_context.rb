@@ -106,7 +106,7 @@ RSpec.shared_context :dispute_created_context do
 
     let!(:transaction) {
       Timecop.freeze(dispute_time - 1.day) do 
-        create(:transaction_for_stripe_dispute_of_80000,
+        create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC,
           supporter:supporter,
           )
       end
@@ -263,7 +263,7 @@ RSpec.shared_context :dispute_funds_withdrawn_context do
 
     let!(:transaction) {
       Timecop.freeze(dispute_time - 1.day) do 
-      create(:transaction_for_stripe_dispute_of_80000,
+      create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC,
         supporter:supporter)
       end
     }
@@ -474,7 +474,7 @@ RSpec.shared_context :dispute_funds_reinstated_context do
     event_json
   end
   let!(:transaction) {
-      create(:transaction_for_stripe_dispute_of_80000, 
+      create(:transaction_for_stripe_dispute_of_ch_1Y7vFYBCJIIhvMWmsdRJWSw5, 
         supporter:supporter)
   }
 end
@@ -658,7 +658,7 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
           obj
           ApiNew::ObjectEventsController.render('api_new/object_events/index', 
           assigns: {
-            object_events: nonprofit.associated_object_events.event_types(['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created', 'donation.updated']).page
+            object_events: nonprofit.associated_object_events.event_types(['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created', 'donation.updated']).order('created').page
           })
         end
   
@@ -689,7 +689,7 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
                 
               id: match_houid(:don),
               amount: {cents: 800}
-            })
+            }),
             generate_object_event_json(type: 'stripe_transaction_charge.updated', data: a_kind_of(Object)),
             generate_object_event_json(type: 'stripe_transaction_dispute.created', data: {
                 
@@ -736,7 +736,7 @@ RSpec.shared_context :dispute_lost_context do
   end
   let!(:transaction) {
     Timecop.freeze(dispute_time - 1.day) do 
-      create(:transaction_for_stripe_dispute_of_80000, 
+      create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC, 
         supporter:supporter)
     end
   }
@@ -828,7 +828,7 @@ RSpec.shared_context :dispute_won_context do
   end
   let!(:transaction) {
   
-    create(:transaction_for_stripe_dispute_of_80000,
+    create(:transaction_for_stripe_dispute_of_ch_1Y7vFYBCJIIhvMWmsdRJWSw5,
       supporter:supporter)
   }
 end
@@ -948,7 +948,7 @@ RSpec.shared_context :dispute_created_and_withdrawn_at_same_time_context do
 
   let!(:transaction) {
     Timecop.freeze(dispute_time - 1.day) do 
-      create(:transaction_for_stripe_dispute_of_80000, 
+      create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC, 
         supporter:supporter,
         )
     end
@@ -1061,7 +1061,7 @@ RSpec.shared_context :dispute_created_and_withdrawn_in_order_context do
 
   let!(:transaction) {
     Timecop.freeze(dispute_time - 1.day) do 
-      create(:transaction_for_stripe_dispute_of_80000,
+      create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC,
         supporter:supporter,
         )
     end
@@ -1184,7 +1184,7 @@ RSpec.shared_context :dispute_created_withdrawn_and_lost_in_order_context do
 
   let!(:transaction) {
     Timecop.freeze(dispute_time - 1.day) do 
-      create(:transaction_for_stripe_dispute_of_80000,
+      create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC,
         supporter:supporter,
         )
     end
@@ -1389,7 +1389,7 @@ RSpec.shared_context :dispute_lost_created_and_funds_withdrawn_at_same_time_cont
 
   let!(:transaction) {
     Timecop.freeze(dispute_time - 1.day) do 
-      create(:transaction_for_stripe_dispute_of_80000,
+      create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC,
         supporter:supporter,
         )
     end
@@ -1500,7 +1500,7 @@ RSpec.shared_context :__dispute_with_two_partial_disputes_withdrawn_at_same_time
 
   let!(:transaction) {
     Timecop.freeze(dispute_time - 1.day) do 
-      create(:transaction_for_stripe_dispute_of_80000,
+      create(:transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC,
         supporter:supporter,
         )
     end

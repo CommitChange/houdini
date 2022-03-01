@@ -100,7 +100,7 @@ FactoryBot.define do
 
 		created { date }
 
-		factory :transaction_for_stripe_dispute_of_80000 do
+		factory :transaction_for_stripe_dispute_of_ch_1Y7vFYBCJIIhvMWmsdRJWSw5 do
 			transient do
 				stripe_charge_id { "ch_1Y7vFYBCJIIhvMWmsdRJWSw5"}
 				gross_amount { 80000 }
@@ -109,7 +109,7 @@ FactoryBot.define do
 			end
 		end
 
-		factory :transaction_for_stripe_dispute_of_80000 do
+		factory :transaction_for_stripe_dispute_of_ch_1Y7zzfBCJIIhvMWmSiNWrPAC do
 			transient do
 				stripe_charge_id { "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"}
 				gross_amount { 80000 }
