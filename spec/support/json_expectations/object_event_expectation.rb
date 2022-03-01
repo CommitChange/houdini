@@ -18,13 +18,13 @@ class JsonExpectations::ObjectEventExpectation
   end
 
   def created
-    @created || Time.current
+     @created || Time.current
   end
 
   def output
     output = {
       'id' => houid,
-      'created' => created.to_i,
+      'created' => an_instance_of(Integer),
       'object' => 'object_event',
       'type' => type,
       'data' => {

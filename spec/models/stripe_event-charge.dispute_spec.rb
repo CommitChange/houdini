@@ -51,7 +51,8 @@ RSpec.describe StripeEvent, :type => :model do
   
     describe "dispute.funds_reinstated" do
       include_context :dispute_funds_reinstated_specs
-      let(:obj) do StripeEvent.process_dispute(event_json)
+      let(:obj) do
+        StripeEvent.process_dispute(event_json)
         StripeDispute.where('stripe_dispute_id = ?', json['id']).first
       end
     end

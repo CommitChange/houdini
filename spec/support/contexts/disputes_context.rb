@@ -589,6 +589,7 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
       include_context 'json results for transaction expectations'
 
       it {
+        transaction_result
             is_expected.to include_json(generate_transaction_json(
               nonprofit_houid: nonprofit.houid,
               supporter_houid: supporter.houid,
@@ -654,11 +655,16 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
       end
   
       describe 'other changes' do
+        around(:each) do |example|
+          Timecop.travel(2020, 5, 4) do
+            example.run
+          end
+        end
         subject(:object_event_result) do
           obj
           ApiNew::ObjectEventsController.render('api_new/object_events/index', 
           assigns: {
-            object_events: nonprofit.associated_object_events.event_types(['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created', 'donation.updated']).order('created').page
+            object_events: nonprofit.associated_object_events.event_types(['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created',  'stripe_transaction_dispute_reversal.created', 'donation.updated']).order('created DESC').page
           })
         end
   
@@ -666,6 +672,7 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
   
         it {
           is_expected.to include_json(data:[
+            generate_object_event_json(type: 'donation.updated', data: a_kind_of(Object)),
             generate_object_event_json(type: 'stripe_transaction_dispute_reversal.created', data: 
             {
                 
@@ -675,32 +682,9 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
               id: match_houid(:stripedisprvrs),
               fee_total: {cents: 1500} ,
               gross_amount: {cents: 80000},
-              net_amount: {cents: 80000}
-            }),
-            generate_object_event_json(type: 'donation.updated', 
-            data: {
-                            
-              nonprofit: nonprofit.houid,
-              supporter: supporter.houid,
-              transaction: {
-                id:transaction.houid,
-                amount: {cents: 800}
-              },
-                
-              id: match_houid(:don),
-              amount: {cents: 800}
+              net_amount: {cents: 81500}
             }),
             generate_object_event_json(type: 'stripe_transaction_charge.updated', data: a_kind_of(Object)),
-            generate_object_event_json(type: 'stripe_transaction_dispute.created', data: {
-                
-                nonprofit: nonprofit.houid,
-                supporter: supporter.houid,
-                transaction: transaction.houid,  
-                id: match_houid(:stripedisp),
-                fee_total: {cents: -1500} ,
-                gross_amount: {cents: -80000},
-                net_amount: {cents: -80000 + -1500}
-              }),
             generate_object_event_json(type: 'donation.updated', 
             data: {
                             
@@ -713,8 +697,20 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
                 
               id: match_houid(:don),
               amount: {cents: 0}
-            })
+            }),  
+            generate_object_event_json(type: 'stripe_transaction_dispute.created', data: {
+                
+                nonprofit: nonprofit.houid,
+                supporter: supporter.houid,
+                transaction: transaction.houid,  
+                id: match_houid(:stripedisp),
+                fee_total: {cents: -1500} ,
+                gross_amount: {cents: -80000},
+                net_amount: {cents: -80000 + -1500}
+              }),
+            generate_object_event_json(type: 'stripe_transaction_charge.updated', data: a_kind_of(Object))
           ])
+         
         }
       end
   
@@ -810,6 +806,48 @@ RSpec.shared_context :dispute_lost_specs do
     specify { expect(subject.kind).to eq 'Dispute'}
     specify { expect(subject.nonprofit).to eq supporter.nonprofit}
     specify { expect(subject.date).to eq DateTime.new(2020, 8, 3, 4, 55, 55)}
+  end
+
+  describe 'object events' do
+    include_context 'json results for transaction expectations'
+    subject(:object_event_result) do
+      obj
+      ApiNew::ObjectEventsController.render('api_new/object_events/index', 
+      assigns: {
+        object_events: nonprofit.associated_object_events.event_types(['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created', 'donation.updated']).order('created').page
+      })
+    end
+
+      
+
+    it {
+      is_expected.to include_json(data:[
+        generate_object_event_json(type: 'stripe_transaction_charge.updated', data: a_kind_of(Object)),
+        generate_object_event_json(type: 'stripe_transaction_dispute.created', data: {
+            
+            nonprofit: nonprofit.houid,
+            supporter: supporter.houid,
+            transaction: transaction.houid,  
+            id: match_houid(:stripedisp),
+            fee_total: {cents: -1500} ,
+            gross_amount: {cents: -80000},
+            net_amount: {cents: -80000 + -1500}
+          }),
+        generate_object_event_json(type: 'donation.updated', 
+        data: {
+                        
+          nonprofit: nonprofit.houid,
+          supporter: supporter.houid,
+          transaction: {
+            id:transaction.houid,
+            amount: {cents: 0}
+          },
+            
+          id: match_houid(:don),
+          amount: {cents: 0}
+        })
+      ])
+    }
   end
 
   it 'has no reinstated transaction' do 
