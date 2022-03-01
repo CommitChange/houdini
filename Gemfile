@@ -111,6 +111,8 @@ group :development, :ci, :test do
   gem 'simplecov', '~> 0.16.1', require: false
   gem 'byebug'
   gem 'shoulda-matchers'
+  gem 'spring'
+  gem 'spring-commands-rspec'
 end
 
 group :test do
