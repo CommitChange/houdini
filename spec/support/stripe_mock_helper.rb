@@ -30,8 +30,10 @@ module StripeMockHelper
   # sets up a StripeMock session and sets up StripeMock::default_helper
   # note: Rspec is set up to autostop a StripeMock session when an example finishes
   def self.start
-    StripeMock.start
-    create_default_helper
+    unless default_helper
+      StripeMock.start
+      create_default_helper
+    end
   end
 
   # stosp a StripeMock session and clears StripeMock::default_helper
