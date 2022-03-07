@@ -16,4 +16,9 @@ FactoryBot.define do
 
 		subtransaction{build(:subtransaction_for_testing_payment_extensions)}
 	end
+	
+	factory :offline_transaction_base, class: 'OfflineTransaction' do 
+		amount { 333 }
+		subtransaction {association :subtransaction_base}
+	end
 end

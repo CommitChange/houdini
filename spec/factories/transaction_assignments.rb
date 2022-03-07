@@ -6,4 +6,9 @@ FactoryBot.define do
   factory :transaction_assignment do
     assignable { build(:modern_donation) }
   end
+
+  factory :transaction_assignment_base, class: "TransactionAssignment" do
+    trx { association :transaction_base }
+    assignable {association :modern_donation_base, transaction_assignment: @instance}
+  end
 end

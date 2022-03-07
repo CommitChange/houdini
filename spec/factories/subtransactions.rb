@@ -92,4 +92,12 @@ FactoryBot.define do
 			]}
 		end
 	end
+
+	factory :subtransaction_base, class: 'Subtransaction' do
+		trx { association :transaction_base}
+		subtransactable {association :offline_transaction_base, subtransaction: @instance}
+		subtransaction_payments {[
+			build(:subtransaction_payment_base, subtransaction: @instance)
+		]}
+	end
 end

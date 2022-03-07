@@ -12,7 +12,7 @@ describe ApiNew::UsersController, type: :request do
 	end
 
 	context 'for a nonprofit admin' do 
-		let(:user) {create(:user_as_nonprofit_admin)}
+		let(:user) {create(:user_base, roles:[build(:role_base, :as_nonprofit_admin) ])}
 
 		subject(:body) { response.body}
 		before do
