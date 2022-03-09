@@ -140,12 +140,13 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
   end
 
   describe 'POST /create' do
-   
+
     around(:each) do |ex|
        StripeMock.start
        ex.run
        StripeMock.stop
     end
+
     let(:supporter) {create(:supporter, nonprofit: nonprofit)}
     let(:nonprofit) { create(:nonprofit)}
     let(:user) { create(:user_base, roles: [build(:role_base, :as_nonprofit_associate, host: nonprofit)]) }
@@ -176,8 +177,10 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
    
 
       context 'transaction json' do 
+
         let(:transaction) {
           payment_id = JSON.parse(main_response.body)['payment']['id']
+
           Payment.find(payment_id).trx
         }
         subject(:transaction_result) do 
@@ -327,6 +330,7 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
                 ) 
               }
             end
+
 
             # describe 'donation.created' do
             #   let(:donation) { transaction.donations.first}

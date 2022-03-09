@@ -7,6 +7,7 @@ FactoryBot.define do
 		supporter { create(:supporter) }
 	end
 
+
 	factory :transaction_base, class: "Transaction" do
 		supporter { association :supporter_base}
 		subtransaction { association :subtransaction_base, trx: @instance}

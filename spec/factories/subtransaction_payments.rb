@@ -86,9 +86,11 @@ FactoryBot.define do
 		end
 	end
 
+
 	factory :subtransaction_payment_base, class: 'SubtransactionPayment' do
 		subtransaction { association :subtransaction_base}
 		legacy_payment { association :legacy_payment_base, :with_offline_donation, supporter: supporter}
 		paymentable { association :offline_transaction_charge_base}
 	end
+
 end

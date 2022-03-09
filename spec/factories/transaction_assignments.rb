@@ -11,4 +11,5 @@ FactoryBot.define do
     trx { association :transaction_base }
     assignable {association :modern_donation_base, transaction_assignment: @instance}
   end
+
 end

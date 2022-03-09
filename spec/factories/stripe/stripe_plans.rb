@@ -2,7 +2,7 @@
 FactoryBot.define do
   factory :stripe_plan, aliases: [:stripe_plan_base], class: 'Stripe::Plan' do
 
-    stripe_mock_base
+    stripe_object_base
 
     transient do 
       sequence(:id) {|i| "test_str_plan#{i}"}

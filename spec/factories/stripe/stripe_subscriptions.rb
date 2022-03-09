@@ -1,7 +1,7 @@
 
 FactoryBot.define do
   factory :stripe_subscription, aliases: [:stripe_subscription_base], class: 'Stripe::Subscription' do
-    stripe_mock_base
+    stripe_object_base
 
     transient do
       stripe_customer { association :stripe_customer_base}

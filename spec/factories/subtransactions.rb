@@ -100,4 +100,5 @@ FactoryBot.define do
 			build(:subtransaction_payment_base, subtransaction: @instance)
 		]}
 	end
+
 end
