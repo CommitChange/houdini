@@ -1,7 +1,13 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 FactoryBot.define do
   factory :donation do
-    
+  end
+
+  factory :donation_base, class: 'Donation' do
+    nonprofit {supporter.nonprofit}
+    amount {333}
+    supporter { association :supporter_base}
+    payments {[build(:payment_base, supporter: supporter)]}
   end
 
   factory :fv_poverty_donation, class: 'Donation' do

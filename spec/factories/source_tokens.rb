@@ -8,5 +8,14 @@ FactoryBot.define do
     factory :source_token_for_supporter_for_fv_poverty do
       tokenizable { build(:card, holder: create(:supporter_with_fv_poverty)) }
     end
+
+    factory :source_token_base do
+      tokenizable { association :card_base}
+      trait :with_stripe_card do 
+        tokenizable { association :card_base, :with_created_stripe_customer_and_card}
+      end
+
+      
+    end
   end
 end
