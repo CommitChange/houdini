@@ -7,6 +7,15 @@ FactoryBot.define do
 		supporter { create(:supporter) }
 	end
 
+
+	factory :transaction_base, class: "Transaction" do
+		supporter { association :supporter_base}
+		subtransaction { association :subtransaction_base, trx: @instance}
+		transaction_assignments { [
+			build(:transaction_assignment_base, trx: @instance)
+		]}
+	end
+
 	factory :transaction_for_offline_donation, class: "Transaction" do
 		transient do
 

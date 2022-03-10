@@ -1,8 +1,9 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 FactoryBot.define do
-  factory :user do
+  factory :user, aliases: [:user_base] do
     sequence(:email) {|i| "user#{i}@example.string.com"}
     password {"whocares"}
+    
   end
 
   factory :automated_user, class: User do 
@@ -11,16 +12,16 @@ FactoryBot.define do
     id { 540 }
   end
 
-  factory :user_as_nonprofit_admin, class: User do
-    transient do
-      nonprofit { create(:fv_poverty) }
-    end
-    sequence(:email) {|i| "user#{i}@example.string.com"}
-    password {"whocares"}
-    roles {[
-      build(:role, name: 'nonprofit_admin', host: create(:fv_poverty))
-    ]}
-  end
+  # factory :user_as_nonprofit_admin, class: User do
+  #   transient do
+  #     nonprofit { create(:fv_poverty) }
+  #   end
+  #   sequence(:email) {|i| "user#{i}@example.string.com"}
+  #   password {"whocares"}
+  #   roles {[
+  #     build(:role, name: 'nonprofit_admin', host: nonprofit)
+  #   ]}
+  # end
 
   factory :user_as_nonprofit_associate, class: User do
     transient do

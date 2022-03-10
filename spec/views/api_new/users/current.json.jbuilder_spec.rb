@@ -10,7 +10,7 @@ RSpec.describe '/api_new/users/current.json.jbuilder', type: :view do
 		
 		subject(:json) do
 			view.lookup_context.prefixes = view.lookup_context.prefixes.drop(1)
-			assign(:user, create(:user_as_nonprofit_admin))
+			assign(:user, create(:user_base, roles: [build(:role_base, :as_nonprofit_admin)]))
 			render
 			rendered
 		end

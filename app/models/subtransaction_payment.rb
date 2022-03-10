@@ -8,7 +8,7 @@ class SubtransactionPayment < ApplicationRecord
 
 	# get payments in reverse chronological order
 	scope :ordered_query, -> {
-		includes(:legacy_payment).references(:payments).order("payments.date DESC")
+		includes(:legacy_payment).references(:legacy_payments).order("payments.date DESC").order("subtransaction_payments.updated_at DESC") 
 	}
 
 	belongs_to :subtransaction

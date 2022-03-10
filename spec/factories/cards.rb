@@ -1,44 +1,21 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 FactoryBot.define do
-  factory :card do
-    transient do
-      stripe_helper {  StripeMock.create_test_helper }
-      sequence(:stripe_customer_object) {
-        Stripe::Customer.create
-      }
-      
-      stripe_card_object {
-        Stripe::Customer.create_source(
-          stripe_customer_object.id, {
-            source:stripe_helper.generate_card_token 
-          }
-        )
-      }
-
+  factory :card, aliases: [:active_card_1, :active_card_2, :card_base] do
+    name {'card 1'} 
+    factory :inactive_card do
+      inactive {true}
     end
-  
-      factory :active_card_1 do
-        name {'card 1'}
-      end
-      factory :active_card_2 do
-        name { 'card 1'}
-      end
-      factory :inactive_card do
-        name {'card 1'}
-        inactive {true}
+    trait :with_created_stripe_customer_and_card do
+      transient do
+        stripe_card { association :stripe_card_base }
       end
 
-      stripe_customer_id { stripe_customer_object.id }
-      
-      stripe_card_id { stripe_card_object.id}
-     
+      stripe_card_id {stripe_card.id}
+      stripe_customer_id { stripe_card.customer}
+    end
 
-      # before(:create) do|model
-      # end
-
-      # # sequence(:stripe_customer_id) do
-      # #   #Stripe::Card.retrieve(id).customer.id
-      # # end
-
+    trait :with_supporter do
+      holder { association :supporter_base}
+    end
   end
 end

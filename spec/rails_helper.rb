@@ -22,9 +22,11 @@ require 'devise'
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'support/factory_bot'
 require 'support/date_time'
+require 'support/stripe_mock_helper'
 require 'timecop'
 require 'delayed_job'
 require 'support/contexts'
+require 'action_mailer_matchers'
 Delayed::Worker.delay_jobs = false
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -78,5 +80,28 @@ RSpec.configure do |config|
       with.test_framework :rspec
       with.library :rails
     end
+  end
+
+  config.include ActionMailerMatchers
+  config.before(:suite) do
+
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation, reset_ids: true)
+    Rails.cache.clear
+  end
+
+  config.after(:each) do
+    StripeMockHelper.stop
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+      Rails.cache.clear
+    end
+  end
+
+  FactoryBot::SyntaxRunner.class_eval do
+    include RSpec::Matchers
   end
 end
