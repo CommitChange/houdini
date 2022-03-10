@@ -4,18 +4,5 @@ require 'rails_helper'
 RSpec.describe Charge, :type => :model do
 
   it {is_expected.to belong_to(:card)}
-
-  describe '.charge' do
-    include_context :disputes_context
-    let!(:charge) { force_create(:charge, supporter: supporter, 
-      stripe_charge_id: 'ch_1Y7zzfBCJIIhvMWmSiNWrPAC', nonprofit: nonprofit, payment:force_create(:payment,
-        supporter:supporter,
-        nonprofit: nonprofit,
-        gross_amount: 80000))}
-    let(:stripe_dispute) { force_create(:stripe_dispute, stripe_charge_id: charge.stripe_charge_id)}
-    
-    it 'directs to a stripe_dispute with the correct Stripe charge id' do
-      expect(stripe_dispute).to eq charge.stripe_dispute
-    end
-  end
+  it {is_expected.to have_many(:stripe_dispute).with_primary_key(:stripe_charge_id).with_foreign_key(:stripe_charge_id)}
 end
