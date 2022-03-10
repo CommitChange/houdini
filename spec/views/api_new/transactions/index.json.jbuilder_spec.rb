@@ -29,8 +29,6 @@ RSpec.describe '/api_new/transactions/index.json.jbuilder', type: :view do
 		rendered
 	end
 
-	include_context 'json results for transaction expectations'
-
 	let(:transaction) { create(:transaction_for_offline_donation) }
 	let(:supporter) { transaction.supporter }
 	let(:nonprofit) { transaction.nonprofit }
@@ -43,32 +41,40 @@ RSpec.describe '/api_new/transactions/index.json.jbuilder', type: :view do
 			requested_size: 25, 
 			total_count: 1,
 			data: [
-				generate_transaction_json(
-								nonprofit_houid: nonprofit.houid,
-								supporter_houid: supporter.houid,
-								transaction_houid: transaction.houid,
-								subtransaction_expectation: {
-									object: 'offline_transaction',
-									houid: match_houid(:offlinetrx),
-									charge_payment: {
-										object: 'offline_transaction_charge',
-										houid: match_houid(:offtrxchrg),
-										gross_amount: 4000,
-										fee_total: 0
-									}
-								},
-
-								transaction_assignments: [
-									{
-										object: 'donation',
-										houid: match_houid(:don),
-										other_attributes: {
-											designation: "Designation 1"
-										}
-									}
-								]
-
+				attributes_for(:trx,
+					nonprofit: nonprofit.houid,
+					supporter: attributes_for(
+						:supporter_expectation,
+						id: supporter.houid
+					),
+					id: transaction.houid,
+					amount_cents: 4000,
+					subtransaction: attributes_for(
+						:subtransaction_expectation, 
+						:offline_transaction, 
+						gross_amount_cents: 4000,
+						net_amount_cents: 4000,
+						payments: [
+							attributes_for(:payment_expectation, 
+							:offline_transaction_charge, 
+							gross_amount_cents: 4000, 
+							fee_total_cents: 0)
+						]
+					),
+					payments: [
+						attributes_for(:payment_expectation, 
+						:offline_transaction_charge,
+						gross_amount_cents: 4000,
+						fee_total_cents: 0)
+					],
+					transaction_assignments: [
+						attributes_for(:trx_assignment_expectation, 
+							:donation, 
+							amount_cents:4000,
+							designation: "Designation 1"
 							)
+					]
+				)
 			]
 		)
 	}

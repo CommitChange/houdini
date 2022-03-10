@@ -58,7 +58,7 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 				def base_url(nonprofit_id, transaction_id)
 					"http://www.example.com#{base_path(nonprofit_id, transaction_id)}"
 				end
-				include_context 'json results for transaction expectations'
+
 				it {
 					is_expected.to include_json(
 						first_page: true, 
@@ -67,32 +67,39 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 						requested_size: 25, 
 						total_count: 1,
 						data: [
-							generate_transaction_json(
-
-					nonprofit_houid: nonprofit.houid,
-					supporter_houid: supporter.houid,
-					transaction_houid: transaction.houid,
-					subtransaction_expectation: {
-						object: 'offline_transaction',
-						houid: match_houid(:offlinetrx),
-						charge_payment: {
-							object: 'offline_transaction_charge',
-							houid: match_houid(:offtrxchrg),
-							gross_amount: 4000,
-							fee_total: 0
-						}
-					},
-
+							attributes_for(:trx,
+					nonprofit: nonprofit.houid,
+					supporter: attributes_for(
+						:supporter_expectation,
+						id: supporter.houid
+					),
+					id: transaction.houid,
+					amount_cents: 4000,
+					subtransaction: attributes_for(
+						:subtransaction_expectation, 
+						:offline_transaction, 
+						gross_amount_cents: 4000,
+						net_amount_cents: 4000,
+						payments: [
+							attributes_for(:payment_expectation, 
+							:offline_transaction_charge, 
+							gross_amount_cents: 4000, 
+							fee_total_cents: 0)
+						]
+					),
+					payments: [
+						attributes_for(:payment_expectation, 
+						:offline_transaction_charge,
+						gross_amount_cents: 4000,
+						fee_total_cents: 0)
+					],
 					transaction_assignments: [
-						{
-							object: 'donation',
-							houid: match_houid(:don),
-							other_attributes: {
-								designation: "Designation 1"
-							}
-						}
+						attributes_for(:trx_assignment_expectation, 
+							:donation, 
+							amount_cents:4000,
+							designation: "Designation 1"
+							)
 					]
-
 				)]
 						
 				)}
@@ -127,34 +134,42 @@ RSpec.describe ApiNew::TransactionsController, type: :request do
 			it {
 				expect(response).to have_http_status(:success)
 			}
-			include_context 'json results for transaction expectations'
+
 			it {
-				is_expected.to include_json(generate_transaction_json(
-					nonprofit_houid: nonprofit.houid,
-					supporter_houid: supporter.houid,
-					transaction_houid: transaction_for_donation.houid,
-					subtransaction_expectation: {
-						object: 'offline_transaction',
-						houid: match_houid(:offlinetrx),
-						charge_payment: {
-							object: 'offline_transaction_charge',
-							houid: match_houid(:offtrxchrg),
-							gross_amount: 4000,
-							fee_total: 0
-						}
-					},
-
-					transaction_assignments: [
-						{
-							object: 'donation',
-							houid: match_houid(:don),
-							other_attributes: {
-								designation: "Designation 1"
-							}
-						}
+				is_expected.to include_json(attributes_for(:trx,
+				nonprofit: nonprofit.houid,
+				supporter: attributes_for(
+					:supporter_expectation,
+					id: supporter.houid
+				),
+				id: transaction_for_donation.houid,
+				amount_cents: 4000,
+				subtransaction: attributes_for(
+					:subtransaction_expectation, 
+					:offline_transaction, 
+					gross_amount_cents: 4000,
+					net_amount_cents: 4000,
+					payments: [
+						attributes_for(:payment_expectation, 
+						:offline_transaction_charge, 
+						gross_amount_cents: 4000, 
+						fee_total_cents: 0)
 					]
-
-				))
+				),
+				payments: [
+					attributes_for(:payment_expectation, 
+					:offline_transaction_charge,
+					gross_amount_cents: 4000,
+					fee_total_cents: 0)
+				],
+				transaction_assignments: [
+					attributes_for(:trx_assignment_expectation, 
+						:donation, 
+						amount_cents:4000,
+						designation: "Designation 1"
+						)
+				]
+			))
 			}
 		end
 

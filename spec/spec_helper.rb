@@ -22,7 +22,6 @@
 require 'support/expect'
 require 'support/mock_helpers'
 
-
 include Expect
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

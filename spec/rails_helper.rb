@@ -100,4 +100,8 @@ RSpec.configure do |config|
       Rails.cache.clear
     end
   end
+
+  FactoryBot::SyntaxRunner.class_eval do
+    include RSpec::Matchers
+  end
 end
