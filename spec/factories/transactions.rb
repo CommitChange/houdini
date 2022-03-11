@@ -13,6 +13,15 @@ FactoryBot.define do
 		
 		supporter { association :supporter_base }
 
+		trait :receive_donation do
+			transient do 
+				donation { nil}
+			end
+			subtransaction { association :subtransaction_base, :receive_donation, gross_amount: amount, trx: @instance, donation: donation}
+			transaction_assignments { [
+				build(:transaction_assignment_base, :receive_donation, trx: @instance, donation: donation)]}
+		end
+
 		trait :inherit_from_transaction do
 			subtransaction { association :subtransaction_base, gross_amount: amount, trx: @instance}
 			transaction_assignments { [

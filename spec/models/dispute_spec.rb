@@ -19,15 +19,104 @@ RSpec.describe Dispute, :type => :model do
       specify { expect(activity_json['gross_amount']).to eq dispute.gross_amount}
     end
 
+    
+    # class DisputeCase < OpenStruct
+    #   def initialize(args={})
+    #     assign_attributes(args)
+    #   end
+      
+    #   def mock_webhook_events
+    #     unless mocked_webhook_events
+    #       mocked_webhook_events ||= events.map do |i|
+    #         StripeMock.mock_webhook_event(i)
+    #       end
+
+    #       StripeMockHelper.stripe_helper.upsert_stripe_object(:dispute, mock_webhook_events.last['data']['object'])
+    #     end
+    #   end
+
+    #   def setup
+    #     mock_webhook_events
+    #     donation
+    #   end
+
+    #   def nonprofit
+    #     @supporter.nonprofit
+    #   end
+
+    #   def supporter
+    #     @supporter ||= create(:supporter_base)
+    #   end
+
+    #   def donation
+    #     @donation ||= create(:donation_base, amount: gross_amount, supporter:supporter,  nonprofit: nonprofit,
+    #         payment: build(
+    #           :payment_base, gross_amount:gross_amount, fee_total: fee_total, net_amount: gross_amount + fee_total,
+    #           date: date
+    #           nonprofit: nonprofit,
+    #           supporter: supporter,
+    #           charge: build(:charge_base, amount: gross_amount, charge_id: stripe_charge_id, created_at: date, supporter: supporter, nonprofit: nonprofit)
+    #         )
+    #     )   
+    #   end
+
+      
+
+    #   def transaction
+    #     @transaction ||= create(:transaction_base,
+    #           created: date,
+    #           amount: gross_amount
+    #     )
+    #   end
+
+    #   def create_dispute_event
+    # end
+
     describe "dispute.created" do
       # include_context :dispute_created_context
       # include_context :common_specs
 
-      def create_dispute_on_stripe
+      def dispute_on_stripe
         StripeMockHelper.start
         event_json = StripeMock.mock_webhook_event('charge.dispute.created')
         StripeMockHelper.stripe_helper.upsert_stripe_object(:dispute, event_json['data']['object'])
-        event_json
+        @dispute_on_stripe = event_json
+      end
+
+      def legacy_donation
+        fee_total = 0
+        gross_amount = 80000
+        stripe_charge_id = "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"
+        date = Time.at(1596429794) - 1.day
+          @legacy_donation ||= create(:donation_base, amount: gross_amount, supporter:supporter,  nonprofit: nonprofit, payment: 
+              build(
+                :payment_base, gross_amount:gross_amount, fee_total: fee_total, net_amount: gross_amount + fee_total,
+                date: date, supporter:supporter,  nonprofit: nonprofit,
+                charge: build(:charge_base, amount: gross_amount, stripe_charge_id: stripe_charge_id, created_at: date, supporter:supporter,  nonprofit: nonprofit,)
+              )
+          )   
+      end
+
+      def legacy_payment
+        legacy_donation.payment
+      end
+
+      
+
+      def nonprofit
+        @supporter.nonprofit
+      end
+
+      def supporter
+        @supporter ||= create(:supporter_base)
+      end
+
+      def setup
+        dispute_on_stripe
+        supporter
+        nonprofit
+        legacy_donation
+        transaction_to_be_disputed
       end
 
 
@@ -36,22 +125,35 @@ RSpec.describe Dispute, :type => :model do
         fee_total = 0
         gross_amount = 80000
         stripe_charge_id = "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"
-        create(:transaction_base,
+        @transaction ||= build(:transaction_base,
+          :receive_donation,
           created: date,
-          amount: gross_amount)
+          amount: gross_amount,
+          supporter: supporter,
+          donation: legacy_donation
+          )
       end
         
-      def create_stripe_dispute
+      def stripe_dispute
         event_json = create_dispute_on_stripe
-        StripeDispute.create(object: event_json['data']['object'])
+        @stripe_dispute = StripeDispute.create(object: event_json['data']['object'])
+      end
+
+      def legacy_dispute
+        @legacy_dispute ||= stripe_dispute.dispute
       end
 
       it {
+        setup
+        
         transaction = transaction_to_be_disputed
+        
         stripe_dispute = create_stripe_dispute
+        
         legacy_dispute = stripe_dispute.dispute
+        
         activities = legacy_dispute.activities
-        byebug
+
         expect(activities).to include {
             kind:"DisputeCreated", 
             date: Time.at(event_json.created),

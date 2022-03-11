@@ -14,6 +14,13 @@ FactoryBot.define do
       trx { association :transaction_base}
       assignable {association :modern_donation_base, :legacy_donation, amount:amount}
     end
+
+    trait :receive_donation do
+      transient do
+        donation {nil}
+      end
+      assignable {association :modern_donation_base, :legacy_donation, amount:amount, legacy_donation: donation, transaction_assignment: @instance}
+    end
   end
 
 end
