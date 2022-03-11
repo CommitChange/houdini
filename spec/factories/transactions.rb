@@ -11,7 +11,7 @@ FactoryBot.define do
 	factory :transaction_base, class: "Transaction" do
 		inherit_from_transaction
 		
-		association :supporter, factory: :supporter_base
+		supporter { association :supporter_base }
 
 		trait :inherit_from_transaction do
 			subtransaction { association :subtransaction_base, gross_amount: amount, trx: @instance}

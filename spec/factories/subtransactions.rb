@@ -129,7 +129,9 @@ FactoryBot.define do
 			gross_amount { 400}
 		end
 		trx { association :transaction_base}
-		subtransactable {association :offline_transaction_base, subtransaction: @instance, amount: gross_amount}
+		subtransactable {
+			byebug
+			association :offline_transaction_base, subtransaction: @instance, amount: gross_amount}
 		subtransaction_payments {[
 			build(:subtransaction_payment_base, gross_amount: gross_amount, subtransaction: @instance)
 		]}

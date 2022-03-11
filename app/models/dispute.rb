@@ -51,7 +51,6 @@ class Dispute < ActiveRecord::Base
 		original_payment = dispute.original_payment
 		case event_type
     when 'DisputeCreated', 'DisputeUpdated', 'DisputeLost', 'DisputeWon'
-      byebug
       return {
         gross_amount: dispute.gross_amount,
 				reason: dispute.reason,
