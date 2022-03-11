@@ -10,10 +10,27 @@ FactoryBot.define do
 
 	factory :transaction_base, class: "Transaction" do
 		supporter { association :supporter_base}
-		subtransaction { association :subtransaction_base, trx: @instance}
+		subtransaction { association :subtransaction_base, gross_amount: amount, trx: @instance}
 		transaction_assignments { [
-			build(:transaction_assignment_base, trx: @instance)
+			build(:transaction_assignment_base, amount: amount, trx: @instance)
 		]}
+
+		amount { 400}
+
+		trait :with_custom_assignments do
+			transient do
+				list_of_assignments do
+					[{props: [:transaction_assignment_base], opts:{}}]
+				end
+			end
+			transaction_assignments {
+				list_of_assignments.map do |assign|
+					build(*assign[:props],
+					**assign[:opts],
+					trx: @instance)
+				end
+			}
+		end
 	end
 
 	factory :transaction_for_offline_donation, class: "Transaction" do

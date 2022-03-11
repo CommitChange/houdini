@@ -128,7 +128,7 @@ FactoryBot.define do
 		trx { association :transaction_base}
 		subtransactable {association :offline_transaction_base, subtransaction: @instance}
 		subtransaction_payments {[
-			build(:subtransaction_payment_base, subtransaction: @instance)
+			build(:subtransaction_payment_base, gross_amount: gross_amount, subtransaction: @instance)
 		]}
 	end
 

@@ -2,18 +2,8 @@
 require 'rails_helper'
 
 RSpec.describe Dispute, :type => :model do
-  describe '.charge' do
-    include_context :disputes_context
-    let!(:charge) { force_create(:charge, supporter: supporter, 
-      stripe_charge_id: 'ch_1Y7zzfBCJIIhvMWmSiNWrPAC', nonprofit: nonprofit, payment:force_create(:payment,
-        supporter:supporter,
-        nonprofit: nonprofit,
-        gross_amount: 80000))}
-    let!(:obj) { force_create(:stripe_dispute, stripe_charge_id: charge.stripe_charge_id)}
-    it 'directs to a stripe_dispute with the correct Stripe dispute id' do
-      expect(dispute.stripe_dispute).to eq obj
-    end
-  end
+
+  it {is_expected.to have_one(:stripe_dispute).with_primary_key(:stripe_dispute_id).with_foreign_key(:stripe_dispute_id)}
 
   describe '.activities' do 
     shared_context :common_specs do
@@ -30,15 +20,38 @@ RSpec.describe Dispute, :type => :model do
     end
 
     describe "dispute.created" do
-      include_context :dispute_created_context
-      include_context :common_specs
+      # include_context :dispute_created_context
+      # include_context :common_specs
 
-      
-      let(:obj) { StripeDispute.create(object:json) }
-      let(:activity) { dispute.activities.build('DisputeCreated', Time.at(event_json.created))}
+      def create_dispute_on_stripe
+        StripeMockHelper.start
+        event_json = StripeMock.mock_webhook_event('charge.dispute.created')
+        StripeMockHelper.stripe_helper.upsert_stripe_object(:dispute, event_json['data']['object'])
+        event_json
+      end
 
-      specify { expect(activity.kind).to eq 'DisputeCreated'}
-      specify { expect(activity.date).to eq Time.at(event_json.created)}
+
+      def transaction_to_be_disputed
+        date = Time.at(1596429794) - 1.day
+        fee_total = 0
+        gross_amount = 80000
+        stripe_charge_id = "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"
+        create(:transaction_base,
+          created: date,
+          amount: gross_amount)
+      end
+        
+      def create_stripe_dispute
+        json = create_dispute_on_stripe
+        StripeDispute.create(json: json)
+      end
+
+      it {
+        event_json = create_dispute_on_stripe
+        transaction_to_be_disputed
+        stripe_dispute = create_stripe_dispute(event_json)
+        expect(stripe_dispute.activities).to include {kind:"DisputeCreated", Time.at(event_json.created)}
+      }
     end
 
     describe "dispute.won" do

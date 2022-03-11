@@ -121,8 +121,11 @@ end
 
 
 	factory :subtransaction_payment_base, class: 'SubtransactionPayment' do
+		transient do
+			gross_amount {400}
+		end
 		subtransaction { association :subtransaction_base}
-		legacy_payment { association :legacy_payment_base, :with_offline_donation, supporter: supporter}
+		legacy_payment { association :legacy_payment_base, :with_offline_donation, supporter: supporter, gross_amount: gross_amount}
 		paymentable { association :offline_transaction_charge_base}
 	end
 
