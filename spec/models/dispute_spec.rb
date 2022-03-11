@@ -42,15 +42,32 @@ RSpec.describe Dispute, :type => :model do
       end
         
       def create_stripe_dispute
-        json = create_dispute_on_stripe
-        StripeDispute.create(json: json)
+        event_json = create_dispute_on_stripe
+        StripeDispute.create(object: event_json['data']['object'])
       end
 
       it {
-        event_json = create_dispute_on_stripe
-        transaction_to_be_disputed
-        stripe_dispute = create_stripe_dispute(event_json)
-        expect(stripe_dispute.activities).to include {kind:"DisputeCreated", Time.at(event_json.created)}
+        transaction = transaction_to_be_disputed
+        stripe_dispute = create_stripe_dispute
+        legacy_dispute = stripe_dispute.dispute
+        activities = legacy_dispute.activities
+        byebug
+        expect(activities).to include {
+            kind:"DisputeCreated", 
+            date: Time.at(event_json.created),
+            supporter: transaction.supporter,
+            nonprofit: transaction.nonprofit,
+            json_data: include_json(
+              status: legacy_dispute.status,
+              reason: legacy_dispute.reason,
+              original_id: legacy_dispute.charge.payment.id,
+              original_kind: legacy_dispute.payment.kind,
+              original_gross_amount: legacy_dispute.payment.gross_amount,
+              original_date: charge.payment.date.to_time,
+              gross_amount: legacy_dispute.gross_amount
+            )
+
+        }
       }
     end
 

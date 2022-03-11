@@ -8,14 +8,11 @@ FactoryBot.define do
   end
 
   factory :transaction_assignment_base, class: "TransactionAssignment" do
-    transient do
-      amount { 400}
-    end
-    trx { association :transaction_base }
-    assignable {association :modern_donation_base, amount:amount, transaction_assignment: @instance}
+    inherit_from_transaction
 
-    trait :legacy_donation do 
-      donation { association :donation, supporter: trx.supporter, nonprofit: trx.nonprofit}
+    trait :inherit_from_transaction do 
+      trx { association :transaction_base}
+      assignable {association :modern_donation_base, :legacy_donation, amount:amount}
     end
   end
 

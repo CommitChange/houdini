@@ -23,6 +23,7 @@ class Dispute < ActiveRecord::Base
   has_one :supporter, through: :charge
   has_one :nonprofit, through: :charge
   has_one :original_payment, through: :charge, source: :payment
+  validates_presence_of :charge
 
   has_many :activities, as: :attachment do
     def create(event_type, event_time, attributes=nil, options={}, &block)
@@ -50,6 +51,7 @@ class Dispute < ActiveRecord::Base
 		original_payment = dispute.original_payment
 		case event_type
     when 'DisputeCreated', 'DisputeUpdated', 'DisputeLost', 'DisputeWon'
+      byebug
       return {
         gross_amount: dispute.gross_amount,
 				reason: dispute.reason,

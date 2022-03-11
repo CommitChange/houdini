@@ -4,8 +4,8 @@ class StripeDispute < ActiveRecord::Base
   TERMINAL_DISPUTE_STATUSES = ['won', 'lost']
 
   attr_accessible  :object, :stripe_dispute_id
-  has_one :dispute, primary_key: :stripe_dispute_id, foreign_key: :stripe_dispute_id
-  has_one :charge, primary_key: :stripe_charge_id, foreign_key: :stripe_charge_id
+  has_one :dispute, primary_key: :stripe_dispute_id, foreign_key: :stripe_dispute_id, validate: true
+  has_one :charge, primary_key: :stripe_charge_id, foreign_key: :stripe_charge_id, validate: true
   after_save :fire_change_events
 
   def object=(input)

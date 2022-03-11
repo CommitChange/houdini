@@ -125,11 +125,30 @@ FactoryBot.define do
 	end
 
 	factory :subtransaction_base, class: 'Subtransaction' do
+		transient do
+			gross_amount { 400}
+		end
 		trx { association :transaction_base}
-		subtransactable {association :offline_transaction_base, subtransaction: @instance}
+		subtransactable {association :offline_transaction_base, subtransaction: @instance, amount: gross_amount}
 		subtransaction_payments {[
 			build(:subtransaction_payment_base, gross_amount: gross_amount, subtransaction: @instance)
 		]}
+
+		trait :inherit_from_transaction do
+			trx { association :transaction_base}
+			subtransactable {association :offline_transaction_base, subtransaction: @instance, amount: gross_amount}
+		end
+		trait :with_payments do
+			payment_descs {
+					[{props: [:subtransaction_payment_base], opts:{}}]
+			}
+
+			subtransaction_payments do
+				payment_desc.map do |desc|
+					build(*desc[:props], **desc[:opts], subtransaction: @instance)
+				end
+			end
+		end
 	end
 
 end
