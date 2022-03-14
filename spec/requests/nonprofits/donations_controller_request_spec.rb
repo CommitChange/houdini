@@ -157,7 +157,7 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
     let(:nonprofit) { create(:nonprofit)}
     let(:user) { create(:user_base, roles: [build(:role_base, :as_nonprofit_associate, host: nonprofit)]) }
     
-    let(:token) { create(:source_token_base, tokenizable: build(:card_base,  :with_created_stripe_customer_and_card, holder: supporter))}
+    let(:token) { create(:source_token_base, tokenizable: create(:card_base,  :with_created_stripe_customer_and_card, holder: supporter))}
     context 'with non-logged-in user' do
 
       def prepare_fee_eras
