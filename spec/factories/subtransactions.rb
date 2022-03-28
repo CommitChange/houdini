@@ -148,7 +148,6 @@ FactoryBot.define do
 			end
 
 			subtransaction_payments {
-			byebug	
 			[
 			build(:subtransaction_payment_base,
 				subtransaction: @instance,
