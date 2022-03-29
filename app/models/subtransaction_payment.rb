@@ -6,7 +6,7 @@ class SubtransactionPayment < ApplicationRecord
 	include Model::CreatedTimeable
 
 
-	# get payments in reverse chronological order
+	# get payments in reverse chronological order using SQL
 	scope :ordered_query, -> {
 		includes(:legacy_payment).references(:legacy_payments).order("payments.date DESC").order("subtransaction_payments.updated_at DESC") 
 	}
