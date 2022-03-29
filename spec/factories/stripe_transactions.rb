@@ -16,5 +16,9 @@ FactoryBot.define do
 		end
 	end
 
+	factory :stripe_transaction_base, class: "StripeTransaction" do
+		
+	end
+
 	
 end

@@ -80,7 +80,7 @@ RSpec.describe Dispute, :type => :model do
         StripeMockHelper.start
         event_json = StripeMock.mock_webhook_event('charge.dispute.created')
         StripeMockHelper.stripe_helper.upsert_stripe_object(:dispute, event_json['data']['object'])
-        @dispute_on_stripe = event_json
+        @dispute_on_stripe ||= event_json
       end
 
       def legacy_donation
@@ -132,11 +132,14 @@ RSpec.describe Dispute, :type => :model do
           supporter: supporter,
           donation: legacy_donation
           )
+
+          @transaction.save!
+        @transaction
       end
         
       def stripe_dispute
-        event_json = create_dispute_on_stripe
-        @stripe_dispute = StripeDispute.create(object: event_json['data']['object'])
+        event_json = dispute_on_stripe
+        @stripe_dispute ||= StripeDispute.create(object: event_json['data']['object'])
       end
 
       def legacy_dispute
@@ -147,8 +150,6 @@ RSpec.describe Dispute, :type => :model do
         setup
         
         transaction = transaction_to_be_disputed
-        
-        stripe_dispute = create_stripe_dispute
         
         legacy_dispute = stripe_dispute.dispute
         
@@ -170,6 +171,42 @@ RSpec.describe Dispute, :type => :model do
             )
 
         }
+      }
+
+      it {
+        setup
+        expect(stripe_dispute.attributes).to include(
+          'status'=> 'needs_response',
+          "reason" => 'duplicate',
+          "balance_transactions" => [],
+          "net_change" => 0,
+          "amount" => 80000,
+          "stripe_charge_id" => "ch_1Y7zzfBCJIIhvMWmSiNWrPAC",
+          "stripe_dispute_id" => "dp_05RsQX2eZvKYlo2C0FRTGSSA",
+          "started_at" => Time.at(1596429794),
+        )
+      }
+
+      it {
+        setup
+        expect(stripe_dispute.dispute).to be_persisted
+      }
+
+      it {
+        setup
+        expect(stripe_dispute.dispute.attributes).to include( 
+        'status'=> 'needs_response',
+        "reason" => 'duplicate',
+        "gross_amount" => 80000,
+        "stripe_dispute_id" => "dp_05RsQX2eZvKYlo2C0FRTGSSA",
+        "started_at" => Time.at(1596429794)
+        )
+      }
+
+      it {
+        setup
+        transaction_to_be_disputed.reload
+        expect(transaction_to_be_disputed.payments).to have_one
       }
     end
 

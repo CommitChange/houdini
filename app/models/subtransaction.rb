@@ -16,7 +16,7 @@ class Subtransaction < ApplicationRecord
 
 	# get payments in reverse chronological order
 	def ordered_payments
-		subtransaction_payments.ordered_query
+		subtransaction_payments.sort_by {|i| [i.legacy_payment.date, i.updated_at]}.reverse
 	end
 
 	delegated_type :subtransactable, types: %w[OfflineTransaction, StripeTransaction]

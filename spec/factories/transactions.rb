@@ -17,7 +17,7 @@ FactoryBot.define do
 			transient do 
 				donation { nil}
 			end
-			subtransaction { association :subtransaction_base, :receive_donation, gross_amount: amount, trx: @instance, donation: donation}
+			subtransaction { association :subtransaction_base, :receive_donation, gross_amount: amount, trx: @instance, donation: donation, subtransactable: build(:stripe_transaction_base, amount: amount)}
 			transaction_assignments { [
 				build(:transaction_assignment_base, :receive_donation, trx: @instance, donation: donation)]}
 		end

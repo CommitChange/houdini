@@ -151,7 +151,8 @@ FactoryBot.define do
 			[
 			build(:subtransaction_payment_base,
 				subtransaction: @instance,
-				legacy_payment: donation.payment
+				legacy_payment: donation.payment,
+				paymentable: build(:stripe_transaction_charge, legacy_payment: donation.payment)
 			)
 		]}
 

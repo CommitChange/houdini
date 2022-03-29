@@ -12,14 +12,14 @@ FactoryBot.define do
 
     trait :inherit_from_transaction do 
       trx { association :transaction_base}
-      assignable {association :modern_donation_base, :legacy_donation, amount:amount}
+      assignable {association :modern_donation_base, :inherit_from_transaction, amount:amount}
     end
 
     trait :receive_donation do
       transient do
         donation {nil}
       end
-      assignable {association :modern_donation_base, :legacy_donation, amount:amount, legacy_donation: donation, transaction_assignment: @instance}
+      assignable {association :modern_donation_base, :inherit_from_transaction, legacy_donation: donation, transaction_assignment: @instance}
     end
   end
 
