@@ -47,7 +47,8 @@ describe InsertRefunds do
                 net_amount: example[:amount],
                 fee_total: 0,
                 supporter: supporter,
-                nonprofit: nonprofit
+                nonprofit: nonprofit,
+                date: Time.current
                 )
               }
 

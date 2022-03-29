@@ -27,7 +27,7 @@ class Transaction < ApplicationRecord
 
 	# get payments in reverse chronological order
 	def ordered_payments
-		payments.ordered_query
+		payments.ordered
 	end
 
 	# def designation
@@ -68,7 +68,7 @@ class Transaction < ApplicationRecord
 			
 			subtransaction.publish_updated
 			# we want to publish that every payment has other than the new refund been updated
-			ordered_payments.select{|i| i != new_refund}.each(&:publish_updated)
+			payments.ordered.select{|i| i != new_refund}.each(&:publish_updated)
 			# publish that the new_refund has been created
 			new_refund.publish_created
 
@@ -98,7 +98,7 @@ class Transaction < ApplicationRecord
 
 			def publish_after_dispute_withdrawal(new_withdrawal)
 				subtransaction.publish_updated
-				ordered_payments.select{|i| i != new_withdrawal}.each(&:publish_updated)
+				payments.ordered.select{|i| i != new_withdrawal}.each(&:publish_updated)
 				new_withdrawal.publish_created
 				transaction_assignments.first.publish_updated
 			end
@@ -122,7 +122,7 @@ class Transaction < ApplicationRecord
 
 			def publish_after_dispute_reversal(new_reversal)
 				subtransaction.publish_updated
-				ordered_payments.select{|i| i != new_reversal}.each(&:publish_updated)
+				payments.ordered.select{|i| i != new_reversal}.each(&:publish_updated)
 				new_reversal.publish_created
 				transaction_assignments.first.publish_updated
 			end
