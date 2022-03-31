@@ -11,13 +11,23 @@ FactoryBot.define do
 	factory :transaction_base, class: "Transaction" do
 		inherit_from_transaction
 		
-		supporter { association :supporter_base }
+		supporter { create :supporter_base }
 
 		trait :receive_donation do
 			transient do 
 				donation { nil}
 			end
 			subtransaction { association :subtransaction_base, :receive_donation, gross_amount: amount, trx: @instance, donation: donation, subtransactable: build(:stripe_transaction_base, amount: amount)}
+			transaction_assignments { [
+				build(:transaction_assignment_base, :receive_donation, trx: @instance, donation: donation)]}
+		end
+
+		trait :generate_donation do
+			transient do
+				donation {create(:donation_base, :with_charge, amount: amount)}
+			end
+			subtransaction { 
+			association :subtransaction_base, :receive_donation, gross_amount: amount, trx: @instance, donation: donation, subtransactable: build(:stripe_transaction_base, amount: amount)}
 			transaction_assignments { [
 				build(:transaction_assignment_base, :receive_donation, trx: @instance, donation: donation)]}
 		end

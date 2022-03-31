@@ -6,9 +6,21 @@ FactoryBot.define do
   factory :donation_base, class: 'Donation' do
     nonprofit {supporter.nonprofit}
     amount {333}
+    created_at {Time.current} 
     supporter { association :supporter_base}
-    payments {[build(:payment_base, supporter: supporter)]}
+    payments {[build(:payment_base, supporter: supporter, gross_amount: gross_amount, fee_total: 0, net_amount: gross_amount, date: created_at)]}
+
+    trait :with_charge do
+      transient do
+        stripe_charge_id { "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"}
+      end
+      payments{[
+        build(:payment_base, supporter: supporter, gross_amount: amount, fee_total: 0, net_amount: amount, date: created_at,
+        charge: build(:charge_base, amount: amount, stripe_charge_id: stripe_charge_id, created_at: date, supporter:supporter,  nonprofit: nonprofit)
+        )]}
+    end
   end
+  
 
   factory :fv_poverty_donation, class: 'Donation' do
     nonprofit {association  :fv_poverty}

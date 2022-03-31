@@ -149,12 +149,41 @@ FactoryBot.define do
 
 			subtransaction_payments {
 			[
-			build(:subtransaction_payment_base,
-				subtransaction: @instance,
-				legacy_payment: donation.payment,
-				paymentable: build(:stripe_transaction_charge, legacy_payment: donation.payment)
-			)
-		]}
+				build(:subtransaction_payment_base,
+					subtransaction: @instance,
+					legacy_payment: donation.payment,
+					paymentable: build(:stripe_transaction_charge, legacy_payment: donation.payment)
+				)
+			]}
+
+		
+			
+		end
+
+
+		trait :generate_donation do 
+			receive_donation
+			transient do
+				gross_amount {4000}
+				fee_total {-300}
+				date { Time.new(2020, 5, 4)}
+				stripe_charge_id { "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"}
+				donation { 
+					create(:donation_base, :with_charge)}
+			end
+
+			supporter { donation.supporter}
+
+		
+
+			subtransaction_payments {
+			[
+				build(:subtransaction_payment_base,
+					subtransaction: @instance,
+					legacy_payment: donation.payment,
+					paymentable: build(:stripe_transaction_charge, legacy_payment: donation.payment)
+				)
+			]}
 
 		end
 		# trait :with_payments do
