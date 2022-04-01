@@ -9,11 +9,16 @@ FactoryBot.define do
 
 
 	factory :transaction_base, class: "Transaction" do
+		transient do
+			legacy_donation { nil}
+			legacy_payment { legacy_donation.payments.first}
+		end
 		supporter { association :supporter_base}
-		subtransaction { association :subtransaction_base, trx: @instance}
-		transaction_assignments { [
-			build(:transaction_assignment_base, trx: @instance)
-		]}
+		after(:build) do |instance, evaluator|
+			instance.transaction_assignments << build(:transaction_assignment_base, legacy_donation: evaluator.legacy_donation)
+			instance.subtransaction = build(:subtransaction_base,legacy_payment: evaluator.legacy_payment)
+		end
+		
 	end
 
 	factory :transaction_for_offline_donation, class: "Transaction" do
