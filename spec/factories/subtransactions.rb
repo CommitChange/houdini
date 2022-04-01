@@ -94,11 +94,13 @@ FactoryBot.define do
 	end
 
 	factory :subtransaction_base, class: 'Subtransaction' do
-		trx { association :transaction_base}
-		subtransactable {association :offline_transaction_base, subtransaction: @instance}
-		subtransaction_payments {[
-			build(:subtransaction_payment_base, subtransaction: @instance)
-		]}
+		transient do
+			legacy_payment {nil}
+		end
+		subtransactable {association :offline_transaction_base}
+		after(:build) do |instance, evaluator|
+			instance.subtransaction_payments << build(:subtransaction_payment_base, legacy_payment: evaluator.legacy_payment)
+		end
 	end
 
 end

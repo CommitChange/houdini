@@ -8,9 +8,9 @@ FactoryBot.define do
   end
  
   factory :modern_donation_base, class: "ModernDonation" do
-    amount { transaction_assignment.trx.subtransaction.subtransaction_payments.ordered.last.gross_amount }
-    transaction_assignment { association :transaction_assignment_base }
-    legacy_donation { transaction_assignment.trx.subtransaction.subtransaction_payments.ordered.last.legacy_payment.donation}
+    amount {
+      legacy_donation.payments.first.gross_amount
+    }
   end
 
 end

@@ -6,8 +6,6 @@ FactoryBot.define do
   factory :donation_base, class: 'Donation' do
     nonprofit {supporter.nonprofit}
     amount {333}
-    supporter { association :supporter_base}
-    payments {[build(:payment_base, supporter: supporter)]}
   end
 
   factory :fv_poverty_donation, class: 'Donation' do

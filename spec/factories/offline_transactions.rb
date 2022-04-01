@@ -19,7 +19,6 @@ FactoryBot.define do
 
 	factory :offline_transaction_base, class: 'OfflineTransaction' do 
 		amount { 333 }
-		subtransaction {association :subtransaction_base}
 	end
 
 end
