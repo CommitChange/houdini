@@ -8,8 +8,12 @@ FactoryBot.define do
   end
 
   factory :transaction_assignment_base, class: "TransactionAssignment" do
-    trx { association :transaction_base }
-    assignable {association :modern_donation_base, transaction_assignment: @instance}
+    transient do
+      legacy_donation { nil}
+    end
+    after(:build) do |instance, evaluator|
+      instance.assignable = build(:modern_donation_base, legacy_donation:evaluator.legacy_donation)
+    end
   end
 
 end
