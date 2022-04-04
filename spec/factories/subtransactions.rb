@@ -126,66 +126,66 @@ FactoryBot.define do
 
 	factory :subtransaction_base, class: 'Subtransaction' do
 		transient do
-			gross_amount { 400}
-			supporter { association :supporter_base }
+		# 	gross_amount { 400}
+		# 	supporter { association :supporter_base }
 			
-		end
-		# trx { association :transaction_base}
-		# subtransactable {
-		# 	build(:offline_transaction_base, subtransaction: @instance, amount: gross_amount)
-		# }
-		# subtransaction_payments {[
-		# 	build(:subtransaction_payment_base, gross_amount: gross_amount, subtransaction: @instance)
-		# ]}
+		# end
+		# # trx { association :transaction_base}
+		# # subtransactable {
+		# # 	build(:offline_transaction_base, subtransaction: @instance, amount: gross_amount)
+		# # }
+		# # subtransaction_payments {[
+		# # 	build(:subtransaction_payment_base, gross_amount: gross_amount, subtransaction: @instance)
+		# # ]}
 
-		trait :inherit_from_transaction do
-			trx { association :transaction_base}
-			subtransactable {association :offline_transaction_base, subtransaction: @instance, amount: gross_amount}
-		end
-		trait :receive_donation do
-			transient do
-				donation { nil}
-			end
+		# trait :inherit_from_transaction do
+		# 	trx { association :transaction_base}
+		# 	subtransactable {association :offline_transaction_base, subtransaction: @instance, amount: gross_amount}
+		# end
+		# trait :receive_donation do
+		# 	transient do
+		# 		donation { nil}
+		# 	end
 
-			subtransaction_payments {
-			[
-				build(:subtransaction_payment_base,
-					subtransaction: @instance,
-					legacy_payment: donation.payment,
-					paymentable: build(:stripe_transaction_charge, legacy_payment: donation.payment)
-				)
-			]}
+		# 	subtransaction_payments {
+		# 	[
+		# 		build(:subtransaction_payment_base,
+		# 			subtransaction: @instance,
+		# 			legacy_payment: donation.payment,
+		# 			paymentable: build(:stripe_transaction_charge, legacy_payment: donation.payment)
+		# 		)
+		# 	]}
 
 		
 			
-		end
+		# end
 
 
-		trait :generate_donation do 
-			receive_donation
-			transient do
-				gross_amount {4000}
-				fee_total {-300}
-				date { Time.new(2020, 5, 4)}
-				stripe_charge_id { "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"}
-				donation { 
-					create(:donation_base, :with_charge)}
-			end
+		# trait :generate_donation do 
+		# 	receive_donation
+		# 	transient do
+		# 		gross_amount {4000}
+		# 		fee_total {-300}
+		# 		date { Time.new(2020, 5, 4)}
+		# 		stripe_charge_id { "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"}
+		# 		donation { 
+		# 			create(:donation_base, :with_charge)}
+		# 	end
 
-			supporter { donation.supporter}
+		# 	supporter { donation.supporter}
 
 		
 
-			subtransaction_payments {
-			[
-				build(:subtransaction_payment_base,
-					subtransaction: @instance,
-					legacy_payment: donation.payment,
-					paymentable: build(:stripe_transaction_charge, legacy_payment: donation.payment)
-				)
-			]}
+		# 	subtransaction_payments {
+		# 	[
+		# 		build(:subtransaction_payment_base,
+		# 			subtransaction: @instance,
+		# 			legacy_payment: donation.payment,
+		# 			paymentable: build(:stripe_transaction_charge, legacy_payment: donation.payment)
+		# 		)
+		# 	]}
 
-		end
+		# end
 		# trait :with_payments do
 		# 	payment_descs {
 		# 			[{props: [:subtransaction_payment_base], opts:{}}]
@@ -197,6 +197,13 @@ FactoryBot.define do
 		# 		end
 		# 	end
 		# end
+
+			legacy_payment {nil}
+		end
+		subtransactable {association :offline_transaction_base}
+		after(:build) do |instance, evaluator|
+			instance.subtransaction_payments << build(:subtransaction_payment_base, legacy_payment: evaluator.legacy_payment)
+		end
 	end
 
 end

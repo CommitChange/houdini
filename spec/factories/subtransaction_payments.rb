@@ -121,25 +121,28 @@ end
 
 
 	factory :subtransaction_payment_base, class: 'SubtransactionPayment' do
-		inherit_from_transaction
-		#offline_transaction_charge
+		# inherit_from_transaction
+		# #offline_transaction_charge
 
 
 
 		
 
-		trait :inherit_from_transaction do
-			subtransaction { association :subtransaction_base}
-			# legacy_payment { association :payment_base, :with_offline_donation, gross_amount: gross_amount, 
-			# 	nonprofit: subtransaction.trx.supporter.nonprofit,
-			# 	supporter: subtransaction.trx.supporter
-			# }
-		end
+		# trait :inherit_from_transaction do
+		# 	subtransaction { association :subtransaction_base}
+		# 	# legacy_payment { association :payment_base, :with_offline_donation, gross_amount: gross_amount, 
+		# 	# 	nonprofit: subtransaction.trx.supporter.nonprofit,
+		# 	# 	supporter: subtransaction.trx.supporter
+		# 	# }
+		# end
 
-		trait :offline_transaction_charge do
-			legacy_payment { association :payment_base, :with_offline_donation, gross_amount: gross_amount}
-			paymentable { build(:offline_transaction_charge_base)}
-		end
+# 		trait :offline_transaction_charge do
+# 			legacy_payment { association :payment_base, :with_offline_donation, gross_amount: gross_amount}
+# 			paymentable { build(:offline_transaction_charge_base)}
+# 		end
+		
+		legacy_payment { nil }
+		paymentable { association :offline_transaction_charge_base}
 	end
 
 end
