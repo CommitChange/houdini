@@ -192,7 +192,7 @@ RSpec.shared_context :dispute_created_specs do
     end
 
     describe 'result' do 
-      include_context 'json results for transaction expectations'
+      # include_context 'json results for transaction expectations'
 
       it {
         obj
@@ -228,7 +228,7 @@ RSpec.shared_context :dispute_created_specs do
   end
 
   describe 'object events' do
-    include_context 'json results for transaction expectations'
+    # include_context 'json results for transaction expectations'
     describe 'transaction.updated' do
       subject(:object_event_result) do
         obj
@@ -356,7 +356,7 @@ RSpec.shared_context :dispute_funds_withdrawn_specs do
     end
 
     describe 'result' do 
-      include_context 'json results for transaction expectations'
+      # include_context 'json results for transaction expectations'
 
       it {
             is_expected.to include_json(generate_transaction_json(
@@ -400,7 +400,7 @@ RSpec.shared_context :dispute_funds_withdrawn_specs do
   end
 
   describe 'object events' do
-    include_context 'json results for transaction expectations'
+    # include_context 'json results for transaction expectations'
     describe 'transaction.updated' do
       subject(:object_event_result) do
         obj
@@ -586,7 +586,7 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
     end
 
     describe 'result' do 
-      include_context 'json results for transaction expectations'
+      # include_context 'json results for transaction expectations'
 
       it {
         transaction_result
@@ -637,7 +637,7 @@ RSpec.shared_context :dispute_funds_reinstated_specs do
     end
 
     describe 'object events' do
-      include_context 'json results for transaction expectations'
+      # include_context 'json results for transaction expectations'
       describe 'transaction.updated' do
         subject(:object_event_result) do
           obj
@@ -809,7 +809,7 @@ RSpec.shared_context :dispute_lost_specs do
   end
 
   describe 'object events' do
-    include_context 'json results for transaction expectations'
+    # include_context 'json results for transaction expectations'
     subject(:object_event_result) do
       obj
       ApiNew::ObjectEventsController.render('api_new/object_events/index', 

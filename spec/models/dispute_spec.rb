@@ -126,11 +126,10 @@ RSpec.describe Dispute, :type => :model do
         gross_amount = 80000
         stripe_charge_id = "ch_1Y7zzfBCJIIhvMWmSiNWrPAC"
         @transaction ||= build(:transaction_base,
-          :receive_donation,
           created: date,
           amount: gross_amount,
           supporter: supporter,
-          donation: legacy_donation
+          legacy_donation: legacy_donation
           )
 
           @transaction.save!
@@ -206,7 +205,7 @@ RSpec.describe Dispute, :type => :model do
       it {
         setup
         transaction_to_be_disputed.reload
-        expect(transaction_to_be_disputed.payments).to have_one
+        expect(transaction_to_be_disputed.payments.count).to eq 1
       }
     end
 
