@@ -85,6 +85,10 @@ RSpec.describe Dispute, :type => :model do
         def legacy_dispute
           @legacy_dispute ||= stripe_dispute.dispute
         end
+
+        def events(types:[])
+          nonprofit.associated_object_events.event_types(types).page
+        end
   
         def setup
           dispute_on_stripe
@@ -158,6 +162,11 @@ RSpec.describe Dispute, :type => :model do
         config = DisputeCaseCreated.new.setup
         config.transaction_to_be_disputed.reload
         expect(config.transaction_to_be_disputed.payments.count).to eq 1
+      }
+
+      it {
+        config = DisputeCaseCreated.new.setup
+        expect(config.events(types:['transaction.updated'])).to be_empty
       }
     end
 
@@ -265,6 +274,10 @@ RSpec.describe Dispute, :type => :model do
           else
             nil
           end
+        end
+
+        def events(types:[])
+          nonprofit.associated_object_events.event_types(types).page.order('created').page
         end
   
         def setup
@@ -448,6 +461,13 @@ RSpec.describe Dispute, :type => :model do
         )
       }
 
+      it {
+        config = DisputeCaseWon.new.setup
+
+        events = config.events(types:['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created', 'donation.updated'])
+        expect(events.count).to eq 5
+      }
+
     end
 
     describe "dispute.lost" do
@@ -553,6 +573,10 @@ RSpec.describe Dispute, :type => :model do
           else
             nil
           end
+        end
+
+        def events(types:[])
+          nonprofit.associated_object_events.event_types(types).order('created').page
         end
   
         def setup
@@ -675,7 +699,12 @@ RSpec.describe Dispute, :type => :model do
       }
 
       
-      
+      it {
+        config = DisputeCaseLost.new.setup
+
+        events = config.events(types:['stripe_transaction_charge.updated', 'stripe_transaction_dispute.created', 'donation.updated'])
+        expect(events.count).to eq 3
+      }
       
       # let(:obj) { StripeDispute.create(object:json) }
       # let(:activity) { obj.dispute.activities.build('DisputeLost', Time.at(event_json.created))}
