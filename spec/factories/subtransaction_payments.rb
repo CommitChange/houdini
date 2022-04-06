@@ -142,7 +142,8 @@ end
 # 		end
 		
 		legacy_payment { nil }
-		paymentable { association :offline_transaction_charge_base}
+		created { legacy_payment.date }
+		paymentable { legacy_payment&.charge ? association(:stripe_transaction_charge_base) : association(:offline_transaction_charge_base)}
 	end
 
 end

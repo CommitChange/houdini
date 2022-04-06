@@ -200,8 +200,9 @@ FactoryBot.define do
 
 			legacy_payment {nil}
 		end
-		subtransactable {association :offline_transaction_base}
+
 		after(:build) do |instance, evaluator|
+			instance.subtransactable = evaluator.legacy_payment&.charge ? build(:stripe_transaction_base, amount: evaluator.legacy_payment.gross_amount) : build(:offline_transaction_base, amount: evaluator.legacy_payment.gross_amount)
 			instance.subtransaction_payments << build(:subtransaction_payment_base, legacy_payment: evaluator.legacy_payment)
 		end
 	end

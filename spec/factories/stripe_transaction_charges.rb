@@ -8,4 +8,7 @@ FactoryBot.define do
       nonprofit {supporter.nonprofit}
     end
   end
+
+  factory :stripe_transaction_charge_base, class: 'StripeTransactionCharge' do
+  end
 end
