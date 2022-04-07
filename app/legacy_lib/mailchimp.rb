@@ -210,7 +210,7 @@ module Mailchimp
 
     # if on our list, add to mailchimp
     output = in_our_side_only.map{|i|
-      {method: 'POST', path: "lists/#{email_list.mailchimp_list_id}/members", body: {email_address: i.email, status: 'subscribed'}.to_json}
+      {method: 'POST', path: "lists/#{email_list.mailchimp_list_id}/members", body: create_subscribe_body(i).to_json}
     }
 
     if delete_from_mailchimp
@@ -249,5 +249,9 @@ module Mailchimp
         basic_auth: {username: @username, password: mailchimp_token},
         headers: {'Content-Type' => 'application/json'}})
     result
+  end
+
+  def self.create_subscribe_body(supporter)
+    JSON::parse(ApplicationController.render 'mailchimp/list', assigns: {supporter: supporter})
   end
 end
