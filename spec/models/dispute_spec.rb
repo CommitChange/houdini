@@ -2,27 +2,115 @@
 require 'rails_helper'
 
 RSpec.describe Dispute, :type => :model do
+  class DisputeCase
+    include FactoryBot::Syntax::Methods
+
+    def legacy_payment
+      legacy_donation.payment
+    end
+
+    def nonprofit
+      supporter.nonprofit
+    end
+
+    def supporter
+      @supporter ||= create(:supporter_base)
+    end
+
+      
+    def stripe_dispute
+      event_json = dispute_on_stripe
+      @stripe_dispute ||= StripeDispute.create(object: event_json['data']['object'])
+    end
+
+    def legacy_dispute
+      @legacy_dispute ||= stripe_dispute.dispute
+    end
+
+    def legacy_dispute
+      @legacy_dispute ||= stripe_dispute.dispute
+    end
+
+    def withdrawal_dispute_transaction
+      legacy_dispute.dispute_transactions.order("date").first
+    end
+
+    def reinstated_dispute_transaction
+      legacy_dispute.dispute_transactions.order("date").second
+    end
+
+    def withdrawal_dispute_legacy_payment
+      legacy_dispute.dispute_transactions.order("date").first.payment
+    end
+
+    def reinstated_dispute_legacy_payment
+      legacy_dispute.dispute_transactions.order("date").second.payment
+    end
+
+    def transaction_payment_charge
+      transaction_to_be_disputed.reload
+      transaction_to_be_disputed.ordered_payments.last
+    end
+
+    def transaction_payment_withdrawal
+      transaction_to_be_disputed.reload
+      case transaction_to_be_disputed.ordered_payments.count
+      when 2
+        transaction_to_be_disputed.ordered_payments.first
+      when 3
+        transaction_to_be_disputed.ordered_payments.second
+      else
+        nil
+      end
+    end
+
+    def transaction_payment_reinstated
+      transaction_to_be_disputed.reload
+      case transaction_to_be_disputed.ordered_payments.count
+      when 3
+         transaction_to_be_disputed.ordered_payments.first
+      else
+        nil
+      end
+    end
+
+    def events(types:[])
+      nonprofit.associated_object_events.event_types(types).page
+    end
+
+    def setup
+      dispute_on_stripe
+      supporter
+      nonprofit
+      legacy_donation
+      transaction_to_be_disputed
+      stripe_dispute
+      self
+    end
+  end
+
 
   it {is_expected.to have_one(:stripe_dispute).with_primary_key(:stripe_dispute_id).with_foreign_key(:stripe_dispute_id)}
 
   describe '.activities' do 
-    # shared_context :common_specs do
-    #   let(:activity_json) { activity.json_data}
-    #   specify { expect(activity.supporter).to eq supporter}
-    #   specify { expect(activity.nonprofit).to eq nonprofit}
-    #   specify { expect(activity_json['status']).to eq dispute.status }
-    #   specify { expect(activity_json['reason']).to eq dispute.reason }
-    #   specify { expect(activity_json['original_id']).to eq charge.payment.id}
-    #   specify { expect(activity_json['original_kind']).to eq charge.payment.kind}
-    #   specify { expect(activity_json['original_gross_amount']).to eq charge.payment.gross_amount}
-    #   specify { expect(activity_json['original_date'].to_time).to eq charge.payment.date}
-    #   specify { expect(activity_json['gross_amount']).to eq dispute.gross_amount}
-    # end
+
+    all_events = [:created, :updated, :funds_reinstated, :funds_withdrawn, :won, :lost]
+
+    shared_examples 'an event initializer with proper ordering' do |valid_events|
+     
+      
+      all_events = [:created, :updated, :funds_reinstated, :funds_withdrawn, :won, :lost]
+    
+        
+      
+    end
+    
     
 
     describe "dispute.created" do
-      
-      class DisputeCaseCreated
+      valid_events = [:created]
+
+      class DisputeCaseCreated < DisputeCase
         include FactoryBot::Syntax::Methods
   
         def dispute_on_stripe
@@ -49,17 +137,7 @@ RSpec.describe Dispute, :type => :model do
             )   
         end
   
-        def legacy_payment
-          legacy_donation.payment
-        end
-  
-        def nonprofit
-          @supporter.nonprofit
-        end
-  
-        def supporter
-          @supporter ||= create(:supporter_base)
-        end
+        
   
         def transaction_to_be_disputed
           date = Time.at(1596429794) - 1.day
@@ -75,19 +153,6 @@ RSpec.describe Dispute, :type => :model do
   
             @transaction.save!
           @transaction
-        end
-          
-        def stripe_dispute
-          event_json = dispute_on_stripe
-          @stripe_dispute ||= StripeDispute.create(object: event_json['data']['object'])
-        end
-  
-        def legacy_dispute
-          @legacy_dispute ||= stripe_dispute.dispute
-        end
-
-        def events(types:[])
-          nonprofit.associated_object_events.event_types(types).page
         end
   
         def setup
@@ -168,11 +233,67 @@ RSpec.describe Dispute, :type => :model do
         config = DisputeCaseCreated.new.setup
         expect(config.events(types:['transaction.updated'])).to be_empty
       }
+
+      it 'has correct events in order' do
+        config = DisputeCaseCreated.new.setup
+        valid_events.each do |t|
+        
+          job_type = ('JobTypes::Dispute' + t.to_s.camelize + "Job").constantize
+          expect(JobQueue).to have_received(:queue).with(
+          job_type, config.legacy_dispute).ordered
+        end
+      end
+    
+      it 'does not have invalid events' do
+        config = DisputeCaseCreated.new.setup
+        invalid_events = all_events - valid_events
+        invalid_events.each do |t|
+          job_type = ('JobTypes::Dispute' + t.to_s.camelize + "Job").constantize
+          expect(JobQueue).to_not have_received(:queue).with(
+          job_type)
+        end
+      end
+    
+      it 'has valid activities' do
+        config = DisputeCaseCreated.new.setup
+        valid_events.each do |t|
+          dispute_kind = "Dispute" + t.to_s.camelize
+          case t
+          when :funds_withdrawn
+            expect(config.withdrawal_dispute_transaction.payment.activities.where(kind: dispute_kind).count).to eq 1
+          when :funds_reinstated
+            expect(config.withdrawal_dispute_transaction.payment.activities.where(kind: dispute_kind).count).to eq 1
+          else
+            expect(config.legacy_dispute.activities.where(kind: dispute_kind).count).to eq 1
+          end
+        end
+      end
+    
+      it 'does not have invalid activities' do
+        config = DisputeCaseCreated.new.setup
+        invalid_events = all_events - valid_events
+        invalid_events.each do |t|
+          dispute_kind = "Dispute" + t.to_s.camelize
+          case t
+          when :funds_withdrawn
+            if (config.withdrawal_dispute_transaction)
+              expect(config.withdrawal_dispute_transaction.payment.activities.where(kind: dispute_kind)).to be_empty, "#{dispute_kind} should not have been here."
+            end
+          when :funds_reinstated
+            if (config.reinstated_dispute_transaction)
+              expect(config.reinstated_dispute_transaction.payment.activities.where(kind: dispute_kind)).to be_empty, "#{dispute_kind} should not have been here."
+            end
+          else
+            #byebug if dispute_kind == "DisputeUpdated" && dispute.activities.where(kind: dispute_kind).any?
+            expect(config.legacy_dispute.activities.where(kind: dispute_kind)).to be_empty, "#{dispute_kind} should not have been here."
+          end
+        end
+      end
     end
 
     describe "dispute.won" do
 
-      class DisputeCaseWon
+      class DisputeCaseWon < DisputeCase
         include FactoryBot::Syntax::Methods
   
         def dispute_on_stripe
@@ -196,17 +317,7 @@ RSpec.describe Dispute, :type => :model do
             )   
         end
   
-        def legacy_payment
-          legacy_donation.payment
-        end
-  
-        def nonprofit
-          @supporter.nonprofit
-        end
-  
-        def supporter
-          @supporter ||= create(:supporter_base)
-        end
+       
   
         def transaction_to_be_disputed
           date = Time.new(2019, 8, 5) - 1.day
@@ -222,72 +333,6 @@ RSpec.describe Dispute, :type => :model do
   
             @transaction.save!
           @transaction
-        end
-          
-        def stripe_dispute
-          event_json = dispute_on_stripe
-          @stripe_dispute ||= StripeDispute.create(object: event_json['data']['object'])
-        end
-  
-        def legacy_dispute
-          @legacy_dispute ||= stripe_dispute.dispute
-        end
-
-        def withdrawal_dispute_transaction
-          legacy_dispute.dispute_transactions.order("date").first
-        end
-
-        def reinstated_dispute_transaction
-          legacy_dispute.dispute_transactions.order("date").second
-        end
-
-        def withdrawal_dispute_legacy_payment
-          legacy_dispute.dispute_transactions.order("date").first.payment
-        end
-
-        def reinstated_dispute_legacy_payment
-          legacy_dispute.dispute_transactions.order("date").second.payment
-        end
-
-        def transaction_payment_charge
-          transaction_to_be_disputed.reload
-          transaction_to_be_disputed.ordered_payments.last
-        end
-
-        def transaction_payment_withdrawal
-          transaction_to_be_disputed.reload
-          case transaction_to_be_disputed.ordered_payments.count
-          when 2
-            transaction_to_be_disputed.ordered_payments.first
-          when 3
-            transaction_to_be_disputed.ordered_payments.second
-          else
-            nil
-          end
-        end
-
-        def transaction_payment_reinstated
-          transaction_to_be_disputed.reload
-          case transaction_to_be_disputed.ordered_payments.count
-          when 3
-             transaction_to_be_disputed.ordered_payments.first
-          else
-            nil
-          end
-        end
-
-        def events(types:[])
-          nonprofit.associated_object_events.event_types(types).page.order('created').page
-        end
-  
-        def setup
-          dispute_on_stripe
-          supporter
-          nonprofit
-          legacy_donation
-          transaction_to_be_disputed
-          stripe_dispute
-          self
         end
       end
 
@@ -348,11 +393,11 @@ RSpec.describe Dispute, :type => :model do
         )
       }
 
-      it {
+      it 'should have three subtransaction payments'  do
         config = DisputeCaseWon.new.setup
         config.transaction_to_be_disputed.reload
         expect(config.transaction_to_be_disputed.payments.count).to eq 3
-      }
+      end
 
       it {
         config = DisputeCaseWon.new.setup
@@ -471,7 +516,7 @@ RSpec.describe Dispute, :type => :model do
     end
 
     describe "dispute.lost" do
-      class DisputeCaseLost
+      class DisputeCaseLost < DisputeCase
         include FactoryBot::Syntax::Methods
   
         def dispute_on_stripe
@@ -495,18 +540,6 @@ RSpec.describe Dispute, :type => :model do
             )   
         end
   
-        def legacy_payment
-          legacy_donation.payment
-        end
-  
-        def nonprofit
-          @supporter.nonprofit
-        end
-  
-        def supporter
-          @supporter ||= create(:supporter_base)
-        end
-  
         def transaction_to_be_disputed
           date = Time.at(1596429794) - 1.day
           fee_total = 0
@@ -523,71 +556,12 @@ RSpec.describe Dispute, :type => :model do
           @transaction
         end
           
-        def stripe_dispute
-          event_json = dispute_on_stripe
-          @stripe_dispute ||= StripeDispute.create(object: event_json['data']['object'])
-        end
-  
-        def legacy_dispute
-          @legacy_dispute ||= stripe_dispute.dispute
-        end
-
-        def withdrawal_dispute_transaction
-          legacy_dispute.dispute_transactions.order("date").first
-        end
-
-        def reinstated_dispute_transaction
-          legacy_dispute.dispute_transactions.order("date").second
-        end
-
-        def withdrawal_dispute_legacy_payment
-          legacy_dispute.dispute_transactions.order("date").first.payment
-        end
-
-        def reinstated_dispute_legacy_payment
-          legacy_dispute.dispute_transactions.order("date").second.payment
-        end
-
-        def transaction_payment_charge
-          transaction_to_be_disputed.reload
-          transaction_to_be_disputed.ordered_payments.last
-        end
-
-        def transaction_payment_withdrawal
-          transaction_to_be_disputed.reload
-          case transaction_to_be_disputed.ordered_payments.count
-          when 2
-            transaction_to_be_disputed.ordered_payments.first
-          when 3
-            transaction_to_be_disputed.ordered_payments.second
-          else
-            nil
-          end
-        end
-
-        def transaction_payment_reinstated
-          transaction_to_be_disputed.reload
-          case transaction_to_be_disputed.ordered_payments.count
-          when 3
-             transaction_to_be_disputed.ordered_payments.first
-          else
-            nil
-          end
-        end
-
         def events(types:[])
           nonprofit.associated_object_events.event_types(types).order('created').page
         end
-  
-        def setup
-          dispute_on_stripe
-          supporter
-          nonprofit
-          legacy_donation
-          transaction_to_be_disputed
-          stripe_dispute
-          self
-        end
+      end
+      before(:each) do
+        allow(JobQueue).to receive(:queue)
       end
 
       it {
