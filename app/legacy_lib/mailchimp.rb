@@ -42,12 +42,9 @@ module Mailchimp
     return metadata['dc']
   end
 
-	def self.signup email, mailchimp_list_id
-		body_hash = @body.merge({
-			:id => mailchimp_list_id,
-			:email => {:email => email}
-		})
-		post("/lists/subscribe", @options.merge(:body => body_hash.to_json)).parsed_response
+	def self.signup supporter, mailchimp_list_id
+		body_hash = @body.merge(create_subscribe_body(supporter))
+		put("/lists/#{mailchimp_list_id}/members", @options.merge(:body => body_hash.to_json))
   end
 
   def self.get_mailchimp_token(npo_id)

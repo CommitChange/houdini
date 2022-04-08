@@ -79,7 +79,13 @@ class Supporter < ActiveRecord::Base
     include Supporter::Tags # not needed but helpful for tracking dependencies
     included do
       has_many :email_lists, through: :tag_masters
-      has_many :active_email_lists, through: :undeleted_tag_masters, source: :email_list
+      has_many :active_email_lists, through: :undeleted_tag_masters, source: :email_list, -> {
+        def update_member_on_all_lists
+          proxy_association.target.all do |list|
+            Mailchimp.delay.signup(proxy_association.owner, list)
+          end
+        end
+      }
     end
   end
   
@@ -208,6 +214,12 @@ class Supporter < ActiveRecord::Base
   def set_address_to_primary_if_needed(new_address)
     if primary_address.nil?
       assign_attributes(primary_address: new_address)
+    end
+  end
+
+  concerning :Mailchimp do
+    def md5_hash_of_email
+      Digest::MD5.hexdigest email.downcase
     end
   end
 end

@@ -70,6 +70,8 @@ module InsertRecurringDonation
       # Create the activity record
       result['activity'] = InsertActivities.for_recurring_donations([result['payment'].id])
     end
+
+    # notify of recurring donation change for the supporter
     # Send receipts
     JobQueue.queue(JobTypes::DonationPaymentCreateJob, result['donation'].id, result['payment']&.id, entities[:supporter_id].locale)
     return result
