@@ -79,6 +79,13 @@ class RecurringDonation < ActiveRecord::Base
     !failed? && !cancelled? && (end_date.nil? || end_date > Time.current);
   end
 
+  def cancel!(email)
+    self.active = false
+    self.cancelled_by = email
+    self.cancelled_at = Time.current
+    save!
+  end
+
   # XXX let's make these monthly_totals a query
   # Or just push it into the front-end
   def self.monthly_total
