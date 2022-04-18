@@ -27,15 +27,32 @@ RSpec.describe Supporter, type: :model do
     it { is_expected.to have_many(:email_lists).through(:tag_masters) }
     it { is_expected.to have_many(:active_email_lists).through(:undeleted_tag_masters).source("email_list") }
 
-    describe '.active_email_lists' do 
+    describe '.active_email_lists' do
       it 'only contains an active email list tags masters' do
         nonprofit = create(:nonprofit_base)
         undeleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
         deleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, deleted: true, email_list: build(:email_list_base, nonprofit: nonprofit))
         supporter = create(:supporter_base, nonprofit: nonprofit, tag_joins: [build(:tag_join_base, tag_master: undeleted_tag_master), build(:tag_join_base, tag_master: deleted_tag_master)])
-
         expect(supporter.active_email_lists).to contain_exactly(undeleted_tag_master.email_list)
         
+      end
+
+      describe '.update_member_on_all_lists' do
+        it 'updates the correct lists' do
+          nonprofit = create(:nonprofit_base)
+          undeleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
+
+          undeleted_but_unassociated_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
+          deleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, deleted: true, email_list: build(:email_list_base, nonprofit: nonprofit))
+          supporter = create(:supporter_base, nonprofit: nonprofit, tag_joins: [build(:tag_join_base, tag_master: undeleted_tag_master), build(:tag_join_base, tag_master: deleted_tag_master)])
+
+
+          supporter.active_email_lists.update_member_on_all_lists
+          expect(MailchimpSignupJob).to have_been_enqueued.with(supporter, undeleted_tag_master.email_list)
+
+          expect(MailchimpSignupJob).to_not have_been_enqueued.with(supporter, deleted_tag_master.email_list)
+          expect(MailchimpSignupJob).to_not have_been_enqueued.with(supporter, undeleted_but_unassociated_tag_master.email_list)
+        end
       end
     end
   end

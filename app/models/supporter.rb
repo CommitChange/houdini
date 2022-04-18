@@ -79,13 +79,14 @@ class Supporter < ActiveRecord::Base
     include Supporter::Tags # not needed but helpful for tracking dependencies
     included do
       has_many :email_lists, through: :tag_masters
-      has_many :active_email_lists, through: :undeleted_tag_masters, source: :email_list, -> {
+      has_many :active_email_lists, through: :undeleted_tag_masters, source: :email_list do
         def update_member_on_all_lists
-          proxy_association.target.all do |list|
-            Mailchimp.delay.signup(proxy_association.owner, list)
+          proxy_association.reload.target.each do |list| # We're reloading the association and running .each on target
+            #to make sure we get any newly saved email lists. I think this should be simpler but I'm not sure how to do it.
+            MailchimpSignupJob.perform_later(proxy_association.owner, list)
           end
         end
-      }
+      end
     end
   end
   
