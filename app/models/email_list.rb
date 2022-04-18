@@ -2,4 +2,8 @@
 class EmailList < ActiveRecord::Base
   belongs_to :nonprofit
   belongs_to :tag_master
+
+  has_many :tag_joins, through: :tag_master
+
+  has_many :supporters, through: :tag_joins
 end
