@@ -87,7 +87,23 @@ class Supporter < ActiveRecord::Base
           end
         end
       end
+
+      after_save :update_member_on_all_lists
     end
+
+    def must_update_email_lists?
+      previous_changes.has_key?("name") || previous_changes.has_key?("email")
+    end
+
+    private
+
+   
+    
+    def update_member_on_all_lists
+      if must_update_email_lists?
+        active_email_lists.update_member_on_all_lists
+      end
+    end 
   end
   
   has_many :custom_field_joins, dependent: :destroy

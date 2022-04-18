@@ -27,31 +27,72 @@ RSpec.describe Supporter, type: :model do
     it { is_expected.to have_many(:email_lists).through(:tag_masters) }
     it { is_expected.to have_many(:active_email_lists).through(:undeleted_tag_masters).source("email_list") }
 
+    def prepare
+      ret = OpenStruct.new
+      nonprofit = ret.nonprofit = create(:nonprofit_base)
+      undeleted_tag_master = ret.undeleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
+
+      ret.undeleted_but_unassociated_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
+      deleted_tag_master = ret.deleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, deleted: true, email_list: build(:email_list_base, nonprofit: nonprofit))
+      ret.supporter = create(:supporter_base, nonprofit: nonprofit, tag_joins: [build(:tag_join_base, tag_master: undeleted_tag_master), build(:tag_join_base, tag_master: deleted_tag_master)])
+
+      ret
+    end
     describe '.active_email_lists' do
       it 'only contains an active email list tags masters' do
-        nonprofit = create(:nonprofit_base)
-        undeleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
-        deleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, deleted: true, email_list: build(:email_list_base, nonprofit: nonprofit))
-        supporter = create(:supporter_base, nonprofit: nonprofit, tag_joins: [build(:tag_join_base, tag_master: undeleted_tag_master), build(:tag_join_base, tag_master: deleted_tag_master)])
-        expect(supporter.active_email_lists).to contain_exactly(undeleted_tag_master.email_list)
+        ret = prepare
+        expect(ret.supporter.active_email_lists).to contain_exactly(ret.undeleted_tag_master.email_list)
         
       end
 
       describe '.update_member_on_all_lists' do
         it 'updates the correct lists' do
-          nonprofit = create(:nonprofit_base)
-          undeleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
+          ret = prepare
 
-          undeleted_but_unassociated_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
-          deleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, deleted: true, email_list: build(:email_list_base, nonprofit: nonprofit))
-          supporter = create(:supporter_base, nonprofit: nonprofit, tag_joins: [build(:tag_join_base, tag_master: undeleted_tag_master), build(:tag_join_base, tag_master: deleted_tag_master)])
-
-
+          supporter = ret.supporter
           supporter.active_email_lists.update_member_on_all_lists
-          expect(MailchimpSignupJob).to have_been_enqueued.with(supporter, undeleted_tag_master.email_list)
+          expect(MailchimpSignupJob).to have_been_enqueued.with(supporter, ret.undeleted_tag_master.email_list)
 
-          expect(MailchimpSignupJob).to_not have_been_enqueued.with(supporter, deleted_tag_master.email_list)
-          expect(MailchimpSignupJob).to_not have_been_enqueued.with(supporter, undeleted_but_unassociated_tag_master.email_list)
+          expect(MailchimpSignupJob).to_not have_been_enqueued.with(supporter, ret.deleted_tag_master.email_list)
+          expect(MailchimpSignupJob).to_not have_been_enqueued.with(supporter, ret.undeleted_but_unassociated_tag_master.email_list)
+        end
+      end
+    end
+
+    describe '#must_update_email_lists?' do
+      it 'when name changed' do 
+        ret = prepare
+        ret.supporter.update(name: "Another name")
+        expect(ret.supporter).to be_must_update_email_lists
+      end
+
+      it 'when email changed' do 
+        ret = prepare
+        ret.supporter.update(email: "another@email.address")
+        expect(ret.supporter).to be_must_update_email_lists
+      end
+
+      it 'but not when phone number changes' do
+        ret = prepare
+        ret.supporter.update(phone: 920418918)
+        expect(ret.supporter).to_not be_must_update_email_lists
+      end
+    end
+
+    context 'after_save' do
+      describe '.update_member_on_all_lists' do
+        it 'updates the correct lists on name change' do
+          ret = prepare
+          ret.supporter.update(name: "Another name")
+
+          expect(MailchimpSignupJob).to have_been_enqueued.with(ret.supporter, ret.undeleted_tag_master.email_list)
+        end
+
+        it 'updates nothing if something other than name and email change' do
+          ret = prepare
+          ret.supporter.update(phone: "9305268998")
+
+          expect(MailchimpSignupJob).to_not have_been_enqueued
         end
       end
     end
@@ -270,4 +311,5 @@ RSpec.describe Supporter, type: :model do
       end
     end
   end
+
 end
