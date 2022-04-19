@@ -53,24 +53,30 @@ RSpec.describe RecurringDonation, type: :model do
       expect{ build_stubbed(:recurring_donation_base).cancel!}.to raise_error ArgumentError
     end
 
-    it 'cancels an rd properly' do 
-      nonprofit = create(:nonprofit_base)
-      supporter = create(:supporter_base, nonprofit: nonprofit)
+    def uncancelled_recurring_donation
+      supporter = create(:supporter_base, :with_1_active_mailing_list)
+      nonprofit = supporter.nonprofit
       donation = create(:donation_base, nonprofit: nonprofit, supporter_id: supporter.id, amount: 999)
-      freeze_time = Time.new(2020, 5, 4)
       recurring_donation = create(:recurring_donation_base, nonprofit: nonprofit, supporter_id: supporter.id, donation: donation)
-      Timecop.freeze freeze_time do
+
+    end
+
+    it 'cancels an rd properly' do 
+      recurring_donation = uncancelled_recurring_donation
+      Timecop.freeze Time.new(2020, 5, 4) do
         recurring_donation.cancel!("penelope@rebecca.schultz")
         expect(recurring_donation).to have_attributes(
           'active' => false,
-          'cancelled_at' => freeze_time,
+          'cancelled_at' => Time.new(2020, 5, 4),
           'cancelled_by' => "penelope@rebecca.schultz"
         )
 
+        expect(recurring_donation).to be_cancelled
+
         expect(recurring_donation).to be_persisted
+        expect(MailchimpSignupJob).to have_been_enqueued
       end
     end
-
 
   end
 end

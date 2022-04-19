@@ -96,8 +96,6 @@ class Supporter < ActiveRecord::Base
     end
 
     private
-
-   
     
     def update_member_on_all_lists
       if must_update_email_lists?

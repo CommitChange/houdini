@@ -1,7 +1,11 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 class RecurringDonation < ActiveRecord::Base
 
+  define_model_callbacks :cancel
+
   before_save :set_anonymous
+
+  after_cancel :notify_supporter_of_cancellation
 
   attr_accessible \
     :amount, # int (cents)
@@ -80,10 +84,12 @@ class RecurringDonation < ActiveRecord::Base
   end
 
   def cancel!(email)
-    self.active = false
-    self.cancelled_by = email
-    self.cancelled_at = Time.current
-    save!
+    run_callbacks(:cancel) do 
+      self.active = false
+      self.cancelled_by = email
+      self.cancelled_at = Time.current
+      save!
+    end unless cancelled?
   end
 
   # XXX let's make these monthly_totals a query
@@ -105,5 +111,9 @@ class RecurringDonation < ActiveRecord::Base
 
   def set_anonymous
     update_attributes(anonymous: false) if anonymous.nil?
+  end
+
+  def notify_supporter_of_cancellation
+    supporter.active_email_lists.update_member_on_all_lists
   end
 end
