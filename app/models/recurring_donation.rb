@@ -5,7 +5,9 @@ class RecurringDonation < ActiveRecord::Base
 
   before_save :set_anonymous
 
-  after_cancel :notify_supporter_of_cancellation
+  after_create :fire_recurring_donation_created
+
+  after_cancel :fire_recurring_donation_cancelled
 
   attr_accessible \
     :amount, # int (cents)
@@ -113,7 +115,11 @@ class RecurringDonation < ActiveRecord::Base
     update_attributes(anonymous: false) if anonymous.nil?
   end
 
-  def notify_supporter_of_cancellation
-    supporter.active_email_lists.update_member_on_all_lists
+  def fire_recurring_donation_created
+    RecurringDonationCreatedJob.perform_later(self)
+  end
+
+  def fire_recurring_donation_cancelled
+    RecurringDonationCancelledJob.perform_later(self)
   end
 end
