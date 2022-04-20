@@ -1,7 +1,7 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 require 'rails_helper'
 
-describe PeriodicReportAdapter::FailedRecurringDonationsReport do
+describe PeriodicReportAdapter::CancelledRecurringDonationsReport do
   let(:nonprofit) { create(:nonprofit_base) }
   let(:user) { create(:user) }
   let(:users_list) { User.where(user_id: user) }
@@ -15,10 +15,9 @@ describe PeriodicReportAdapter::FailedRecurringDonationsReport do
 
   let(:params) do
     {
-      :failed => true,
-      :include_last_failed_charge => true,
-      :from_date => Time.new(2021, 9, 1),
-      :before_date => Time.new(2021, 10, 1)
+      :active => false,
+      :cancelled_at_gt_or_eq => Time.new(2021, 9, 1),
+      :cancelled_at_lt => Time.new(2021, 10, 1)
     }
   end
 
@@ -35,7 +34,7 @@ describe PeriodicReportAdapter::FailedRecurringDonationsReport do
   before do
     allow(ExportRecurringDonations)
       .to receive(:initiate_export)
-      .with(nonprofit.id, params, users_list, :failed_recurring_donations_automatic_report)
+      .with(nonprofit.id, params, users_list, :cancelled_recurring_donations_automatic_report)
       .and_return(export_recurring_donations)
   end
 
@@ -43,6 +42,6 @@ describe PeriodicReportAdapter::FailedRecurringDonationsReport do
     subject
     expect(ExportRecurringDonations)
       .to have_received(:initiate_export)
-      .with(nonprofit.id, params, users_list, :failed_recurring_donations_automatic_report)
+      .with(nonprofit.id, params, users_list, :cancelled_recurring_donations_automatic_report)
   end
 end

@@ -1,8 +1,11 @@
 source 'https://rubygems.org'
 
-ruby '2.5.9'
+ruby ENV['CUSTOM_RUBY_VERSION'] || '2.6.10' # heroku needs a specific ruby version in the Gemfile
+
 gem 'rake'
 gem 'rails', '~> 4.0'
+
+gem 'rack', git: "https://github.com/CommitChange/rack.git", branch: "1-6-stable"
 
 gem 'date', '~> 2.0.2'
 
@@ -39,7 +42,7 @@ gem 'rack-attack'
 gem 'rack-freeze'
 
 # Database (postgres)
-gem 'pg' # Postgresql
+gem 'pg', "< 1" # Postgresql, must be under 1 because 1.0 and later don't work on Rails 4
 gem 'qx', path: 'gems/ruby-qx'
 gem 'dalli'
 gem 'memcachier'
@@ -98,11 +101,9 @@ end
 
 group :development, :ci, :test do
 	gem 'timecop'
-	gem 'pry'
-	gem 'pry-byebug'
 	gem 'binding_of_caller'
-  gem 'rspec'
-	gem 'rspec-rails'
+  gem 'rspec', "~> 3.9"
+	gem 'rspec-rails', "~> 3.9"
 	gem 'database_cleaner'
   gem 'dotenv-rails'
   gem 'ruby-prof', '0.15.9'
@@ -111,9 +112,9 @@ group :development, :ci, :test do
 	gem 'factory_bot_rails'
 	gem 'action_mailer_matchers', '~> 1.2.0'
   gem 'simplecov', '~> 0.16.1', require: false
-  gem 'byebug'
   gem 'shoulda-matchers'
   gem 'rspec-json_expectations'
+  gem 'debug'
 end
 
 group :test do

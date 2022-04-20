@@ -1,4 +1,11 @@
 GIT
+  remote: https://github.com/CommitChange/rack.git
+  revision: d25ed1c2dd7b734db6f8d008283d8b9f32721c5c
+  branch: 1-6-stable
+  specs:
+    rack (1.6.13)
+
+GIT
   remote: https://github.com/ruby-grape/grape-entity.git
   revision: 0e04aa561373b510c2486282979085eaef2ae663
   ref: 0e04aa561373b510c2486282979085eaef2ae663
@@ -118,7 +125,6 @@ GEM
     bootsnap (1.1.7)
       msgpack (~> 1.0)
     builder (3.2.4)
-    byebug (11.0.1)
     carrierwave (0.10.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -128,7 +134,6 @@ GEM
       aws-sdk (~> 1.58)
       carrierwave (~> 0.7)
     chronic (0.10.2)
-    coderay (1.1.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     colorize (0.8.1)
@@ -152,6 +157,9 @@ GEM
     dante (0.2.0)
     database_cleaner (1.6.1)
     date (2.0.2)
+    debug (1.5.0)
+      irb (>= 1.3.6)
+      reline (>= 0.2.7)
     debug_inspector (0.0.2)
     deep_merge (1.2.1)
     delayed_job (4.1.10)
@@ -167,7 +175,7 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
-    diff-lcs (1.4.4)
+    diff-lcs (1.5.0)
     docile (1.3.1)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
@@ -259,6 +267,9 @@ GEM
     i18n_data (0.8.0)
     ice_nine (0.11.2)
     inflecto (0.0.2)
+    io-console (0.5.11)
+    irb (1.4.1)
+      reline (>= 0.3.0)
     jbuilder (2.9.1)
       activesupport (>= 4.2.0)
     jmespath (1.4.0)
@@ -280,19 +291,18 @@ GEM
       actionpack (>= 3)
       activesupport (>= 3)
       railties (>= 3)
-    loofah (2.15.0)
+    loofah (2.16.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
     memcachier (0.0.2)
-    method_source (0.9.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2021.0225)
     mini_magick (4.9.5)
     mini_mime (1.1.0)
-    mini_portile2 (2.4.0)
+    mini_portile2 (2.8.0)
     minitest (5.15.0)
     money (6.10.0)
       i18n (>= 0.6.4, < 1.0)
@@ -311,11 +321,12 @@ GEM
       connection_pool (~> 2.2)
     netrc (0.11.0)
     nio4r (2.5.8)
-    nokogiri (1.10.10)
-      mini_portile2 (~> 2.4.0)
+    nokogiri (1.13.4)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
     orm_adapter (0.5.0)
     parallel (1.6.1)
-    pg (0.18.3)
+    pg (0.21.0)
     power_assert (1.1.1)
     premailer (1.12.1)
       addressable
@@ -326,12 +337,6 @@ GEM
       premailer (~> 1.7, >= 1.7.9)
     protected_attributes (1.1.4)
       activemodel (>= 4.0.1, < 5.0)
-    pry (0.11.3)
-      coderay (~> 1.1.0)
-      method_source (~> 0.9.0)
-    pry-byebug (3.7.0)
-      byebug (~> 11.0)
-      pry (~> 0.10)
     public_suffix (4.0.6)
     puma (5.6.4)
       nio4r (~> 2.0)
@@ -340,7 +345,7 @@ GEM
       puma (>= 2.7)
     rabl (0.11.6)
       activesupport (>= 2.3.14)
-    rack (1.6.13)
+    racc (1.6.0)
     rack-accept (0.4.5)
       rack (>= 0.4)
     rack-attack (6.5.0)
@@ -398,6 +403,8 @@ GEM
       redis-store (>= 1.2, < 2)
     redis-store (1.9.0)
       redis (>= 4, < 5)
+    reline (0.3.1)
+      io-console (~> 0.5)
     require_all (1.3.2)
     responders (2.4.1)
       actionpack (>= 4.2.0, < 6.0)
@@ -407,28 +414,28 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rspec (3.5.0)
-      rspec-core (~> 3.5.0)
-      rspec-expectations (~> 3.5.0)
-      rspec-mocks (~> 3.5.0)
-    rspec-core (3.5.1)
-      rspec-support (~> 3.5.0)
-    rspec-expectations (3.5.0)
+    rspec (3.9.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
+    rspec-core (3.9.3)
+      rspec-support (~> 3.9.3)
+    rspec-expectations (3.9.4)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.5.0)
+      rspec-support (~> 3.9.0)
     rspec-json_expectations (2.2.0)
-    rspec-mocks (3.5.0)
+    rspec-mocks (3.9.1)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.5.0)
-    rspec-rails (3.5.0)
+      rspec-support (~> 3.9.0)
+    rspec-rails (3.9.1)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       railties (>= 3.0)
-      rspec-core (~> 3.5.0)
-      rspec-expectations (~> 3.5.0)
-      rspec-mocks (~> 3.5.0)
-      rspec-support (~> 3.5.0)
-    rspec-support (3.5.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
+      rspec-support (~> 3.9.0)
+    rspec-support (3.9.4)
     ruby-prof (0.15.9)
     ruby2_keywords (0.0.5)
     safe_yaml (1.0.4)
@@ -503,7 +510,6 @@ DEPENDENCIES
   barnes
   binding_of_caller
   bootsnap
-  byebug
   carrierwave
   carrierwave-aws
   chronic
@@ -514,6 +520,7 @@ DEPENDENCIES
   dalli
   database_cleaner
   date (~> 2.0.2)
+  debug
   delayed_job_active_record
   devise (~> 4.1)
   dotenv-rails
@@ -545,15 +552,14 @@ DEPENDENCIES
   nearest_time_zone
   parallel
   param_validation!
-  pg
+  pg (< 1)
   premailer-rails
   protected_attributes
-  pry
-  pry-byebug
   puma (~> 5.6)
   puma_worker_killer
   qx!
   rabl
+  rack!
   rack-attack
   rack-cors
   rack-freeze
@@ -567,9 +573,9 @@ DEPENDENCIES
   redis (>= 3.2.0)
   redis-actionpack
   rest-client
-  rspec
+  rspec (~> 3.9)
   rspec-json_expectations
-  rspec-rails
+  rspec-rails (~> 3.9)
   ruby-prof (= 0.15.9)
   ruby2_keywords
   sassc
@@ -587,7 +593,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 2.5.9p229
+   ruby 2.6.10p210
 
 BUNDLED WITH
    1.17.3
