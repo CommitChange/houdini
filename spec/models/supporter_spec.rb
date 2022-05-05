@@ -28,6 +28,7 @@ RSpec.describe Supporter, type: :model do
     it { is_expected.to have_many(:active_email_lists).through(:undeleted_tag_masters).source("email_list") }
 
     def prepare
+      ActiveJob::Base.queue_adapter = :test
       ret = OpenStruct.new
       nonprofit = ret.nonprofit = create(:nonprofit_base)
       undeleted_tag_master = ret.undeleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, email_list: build(:email_list_base, nonprofit: nonprofit))
@@ -36,6 +37,7 @@ RSpec.describe Supporter, type: :model do
       deleted_tag_master = ret.deleted_tag_master = create(:tag_master_base, nonprofit: nonprofit, deleted: true, email_list: build(:email_list_base, nonprofit: nonprofit))
       ret.supporter = create(:supporter_base, nonprofit: nonprofit, tag_joins: [build(:tag_join_base, tag_master: undeleted_tag_master), build(:tag_join_base, tag_master: deleted_tag_master)])
 
+      ActiveJob::Base.queue_adapter = :test # this is to clear any jobs that might have been created these objects
       ret
     end
     describe '.active_email_lists' do
@@ -90,6 +92,7 @@ RSpec.describe Supporter, type: :model do
 
         it 'updates nothing if something other than name and email change' do
           ret = prepare
+          expect(MailchimpSignupJob).to_not have_been_enqueued
           ret.supporter.update(phone: "9305268998")
 
           expect(MailchimpSignupJob).to_not have_been_enqueued

@@ -92,7 +92,7 @@ class Supporter < ActiveRecord::Base
     end
 
     def must_update_email_lists?
-      previous_changes.has_key?("name") || previous_changes.has_key?("email")
+      changes.has_key?("name") || changes.has_key?("email")
     end
 
     private
