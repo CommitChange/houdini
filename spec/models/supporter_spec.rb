@@ -61,23 +61,23 @@ RSpec.describe Supporter, type: :model do
       end
     end
 
-    describe '#must_update_email_lists?' do
+    describe 'update email lists on supporter save' do
       it 'when name changed' do 
         ret = prepare
+        expect(ret.supporter).to receive(:update_member_on_all_lists)
         ret.supporter.update(name: "Another name")
-        expect(ret.supporter).to be_must_update_email_lists
       end
 
       it 'when email changed' do 
         ret = prepare
+        expect(ret.supporter).to receive(:update_member_on_all_lists)
         ret.supporter.update(email: "another@email.address")
-        expect(ret.supporter).to be_must_update_email_lists
       end
 
       it 'but not when phone number changes' do
         ret = prepare
+        expect(ret.supporter).to_not receive(:update_member_on_all_lists)
         ret.supporter.update(phone: 920418918)
-        expect(ret.supporter).to_not be_must_update_email_lists
       end
     end
 

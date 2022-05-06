@@ -35,7 +35,7 @@ module InsertEmailLists
       .returning('*')
       .execute
 
-    Nonprofit.find(npo_id).email_lists.each(&:request_populate_list)
+    Nonprofit.find(npo_id).email_lists.each(&:populate_list_later)
 
     return {deleted:deleted.map{|i| {'mailchimp_list_id' => i.mailchimp_list_id}}, deleted_result: result, inserted_lists: inserted_lists, inserted_result: lists}
   end

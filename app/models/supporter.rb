@@ -88,7 +88,7 @@ class Supporter < ActiveRecord::Base
         end
       end
 
-      after_save :update_member_on_all_lists
+      after_save :try_update_member_on_all_lists
     end
 
     def must_update_email_lists?
@@ -97,11 +97,14 @@ class Supporter < ActiveRecord::Base
 
     private
     
-    def update_member_on_all_lists
-      if must_update_email_lists?
-        active_email_lists.update_member_on_all_lists
-      end
+    def try_update_member_on_all_lists
+      update_member_on_all_lists if must_update_email_lists?
     end 
+
+    def update_member_on_all_lists
+      active_email_lists.update_member_on_all_lists
+    end
+
   end
   
   has_many :custom_field_joins, dependent: :destroy

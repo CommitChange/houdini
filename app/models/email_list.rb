@@ -7,31 +7,41 @@ class EmailList < ActiveRecord::Base
 
   has_many :supporters, through: :tag_joins
 
-  def list_url
+  # the path on the Mailchimp api for the list
+  def list_path
    "lists/#{mailchimp_list_id}"
   end
-
-  def list_members_url
-    list_url + "/members"
+  
+  # the path on the Mailchimp api for the list's members
+  def list_members_path
+    list_path + "/members"
   end
 
+  def active?
+    !deleted?
+  end
+
+  # true if we no longer want to sync that list, false if we do
   def deleted?
     tag_master&.deleted
   end
 
-  def request_populate_list
+  # schedules a job to populate the list in the background
+  def populate_list_later
     PopulateListJob.perform_later(self)
   end
 
-  def create_supporter_batch_contents(supporter)
-    {method: 'POST', path: list_members_url, body: Mailchimp::create_subscribe_body(supporter).to_json}
-  end
-
+  # populate the list by adding every Supporter in the list to mailchimp
   def populate_list
     unless deleted?
       Mailchimp.perform_batch_operations(nonprofit.id, supporters.all.map do |s|
-        create_supporter_batch_contents(s)
+        build_supporter_post_operation(s)
       end)
     end
+  end
+
+  # 
+  def build_supporter_post_operation(supporter)
+    MailchimpBatchOperation.new(method: 'POST', list: self, supporter:supporter)
   end
 end
