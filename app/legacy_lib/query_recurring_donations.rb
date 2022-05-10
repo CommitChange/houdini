@@ -388,4 +388,9 @@ module QueryRecurringDonations
     card: i.card.stripe_card_id}}
     return output.to_a
   end
+
+  def self.get_active_recurring_for_an_org(nonprofit_id)
+    supporter_group_by_email = Nonprofit.find(nonprofit_id).supporters.joins(:recurring_donations).where("recurring_donations.active AND recurring_donations.n_failures < 3").references(:recurring_donations).group("supporters.email").select("supporters.email, ARRAY_AGG(supporters.id) AS supporters")
+    JSON.parse(ApplicationController.render 'custom_output/active_recurring_for_an_org', assigns: {supporter_group_by_email: supporter_group_by_email})
+  end
 end
