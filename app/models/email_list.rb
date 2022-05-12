@@ -40,7 +40,6 @@ class EmailList < ActiveRecord::Base
     end
   end
 
-  # 
   def build_supporter_post_operation(supporter)
     MailchimpBatchOperation.new(method: 'POST', list: self, supporter:supporter)
   end
