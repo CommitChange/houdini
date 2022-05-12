@@ -5,7 +5,7 @@ RSpec.describe EmailList, :type => :model do
   it { is_expected.to belong_to(:nonprofit) }
   it { is_expected.to belong_to(:tag_master) }
   
-  describe '#request_populate_list' do
+  describe '#populate_list_later' do
     it 'queues a PopulateListJob' do
       ActiveJob::Base.queue_adapter = :test
       nonprofit = build(:nonprofit_base)
