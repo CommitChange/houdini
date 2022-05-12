@@ -10,14 +10,24 @@ class MailchimpBatchOperation
     :supporter # the Supporter in question
 
   def body
-    Mailchimp::create_subscribe_body(supporter)
+    method === "POST" ? Mailchimp::create_subscribe_body(supporter) : nil
   end
 
   def path
-    list.list_members_path
+    path = list.list_members_path
+    path = path + "/#{Digest::MD5.hexdigest(supporter.email.downcase).to_s}" if method === "DELETE" 
+    path
   end
 
   def to_h
-    {method: method, body: body, path: path}
+    if (supporter.email) 
+      result = {method: method, path: path}
+      if body
+        result[:body] = body
+      end
+      result
+    else
+      nil
+    end
   end
 end
