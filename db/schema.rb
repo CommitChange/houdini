@@ -1270,10 +1270,10 @@ ActiveRecord::Schema.define(version: 20220419171847) do
   create_trigger :update_donations_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_donations_fts BEFORE INSERT OR UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION update_fts_on_donations()
   SQL
-  create_trigger :update_supporters_fts, sql_definition: <<-SQL
-      CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
-  SQL
   create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
       CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
+  SQL
+  create_trigger :update_supporters_fts, sql_definition: <<-SQL
+      CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
   SQL
 end

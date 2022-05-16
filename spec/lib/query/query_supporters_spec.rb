@@ -263,6 +263,22 @@ describe QuerySupporters do
           result = QuerySupporters.full_search(np.id, { search: 'Cac' })
           expect(result[:data][0]['id']).to eq supporter1.id
         end
+
+        context 'when the name being searched is a small name' do
+          it 'finds the supporter' do
+            supporter1.name = 'Eric Schultz'
+            supporter1.save!
+            result = QuerySupporters.full_search(np.id, { search: 'Eri' })
+            expect(result[:data][0]['id']).to eq supporter1.id
+          end
+
+          it 'finds the supporter' do
+            supporter1.name = 'Eric Schultz'
+            supporter1.save!
+            result = QuerySupporters.full_search(np.id, { search: 'Eric' })
+            expect(result[:data][0]['id']).to eq supporter1.id
+          end
+        end
       end
 
       context 'when the name being searched is different' do

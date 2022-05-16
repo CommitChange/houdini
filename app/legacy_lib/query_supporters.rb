@@ -228,10 +228,14 @@ module QuerySupporters
       date_ago = Timespan::TimeUnits[query[:MAX_payment_before]].utc
       expr = expr.and_where("payments.max_date < timezone(COALESCE(nonprofits.timezone, \'UTC\'), timezone(\'UTC\', $date)) OR payments.count = 0", date: date_ago)
     end
+    multiple_strings = []
+    query[:search].to_s.split(' ').each do |s|
+      multiple_strings << "OR supporters.name ILIKE '%#{s}%'"
+    end
     if query[:search].present?
       expr = expr.and_where(%Q(
         supporters.fts @@ websearch_to_tsquery('english', $search)
-        OR supporters.name % $search
+        #{multiple_strings.join(' ')}
         OR (
           supporters.phone IS NOT NULL
           AND supporters.phone != ''
