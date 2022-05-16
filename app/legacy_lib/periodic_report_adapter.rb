@@ -4,6 +4,8 @@ class PeriodicReportAdapter
 
   autoload :CancelledRecurringDonationsReport
   autoload :FailedRecurringDonationsReport
+  autoload :ActiveRecurringDonationsToJsonReport
+  autoload :StartRecurringDonationsToJsonReport
   
 
   REPORT = 'Report'

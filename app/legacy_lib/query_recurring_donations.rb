@@ -393,4 +393,15 @@ module QueryRecurringDonations
     supporter_group_by_email = Nonprofit.find(nonprofit_id).supporters.joins(:recurring_donations).where("recurring_donations.active AND recurring_donations.n_failures < 3").references(:recurring_donations).group("supporters.email").select("supporters.email, ARRAY_AGG(supporters.id) AS supporters")
     JSON.parse(ApplicationController.render 'custom_output/active_recurring_for_an_org', assigns: {supporter_group_by_email: supporter_group_by_email})
   end
+
+  def self.get_new_recurring_for_an_org_during_a_period(nonprofit_id, start_date_for_search=nil , end_date_for_search=nil)
+    if start_date_for_search.nil? || end_date_for_search.nil?
+      start_date_for_search = Time.current.beginning_of_month - 1.month
+      end_date_for_search = Time.current.beginning_of_month
+    end
+    supporter_group_by_email = Nonprofit.find(nonprofit_id).supporters.joins(:recurring_donations)
+      .where("recurring_donations.active AND recurring_donations.n_failures < 3 and recurring_donations.start_date >= ? and recurring_donations.start_date < ?", start_date_for_search, end_date_for_search).references(:recurring_donations).group("supporters.email").select("supporters.email, ARRAY_AGG(supporters.id) AS supporters")
+
+    JSON.parse(ApplicationController.render 'custom_output/active_recurring_for_an_org', assigns: {supporter_group_by_email: supporter_group_by_email})
+  end
 end
