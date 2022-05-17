@@ -11,6 +11,7 @@ describe QuerySupporters do
   
   let(:np) { force_create(:nonprofit)}
   let(:supporter1) { force_create(:supporter, nonprofit: np, name: 'Cacau')}
+  let(:eric_schultz) {force_create(:supporter, nonprofit:np, name: "Eric Schultz")}
   let(:supporter2) { force_create(:supporter, nonprofit: np, name: 'Penelope')}
   let(:campaign) { force_create(:campaign, nonprofit: np, slug: "slug stuff")}
   let(:campaign_gift_option) { force_create(:campaign_gift_option, campaign: campaign, name: campaign_gift_option_name, amount_one_time: gift_level_one_time, amount_recurring: gift_level_recurring)}
@@ -237,8 +238,8 @@ describe QuerySupporters do
         supporter1.save!
       }
 
-      it 'finds when using character filled phone number' do 
-        result = QuerySupporters.full_search(np.id, { search: "A search term" })
+      it 'finds when using character filled phone number' do
+        result = QuerySupporters.full_search(np.id, { search: "search term" }) # if this starts with A it will catch Cacau is that bad? I don't know
         expect(result[:data].count).to eq 0
       end
     end
@@ -262,6 +263,30 @@ describe QuerySupporters do
         it 'finds the supporter' do
           result = QuerySupporters.full_search(np.id, { search: 'Cac' })
           expect(result[:data][0]['id']).to eq supporter1.id
+        end
+      end
+
+      context 'when the name being searched has part of the full name' do
+        it 'finds the supporter' do
+          eric_schultz
+          result = QuerySupporters.full_search(np.id, { search: 'eri' })
+          expect(result[:data][0]['id']).to eq eric_schultz.id
+        end
+      end
+
+      context 'when the name being searched has parts of the full name for both words' do
+        it 'finds the supporter' do
+          eric_schultz
+          result = QuerySupporters.full_search(np.id, { search: 'eri schu' })
+          expect(result[:data][0]['id']).to eq eric_schultz.id
+        end
+      end
+
+      context 'when the name being searched has parts of the full name but one part is wrong' do
+        it 'finds the supporter' do
+          eric_schultz
+          result = QuerySupporters.full_search(np.id, { search: 'jim schu' })
+          expect(result[:data][0]['id']).to eq eric_schultz.id
         end
       end
 
