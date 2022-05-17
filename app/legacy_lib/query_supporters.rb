@@ -231,7 +231,7 @@ module QuerySupporters
     if query[:search].present?
       expr = expr.and_where(%Q(
         supporters.fts @@ websearch_to_tsquery('english', $search)
-        OR supporters.name % $search
+        OR supporters.name % $old_search
         OR (
           supporters.phone IS NOT NULL
           AND supporters.phone != ''
@@ -239,7 +239,7 @@ module QuerySupporters
           AND supporters.phone_index != ''
           AND supporters.phone_index = (regexp_replace($search, '\\D','', 'g'))
         )
-      ), search: query[:search], old_search: '%' + query[:search] + '%')
+      ), search: query[:search], old_search: '(' + query[:search].split.map{|s| "%" + s + "%"}.join("|") + ')')
     end
     if query[:notes].present?
       notes_subquery = Qx.select("STRING_AGG(content, ' ') as content, supporter_id")

@@ -11,12 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20220419171847) do
+ActiveRecord::Schema.define(version: 20220516224148) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pg_stat_statements"
   enable_extension "uuid-ossp"
+  enable_extension "pg_trgm"
+  enable_extension "btree_gin"
 
   create_table "activities", force: :cascade do |t|
     t.integer  "supporter_id"
@@ -1088,6 +1090,7 @@ ActiveRecord::Schema.define(version: 20220419171847) do
   add_index "supporters", ["anonymous", "nonprofit_id"], name: "index_supporters_on_anonymous_and_nonprofit_id", using: :btree
   add_index "supporters", ["fts"], name: "supporters_fts_idx", using: :gin
   add_index "supporters", ["name"], name: "index_supporters_on_name", using: :btree
+  add_index "supporters", ["name"], name: "name_search_idx", using: :gin, opclass: {"name"=>:gin_trgm_ops}
   add_index "supporters", ["nonprofit_id", "deleted"], name: "supporters_nonprofit_id_not_deleted", where: "(NOT deleted)", using: :btree
   add_index "supporters", ["nonprofit_id", "imported_at"], name: "index_supporters_on_nonprofit_id_and_imported_at", using: :btree
   add_index "supporters", ["nonprofit_id", "phone_index", "deleted"], name: "index_supporters_on_nonprofit_id_and_phone_index_and_deleted", where: "((phone IS NOT NULL) AND ((phone)::text <> ''::text))", using: :btree
