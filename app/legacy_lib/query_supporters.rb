@@ -230,7 +230,7 @@ module QuerySupporters
     end
     if query[:search].present?
 
-      icky_bad_search = query[:search].split.map{|s| 
+      split_name_or_search = query[:search].split.map{|s| 
       [
         "OR supporters.name ILIKE #{ActiveRecord::Base.quote_value("%" + s + "%", nil)}", # we need to use this manual quoting because there's no good way to do the quoting
             #with the dollar signed substitution in Qx
@@ -240,7 +240,7 @@ module QuerySupporters
 
       where_string = %Q(
         supporters.fts @@ websearch_to_tsquery('english', $search)
-        #{icky_bad_search}
+        #{split_name_or_search}
         OR (
           supporters.phone IS NOT NULL
           AND supporters.phone != ''
