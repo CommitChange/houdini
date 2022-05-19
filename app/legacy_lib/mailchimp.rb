@@ -114,7 +114,7 @@ module Mailchimp
     end
   end
 
-  # Given a nonprofit id and post_data, which is an array of batch operation hashes OR MailchipmBatchOperation objects
+  # Given a nonprofit id and post_data, which is an array of batch operation hashes OR MailchimpBatchOperation objects
   # See here: http://developer.mailchimp.com/documentation/mailchimp/guides/how-to-use-batch-operations/
   # Perform all the batch operations and return a status report 
   def self.perform_batch_operations(npo_id, post_data)
