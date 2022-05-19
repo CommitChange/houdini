@@ -229,9 +229,18 @@ module QuerySupporters
       expr = expr.and_where("payments.max_date < timezone(COALESCE(nonprofits.timezone, \'UTC\'), timezone(\'UTC\', $date)) OR payments.count = 0", date: date_ago)
     end
     if query[:search].present?
-      expr = expr.and_where(%Q(
+
+      split_name_or_search = query[:search].split.map{|s| 
+      [
+        "OR supporters.name ILIKE #{ActiveRecord::Base.quote_value("%" + s + "%", nil)}", # we need to use this manual quoting because there's no good way to do the quoting
+            #with the dollar signed substitution in Qx
+
+        "OR supporters.name % #{ActiveRecord::Base.quote_value("%" + s + "%", nil)}"
+      ]}.flatten.join("\n")
+
+      where_string = %Q(
         supporters.fts @@ websearch_to_tsquery('english', $search)
-        OR supporters.name % $search
+        #{split_name_or_search}
         OR (
           supporters.phone IS NOT NULL
           AND supporters.phone != ''
@@ -239,7 +248,9 @@ module QuerySupporters
           AND supporters.phone_index != ''
           AND supporters.phone_index = (regexp_replace($search, '\\D','', 'g'))
         )
-      ), search: query[:search], old_search: '%' + query[:search] + '%')
+      )
+
+      expr = expr.and_where(where_string, search: query[:search])
     end
     if query[:notes].present?
       notes_subquery = Qx.select("STRING_AGG(content, ' ') as content, supporter_id")

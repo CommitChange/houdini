@@ -11,13 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20220419171847) do
+ActiveRecord::Schema.define(version: 20220516224148) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
   enable_extension "pg_stat_statements"
   enable_extension "uuid-ossp"
+  enable_extension "pg_trgm"
+  enable_extension "btree_gin"
 
   create_table "activities", force: :cascade do |t|
     t.integer  "supporter_id"
@@ -321,6 +322,7 @@ ActiveRecord::Schema.define(version: 20220419171847) do
     t.tsvector "fts"
   end
 
+  add_index "donations", "lower(designation)", name: "donations_designation", using: :btree
   add_index "donations", ["amount"], name: "donations_amount", using: :btree
   add_index "donations", ["anonymous"], name: "index_donations_on_anonymous", using: :btree
   add_index "donations", ["campaign_id"], name: "donations_campaign_id", using: :btree
@@ -1082,10 +1084,13 @@ ActiveRecord::Schema.define(version: 20220419171847) do
     t.string   "houid"
   end
 
+  add_index "supporters", "lower((email)::text)", name: "supporters_email", where: "(deleted <> true)", using: :btree
+  add_index "supporters", "lower((name)::text)", name: "supporters_lower_name", where: "(deleted <> true)", using: :btree
+  add_index "supporters", "to_tsvector('english'::regconfig, (((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(email, ''::character varying))::text))", name: "supporters_general_idx", using: :gin
   add_index "supporters", ["anonymous", "nonprofit_id"], name: "index_supporters_on_anonymous_and_nonprofit_id", using: :btree
   add_index "supporters", ["fts"], name: "supporters_fts_idx", using: :gin
   add_index "supporters", ["name"], name: "index_supporters_on_name", using: :btree
-  add_index "supporters", ["name"], name: "name_search_idx", using: :btree
+  add_index "supporters", ["name"], name: "name_search_idx", using: :gin, opclass: {"name"=>:gin_trgm_ops}
   add_index "supporters", ["nonprofit_id", "deleted"], name: "supporters_nonprofit_id_not_deleted", where: "(NOT deleted)", using: :btree
   add_index "supporters", ["nonprofit_id", "imported_at"], name: "index_supporters_on_nonprofit_id_and_imported_at", using: :btree
   add_index "supporters", ["nonprofit_id", "phone_index", "deleted"], name: "index_supporters_on_nonprofit_id_and_phone_index_and_deleted", where: "((phone IS NOT NULL) AND ((phone)::text <> ''::text))", using: :btree
@@ -1269,10 +1274,10 @@ ActiveRecord::Schema.define(version: 20220419171847) do
   create_trigger :update_donations_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_donations_fts BEFORE INSERT OR UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION update_fts_on_donations()
   SQL
-  create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
-      CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
-  SQL
   create_trigger :update_supporters_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
+  SQL
+  create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
+      CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
   SQL
 end
