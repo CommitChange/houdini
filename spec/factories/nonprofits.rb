@@ -75,6 +75,10 @@ FactoryBot.define do
       billing_subscription
     end
 
+    trait :with_stripe_account_id do
+      
+    end
+
     trait :with_active_card_on_stripe do
       active_card {association :card_base, :with_created_stripe_customer_and_card}
       

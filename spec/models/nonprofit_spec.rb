@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe Nonprofit, type: :model do
-
+  it_behaves_like 'an houidable entity', :np
   it {is_expected.to validate_presence_of(:name)}
   
   it {is_expected.to validate_presence_of(:city)}
@@ -20,6 +20,12 @@ RSpec.describe Nonprofit, type: :model do
   it {is_expected.to have_one(:nonprofit_key)}
 
   describe 'with cards' do
+    around(:each) do |ex|
+      StripeMock.start
+      ex.run
+      StripeMock.stop
+    end
+
     before(:each) do
       @nonprofit = create(:nonprofit_with_cards)
 

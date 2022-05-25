@@ -8,12 +8,15 @@ describe MergeSupporters do
   let(:old_supporter3) { force_create(:supporter, nonprofit: np) }
   let(:card) { force_create(:card, holder: old_supporter1) }
   around(:each) do |e|
+    StripeMock.start
     Timecop.freeze(2020, 3, 4) do
       e.run
     end
+    StripeMock.stop
   end
   
   describe '.update_associations' do
+    
     #one unique tag for 1
     # one unique tag for 2
     # one common tag on both

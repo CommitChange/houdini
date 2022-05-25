@@ -23,7 +23,14 @@ module InsertRefunds
       supporter_id: {required: true, is_integer: true}
     })
     ParamValidation.new(h, { amount: {required: true, is_integer: true, min: 1} })
+
+    if h['amount'].to_i != nil
+      h['amount'] = h['amount'].to_i
+    end
+
     original_payment = Payment.find(charge['payment_id'])
+
+    original_trx = original_payment.subtransaction_payment.trx
 
     if original_payment.refund_total.to_i + h['amount'].to_i > original_payment.gross_amount.to_i
       raise RuntimeError.new("Refund amount must be less than the net amount of the payment (for charge #{charge['id']})")
@@ -70,6 +77,9 @@ module InsertRefunds
       # Update original payment to increment its refund_total for any future refund attempts
       original_payment.refund_total += h['amount'].to_i
       original_payment.save!
+
+      # Update trx_events
+      original_trx.process_refund(refund)
       # Send the refund receipts in a delayed job
     
       JobQueue.queue JobTypes::RefundCreatedJob, refund
