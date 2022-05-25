@@ -12,20 +12,9 @@ FactoryBot.define do
     id { 540 }
   end
 
-  # factory :user_as_nonprofit_admin, class: User do
-  #   transient do
-  #     nonprofit { create(:fv_poverty) }
-  #   end
-  #   sequence(:email) {|i| "user#{i}@example.string.com"}
-  #   password {"whocares"}
-  #   roles {[
-  #     build(:role, name: 'nonprofit_admin', host: nonprofit)
-  #   ]}
-  # end
-
   factory :user_as_nonprofit_associate, class: User do
     transient do
-      nonprofit { create(:fv_poverty) }
+      nonprofit { create(:nonprofit_base) }
     end
 
     sequence(:email) {|i| "user#{i}@example.string.com"}
@@ -37,12 +26,12 @@ FactoryBot.define do
 
   factory :user_as_super_admin, class: User do
     transient do
-      nonprofit { create(:fv_poverty) }
+      nonprofit { create(:nonprofit_base) }
     end
     sequence(:email) {|i| "user#{i}@example.string.com"}
     password {"whocares"}
     roles {[
-      build(:role, name: 'nonprofit_associate', host: create(:fv_poverty)),
+      build(:role, name: 'nonprofit_associate', host: create(:nonprofit_base)),
       build(:role, name: 'super_admin')
     ]}
   end

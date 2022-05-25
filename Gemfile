@@ -31,8 +31,10 @@ gem 'puma_worker_killer'
 gem 'test-unit'
 gem 'hamster'
 
-gem 'aws-sdk'
+gem 'aws-sdk-s3'
 gem 'aws-sdk-rails'
+
+gem 'json', '>= 2.3.0'
 
 
 # for blocking ip addressses
@@ -61,7 +63,7 @@ gem 'chronic'
 
 # Images
 # https://github.com/carrierwaveuploader/carrierwave
-gem 'carrierwave'
+gem 'carrierwave', '~> 1', '< 2'
 gem 'carrierwave-aws' # for uploading images to amazon s3
 gem 'mini_magick'
 
