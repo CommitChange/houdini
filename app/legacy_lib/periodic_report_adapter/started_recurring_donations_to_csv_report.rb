@@ -1,5 +1,5 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-class PeriodicReportAdapter::StartedRecurringDonationsToJsonReport < PeriodicReportAdapter
+class PeriodicReportAdapter::StartedRecurringDonationsToCsvReport < PeriodicReportAdapter
   def initialize(options)
     @nonprofit_id = options[:nonprofit_id]
     @period = options[:period]
@@ -7,7 +7,7 @@ class PeriodicReportAdapter::StartedRecurringDonationsToJsonReport < PeriodicRep
   end
 
   def run
-    StartedRecurringDonationsToJsonJob.perform_later params
+    StartedRecurringDonationsToCsvJob.perform_later params
   end
 
   private

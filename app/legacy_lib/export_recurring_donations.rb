@@ -75,14 +75,14 @@ module ExportRecurringDonations
   end
 
   
-  def self.run_export_for_active_recurring_donations_to_json(export)
+  def self.run_export_for_active_recurring_donations_to_csv(export)
     file_date = Time.now.getutc().strftime('%m-%d-%Y--%H-%M-%S')
     filename = "tmp/json-exports/recurring_donations-#{export.id}-#{file_date}.json"
 
     s3 = ::Aws::S3::Resource.new
     bucket = s3.bucket(ChunkedUploader::S3::S3_BUCKET_NAME)
     object = bucket.object(filename)
-    object.upload_stream(temp_file:true, acl: 'private', content_type: 'application/json', content_disposition: 'attachment') do |write_stream|
+    object.upload_stream(temp_file:true, acl: 'private', content_type: 'text/csv', content_disposition: 'attachment') do |write_stream|
       write_stream << JSON::generate(QueryRecurringDonations.get_active_recurring_for_an_org(export.nonprofit))
     end
 
