@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20220419171847) do
+ActiveRecord::Schema.define(version: 20220606201226) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -653,6 +653,17 @@ ActiveRecord::Schema.define(version: 20220419171847) do
     t.datetime "updated_at",      null: false
   end
 
+  create_table "nonprofit_s3_keys", force: :cascade do |t|
+    t.integer  "nonprofit_id"
+    t.string   "access_key_id"
+    t.string   "secret_access_key"
+    t.string   "bucket_name"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "nonprofit_s3_keys", ["nonprofit_id"], name: "index_nonprofit_s3_keys_on_nonprofit_id", using: :btree
+
   create_table "nonprofit_verification_backups", force: :cascade do |t|
     t.string "verification_status", limit: 255
   end
@@ -1286,7 +1297,7 @@ ActiveRecord::Schema.define(version: 20220419171847) do
        LANGUAGE plpgsql
       AS $function$
                   BEGIN
-                    new.phone_index = (regexp_replace(new.phone, '\D','', 'g'));
+                    new.phone_index = (regexp_replace(new.phone, '\\D','', 'g'));
                     RETURN new;
                   END
                 $function$
