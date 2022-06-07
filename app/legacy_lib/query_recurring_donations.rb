@@ -389,8 +389,8 @@ module QueryRecurringDonations
     return output.to_a
   end
 
-  def self.get_active_recurring_for_an_org(nonprofit_id)
-    supporter_groups_by_email = Nonprofit.find(nonprofit_id).supporters.joins(:recurring_donations).where("recurring_donations.active AND recurring_donations.n_failures < 3").references(:recurring_donations).group("supporters.email").select("supporters.email, ARRAY_AGG(supporters.id) AS supporters")
+  def self.get_active_recurring_for_an_org(nonprofit)
+    supporter_groups_by_email = nonprofit.supporters.joins(:recurring_donations).where("recurring_donations.active AND recurring_donations.n_failures < 3").references(:recurring_donations).group("supporters.email").select("supporters.email, ARRAY_AGG(supporters.id) AS supporters")
 
     result = generate_output_by_supporter_email_groups(supporter_groups_by_email)
         
@@ -401,19 +401,19 @@ module QueryRecurringDonations
     
   end
 
-  def self.get_new_recurring_for_an_org_during_a_period(nonprofit_id, start_date_for_search=nil , end_date_for_search=nil)
+  def self.get_new_recurring_for_an_org_during_a_period(nonprofit, start_date_for_search=nil , end_date_for_search=nil)
     if start_date_for_search.nil? || end_date_for_search.nil?
       start_date_for_search = Time.current.beginning_of_month - 1.month
       end_date_for_search = Time.current.beginning_of_month
     end
-    supporter_groups_by_email = Nonprofit.find(nonprofit_id).supporters.joins(:recurring_donations)
+    supporter_groups_by_email = nonprofit.supporters.joins(:recurring_donations)
       .where("recurring_donations.active AND recurring_donations.n_failures < 3 and recurring_donations.start_date >= ? and recurring_donations.start_date < ?", start_date_for_search, end_date_for_search).references(:recurring_donations).group("supporters.email").select("supporters.email, ARRAY_AGG(supporters.id) AS supporters")
 
     result = generate_output_by_supporter_email_groups(supporter_groups_by_email)
     Format::Csv.from_data(result, titleize_header: false)
   end
 
-  def self.generate_output_by_supporter_email_group(supporter_groups_by_email)
+  def self.generate_output_by_supporter_email_groups(supporter_groups_by_email)
     supporter_groups_by_email.map do |supporter_group|
       all_supporters = supporter_group.supporters.map{|id| Supporter.includes(:recurring_donations, :tag_joins => :tag_master).find(id)}
       tags = all_supporters.map{|s| s.tag_joins.joins(:tag_master).where("NOT tag_masters.deleted").references(:tag_masters).pluck("tag_masters.name")}.flatten
@@ -422,7 +422,7 @@ module QueryRecurringDonations
       {
         email: supporter_group.email, 
         tags: tags.join(','),
-        active_recurring_donations: recurrings.map{|recurring| recurring.amount +',' + recurring.start_date.to_datetime.utc.to_i}.join(';')
+        active_recurring_donations: recurrings.map{|recurring| recurring.amount.to_s + ',' + recurring.start_date.to_datetime.utc.to_i.to_s}.join(';')
       }
     end
   end

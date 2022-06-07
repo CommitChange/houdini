@@ -2,15 +2,12 @@
 class ExportJob < ApplicationJob
   queue_as :default
 
-  def perform(nonprofit, user, export)
-  end
-
   before_enqueue do |job|
-    job.arguments.push(Export.create(nonprofit: job.nonprofit, user: job.user, status: :queued))
+    job.export = Export.create(nonprofit: job.nonprofit, user: job.user, status: :queued)
   end
 
   before_perform do |job|
-    job.arguments.push(Export.create(nonprofit: job.nonprofit, user: job.user, status: :queued)) unless export
+    job.export = Export.create(nonprofit: job.nonprofit, user: job.user, status: :queued) unless export
     job.export.update(status: :started)
   end
 
@@ -27,15 +24,19 @@ class ExportJob < ApplicationJob
   
   # we use these where to get the args in various callbacks
   def nonprofit
-    arguments[0]
+    arguments.first[:nonprofit]
   end
 
   def user
-    arguments[1]
+    arguments.first[:user]
   end
   
   def export
-    arguments[2]
+    arguments.first[:export]
+  end
+
+  def export=(export)
+    arguments.first[:export] = export
   end
 
 

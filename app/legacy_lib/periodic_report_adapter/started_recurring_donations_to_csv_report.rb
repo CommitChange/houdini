@@ -3,7 +3,8 @@ class PeriodicReportAdapter::StartedRecurringDonationsToCsvReport < PeriodicRepo
   def initialize(options)
     @nonprofit_id = options[:nonprofit_id]
     @period = options[:period]
-    @user_ids = options[:users].pluck(:id)
+    @users = options[:users]
+    @nonprofit_s3_key = options[:nonprofit_s3_key]
   end
 
   def run
@@ -11,8 +12,12 @@ class PeriodicReportAdapter::StartedRecurringDonationsToCsvReport < PeriodicRepo
   end
 
   private
+  
+  def nonprofit
+    Nonprofit.find(@nonprofit_id)
+  end
 
   def params
-    { nonprofit: nonprofit }
+    { nonprofit: nonprofit, nonprofit_s3_key: @nonprofit_s3_key, user: users.first }
   end
 end

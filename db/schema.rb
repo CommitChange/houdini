@@ -838,11 +838,13 @@ ActiveRecord::Schema.define(version: 20220606201226) do
   end
 
   create_table "periodic_reports", force: :cascade do |t|
-    t.boolean "active",       default: false, null: false
-    t.string  "report_type",                  null: false
-    t.string  "period",                       null: false
+    t.boolean "active",              default: false, null: false
+    t.string  "report_type",                         null: false
+    t.string  "period",                              null: false
     t.integer "user_id"
     t.integer "nonprofit_id"
+    t.string  "filename"
+    t.integer "nonprofit_s3_key_id"
   end
 
   add_index "periodic_reports", ["nonprofit_id"], name: "index_periodic_reports_on_nonprofit_id", using: :btree
@@ -1297,7 +1299,7 @@ ActiveRecord::Schema.define(version: 20220606201226) do
        LANGUAGE plpgsql
       AS $function$
                   BEGIN
-                    new.phone_index = (regexp_replace(new.phone, '\\D','', 'g'));
+                    new.phone_index = (regexp_replace(new.phone, '\D','', 'g'));
                     RETURN new;
                   END
                 $function$

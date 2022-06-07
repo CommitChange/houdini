@@ -2,8 +2,8 @@
 class ActiveRecurringDonationsToCsvJob < ExportJob
   queue_as :default
 
-  def perform(nonprofit, user, export)
-    url = ExportRecurringDonations.run_export_for_active_recurring_donations_to_csv(export)
+  def perform(opts={})
+    url = ExportRecurringDonations.run_export_for_active_recurring_donations_to_csv(opts[:nonprofit_s3_key], opts[:filename], opts[:export])
     export.update(url: url)
   end
 

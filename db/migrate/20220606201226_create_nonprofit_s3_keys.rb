@@ -8,5 +8,8 @@ class CreateNonprofitS3Keys < ActiveRecord::Migration
 
       t.timestamps null: false
     end
+
+    add_column :periodic_reports, :filename, :string
+    add_reference :periodic_reports, :nonprofit_s3_key
   end
 end

@@ -5,7 +5,7 @@ class PeriodicReportAdapter
   autoload :CancelledRecurringDonationsReport
   autoload :FailedRecurringDonationsReport
   autoload :ActiveRecurringDonationsToCsvReport
-  autoload :StartRecurringDonationsToCsvReport
+  autoload :StartedRecurringDonationsToCsvReport
   
 
   REPORT = 'Report'
