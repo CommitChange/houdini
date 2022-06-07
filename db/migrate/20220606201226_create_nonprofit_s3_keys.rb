@@ -5,6 +5,7 @@ class CreateNonprofitS3Keys < ActiveRecord::Migration
       t.string :access_key_id, required:true
       t.string :secret_access_key, required:true
       t.string :bucket_name, required:true
+      t.string :region, required: true
 
       t.timestamps null: false
     end

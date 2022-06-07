@@ -658,6 +658,7 @@ ActiveRecord::Schema.define(version: 20220606201226) do
     t.string   "access_key_id"
     t.string   "secret_access_key"
     t.string   "bucket_name"
+    t.string   "region"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
   end

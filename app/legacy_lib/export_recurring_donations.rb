@@ -111,7 +111,7 @@ module ExportRecurringDonations
 
   def self.get_bucket(nonprofit_s3_key)
     if nonprofit_s3_key.present?
-      nonprofit_s3_key.bucket
+      nonprofit_s3_key.s3_bucket
     else
       s3 = ::Aws::S3::Resource.new
       bucket = s3.bucket(ChunkedUploader::S3::S3_BUCKET_NAME)

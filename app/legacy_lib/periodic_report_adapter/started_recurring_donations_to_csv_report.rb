@@ -5,6 +5,7 @@ class PeriodicReportAdapter::StartedRecurringDonationsToCsvReport < PeriodicRepo
     @period = options[:period]
     @users = options[:users]
     @nonprofit_s3_key = options[:nonprofit_s3_key]
+    @filename = options[:filename]
   end
 
   def run
@@ -18,6 +19,6 @@ class PeriodicReportAdapter::StartedRecurringDonationsToCsvReport < PeriodicRepo
   end
 
   def params
-    { nonprofit: nonprofit, nonprofit_s3_key: @nonprofit_s3_key, user: users.first }
+    { nonprofit: nonprofit, nonprofit_s3_key: @nonprofit_s3_key, user: @users.first, filename: @filename }
   end
 end

@@ -3,10 +3,10 @@
 class NonprofitS3Key < ActiveRecord::Base
   belongs_to :nonprofit, required: true
 
-  validates_presence_of :access_key_id, :secret_access_key, :bucket_name
+  validates_presence_of :access_key_id, :secret_access_key, :bucket_name, :region
 
   def aws_client
-    ::Aws::Client.new(credentials:credentials)
+    ::Aws::S3::Client.new(credentials:credentials, region: region)
   end
 
   def credentials
@@ -14,7 +14,7 @@ class NonprofitS3Key < ActiveRecord::Base
   end
 
   def s3_resource
-    ::Aws::S3::Resources.new(client: aws_client)
+    ::Aws::S3::Resource.new(client: aws_client)
   end
 
   def s3_bucket
