@@ -18,12 +18,12 @@ end
 
 handle_expansion(:subtransaction, transaction.subtransaction, {json: json, __expand: __expand})
 
-handle_array_expansion(:transaction_assignments, transaction.transaction_assignments, {json: json, __expand: __expand, item_as: :transaction_assignment}) do |tra, opts|
-	handle_item_expansion(tra, opts)
+handle_array_expansion(:transaction_assignments, transaction.transaction_assignments, {json: json, __expand: __expand, item_as: :transaction_assignment}) do |expansion|
+  expansion.handle_item_expansion
 end
 
-handle_array_expansion(:payments, transaction.payments.ordered, {json: json, __expand: __expand, item_as: :subtransaction_payment}) do |py, opts|
-	handle_item_expansion(py, opts)
+handle_array_expansion(:payments, transaction.payments.ordered, {json: json, __expand: __expand, item_as: :subtransaction_payment}) do |expansion|
+  expansion.handle_item_expansion
 end
 
 #json.url api_nonprofit_transaction_url(transaction.nonprofit, transaction)

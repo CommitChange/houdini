@@ -12,8 +12,8 @@ handle_expansion(:supporter, subtransaction.supporter, {json: json, __expand: __
 handle_expansion(:nonprofit, subtransaction.nonprofit,  {json: json, __expand: __expand})
 handle_expansion(:transaction, subtransaction.trx, {json: json, __expand: __expand})
 
-handle_array_expansion(:payments, subtransaction.subtransaction_payments.ordered, {json:json, __expand: __expand, item_as: :subtransaction_payment}) do |py, opts|
-	handle_item_expansion(py, opts)
+handle_array_expansion(:payments, subtransaction.subtransaction_payments.ordered, {json:json, __expand: __expand, item_as: :subtransaction_payment}) do |expansion|
+  expansion.handle_item_expansion
 end
 
 
