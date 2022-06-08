@@ -4,5 +4,6 @@ FactoryBot.define do
     access_key_id { "MyString" }
     secret_access_key { "MyString" }
     bucket_name { "MyString" }
+    region {"ci-estn-1"}
   end
 end
