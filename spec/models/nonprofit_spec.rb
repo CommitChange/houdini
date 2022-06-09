@@ -24,9 +24,9 @@ RSpec.describe Nonprofit, type: :model do
 
   describe 'with cards' do
     around(:each) do |ex|
-      StripeMock.start
-      ex.run
-      StripeMock.stop
+      StripeMockHelper.mock do 
+        ex.run
+      end
     end
     
     before(:each) do
