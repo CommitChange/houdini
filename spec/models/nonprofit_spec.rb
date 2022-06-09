@@ -23,6 +23,12 @@ RSpec.describe Nonprofit, type: :model do
   it {is_expected.to have_many(:associated_object_events).class_name("ObjectEvent")}
 
   describe 'with cards' do
+    around(:each) do |ex|
+      StripeMock.start
+      ex.run
+      StripeMock.stop
+    end
+    
     before(:each) do
       @nonprofit = create(:nonprofit_with_cards)
 
@@ -352,5 +358,9 @@ RSpec.describe Nonprofit, type: :model do
         expect(nonprofit_with_activated_deactivation_record.deactivated?).to eq true
       }
     end
+  end
+
+  describe '::S3Keys' do
+    it {is_expected.to have_many(:nonprofit_s3_keys)}
   end
 end

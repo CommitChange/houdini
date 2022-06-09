@@ -60,6 +60,7 @@ class Nonprofit < ActiveRecord::Base
   has_many :donations
   has_many :recurring_donations
   has_many :payments
+  has_many :transactions, through: :supporters
   has_many :supporters, dependent: :destroy
   has_many :supporter_notes, through: :supporters
   has_many :profiles, through: :donations
@@ -79,6 +80,7 @@ class Nonprofit < ActiveRecord::Base
   has_many :export_formats
 
   has_one :nonprofit_key
+  
   has_many :email_lists
 
   has_one :bank_account, -> { where("COALESCE(bank_accounts.deleted, false) = false") }, dependent: :destroy
@@ -366,6 +368,12 @@ class Nonprofit < ActiveRecord::Base
     def unpublish!
       self.published = false
       self.save!
+    end
+  end
+
+  concerning :S3Keys do
+    included do
+      has_many :nonprofit_s3_keys
     end
   end
 
