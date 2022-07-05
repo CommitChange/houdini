@@ -129,7 +129,7 @@
     "mobx-react-devtools": "^5.0.1",
     "mobx-react-form": "github:houdiniproject/mobx-react-form#our_fix",
     "mobx-utils": "^5.0.1",
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "moment-range": "2.2.0",
     "moment-timezone": "^0.5.34",
     "no-scroll": "^2.1.0",
