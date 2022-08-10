@@ -2,44 +2,31 @@
 require 'rails_helper'
 
 describe CreateCampaignGift do
+  before(:each){
+    ##stub out the mailing stuff used by campaign creation
+    cm = double(CampaignMailer)
+    allow(cm).to receive(:creation_followup)
+    nam = double(NonprofitAdminMailer)
+    allow(nam).to receive(:supporter_fundraiser)
+    allow(CampaignMailer).to receive(:delay).and_return(cm)
+    allow(NonprofitAdminMailer).to receive(:delay).and_return(nam)
 
-	describe '.create' do
-    before(:each){
-      ##stub out the mailing stuff used by campaign creation
-      cm = double(CampaignMailer)
-      allow(cm).to receive(:creation_followup)
-      nam = double(NonprofitAdminMailer)
-      allow(nam).to receive(:supporter_fundraiser)
-      allow(CampaignMailer).to receive(:delay).and_return(cm)
-      allow(NonprofitAdminMailer).to receive(:delay).and_return(nam)
-
-    }
+  }
+	describe '.create_from_ids' do
     describe 'param validation' do
       let (:donation) { force_create(:donation)}
       it 'basic validation' do
-        expect { CreateCampaignGift.create({}) }.to(raise_error {|error|
+        expect { CreateCampaignGift.create_from_ids({}) }.to(raise_error {|error|
 					expect(error).to be_a(ParamValidation::ValidationError)
           expect_validation_errors(error.data, [{
-                                                    :key => :campaign_gift_option_id,
-                                                    :name => :required
-                                                },
-																								{
-                                                    :key => :campaign_gift_option_id,
-                                                    :name => :is_integer
-                                                },
-																								{
-																									:key => :donation_id,
-																									:name => :required
-                                                },
-                                                {
-																										:key => :donation_id,
-																										:name => :is_integer
+                                                    :key => :donation_id,
+
                                                 }])
         })
       end
 
       it 'validates donation exists' do
-				expect {CreateCampaignGift.create({:donation_id => 555, :campaign_gift_option_id => 5555}) }.to(raise_error {|error|
+				expect {CreateCampaignGift.create_from_ids({:donation_id => 555, :campaign_gift_option_id => 5555}) }.to(raise_error {|error|
           expect(error).to be_a(ParamValidation::ValidationError)
           expect_validation_errors(error.data, {:key => :donation_id})
           expect(error.message).to eq ('555 is not a valid donation id.')
@@ -47,7 +34,7 @@ describe CreateCampaignGift do
       end
 
 			it 'validates campaign gift option exists' do
-				expect {CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => 5555}) }.to(raise_error {|error|
+				expect {CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => 5555}) }.to(raise_error {|error|
 					expect(error).to be_a(ParamValidation::ValidationError)
 					expect_validation_errors(error.data, {:key => :campaign_gift_option_id})
 					expect(error.message).to eq ('5555 is not a valid campaign gift option')
@@ -74,7 +61,7 @@ describe CreateCampaignGift do
           billing_subscription
 
           force_create(:campaign_gift, :donation => donation)
-          expect { CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
+          expect { CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
 						expect(error).to be_a(ParamValidation::ValidationError)
 						expect_validation_errors(error.data, {:key => :donation_id})
             expect(error.message).to eq ("#{donation.id} already has at least one associated campaign gift")
@@ -89,7 +76,7 @@ describe CreateCampaignGift do
           campaign
           bad_campaign
           billing_subscription
-          expect { CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
+          expect { CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
             expect(error).to be_a(ParamValidation::ValidationError)
             expect_validation_errors(error.data, {:key => :campaign_gift_option_id})
             expect(error.message).to eq ("#{campaign_gift_option.id} is not for the same campaign as donation #{donation.id}")
@@ -107,7 +94,7 @@ describe CreateCampaignGift do
           campaign_gift_option = force_create(:campaign_gift_option, :campaign => campaign, :amount_one_time => 300, :name=> "name")
           expect(adm).to receive(:notify_failed_gift).with(donation, kind_of(Payment), campaign_gift_option)
           expect(AdminMailer).to receive(:delay).and_return(adm)
-          expect { CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
+          expect { CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
             expect(error).to be_a(ParamValidation::ValidationError)
             expect_validation_errors(error.data, {:key => :campaign_gift_option_id})
             expect(error.message).to eq ("#{campaign_gift_option.id} gift options requires a donation of 300 for donation #{donation.id}")
@@ -127,7 +114,7 @@ describe CreateCampaignGift do
 
           expect(adm).to receive(:notify_failed_gift).with(donation, kind_of(Payment), campaign_gift_option)
           expect(AdminMailer).to receive(:delay).and_return(adm)
-          expect { CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
+          expect { CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
             expect(error).to be_a(ParamValidation::ValidationError)
             expect_validation_errors(error.data, {:key => :campaign_gift_option_id})
             expect(error.message).to eq ("#{campaign_gift_option.id} gift options requires a recurring donation of 300 for donation #{donation.id}")
@@ -169,7 +156,7 @@ describe CreateCampaignGift do
 
           campaign_gift = force_create(:campaign_gift, :campaign_gift_option => campaign_gift_option)
 
-          expect { CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
+          expect { CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id}) }.to raise_error {|error|
             expect(error).to be_a(ParamValidation::ValidationError)
             expect_validation_errors(error.data, [{:key => :campaign_gift_option_id}])
             expect(error.message).to eq "#{campaign_gift_option.id} has no more inventory"
@@ -195,7 +182,7 @@ describe CreateCampaignGift do
           Timecop.freeze(2020, 4, 5) do
             billing_subscription
             donation = force_create(:donation, :campaign => campaign, :nonprofit => nonprofit, :amount => 5000)
-            result = CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
+            result = CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
             expected = {donation_id: donation.id, campaign_gift_option_id: campaign_gift_option.id, created_at: Time.now, updated_at: Time.now, id: result.id, recurring_donation_id: nil}.with_indifferent_access
             expect(result.attributes).to eq expected
             expect(CampaignGift.first.attributes).to eq expected
@@ -208,7 +195,7 @@ describe CreateCampaignGift do
             billing_subscription
             donation = force_create(:donation, :campaign => campaign, :nonprofit => nonprofit, :amount => 300)
             rd = force_create(:recurring_donation, :amount => 300, :donation => donation)
-            result = CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
+            result = CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
             expected = {donation_id: donation.id, campaign_gift_option_id: campaign_gift_option.id, created_at: Time.now, updated_at: Time.now, id: result.id, recurring_donation_id: nil}.with_indifferent_access
             expect(result.attributes).to eq expected
             expect(CampaignGift.first.attributes).to eq expected
@@ -224,7 +211,7 @@ describe CreateCampaignGift do
           Timecop.freeze(2020, 4, 5) do
             billing_subscription
             donation = force_create(:donation, :campaign => campaign, :nonprofit => nonprofit, :amount => 5000)
-            result = CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
+            result = CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
             expected = {donation_id: donation.id, campaign_gift_option_id: campaign_gift_option.id, created_at: Time.now, updated_at: Time.now, id: result.id, recurring_donation_id: nil}.with_indifferent_access
             expect(result.attributes).to eq expected
             expect(CampaignGift.first.attributes).to eq expected
@@ -237,7 +224,7 @@ describe CreateCampaignGift do
             billing_subscription
             donation = force_create(:donation, :campaign => campaign, :nonprofit => nonprofit, :amount => 300)
             rd = force_create(:recurring_donation, :amount => 300, :donation => donation)
-            result = CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
+            result = CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
             expected = {donation_id: donation.id, campaign_gift_option_id: campaign_gift_option.id, created_at: Time.now, updated_at: Time.now, id: result.id, recurring_donation_id: nil}.with_indifferent_access
             expect(result.attributes).to eq expected
             expect(CampaignGift.first.attributes).to eq expected
@@ -253,7 +240,7 @@ describe CreateCampaignGift do
           Timecop.freeze(2020, 4, 5) do
             billing_subscription
             donation = force_create(:donation, :campaign => campaign, :nonprofit => nonprofit, :amount => 5000)
-            result = CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
+            result = CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
             expected = {donation_id: donation.id, campaign_gift_option_id: campaign_gift_option.id, created_at: Time.now, updated_at: Time.now, id: result.id, recurring_donation_id: nil}.with_indifferent_access
             expect(result.attributes).to eq expected
             expect(CampaignGift.first.attributes).to eq expected
@@ -266,7 +253,7 @@ describe CreateCampaignGift do
             billing_subscription
             donation = force_create(:donation, :campaign => campaign, :nonprofit => nonprofit, :amount => 300)
             rd = force_create(:recurring_donation, :amount => 300, :donation => donation)
-            result = CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
+            result = CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
             expected = {donation_id: donation.id, campaign_gift_option_id: campaign_gift_option.id, created_at: Time.now, updated_at: Time.now, id: result.id, recurring_donation_id: nil}.with_indifferent_access
             expect(result.attributes).to eq expected
             expect(CampaignGift.first.attributes).to eq expected
@@ -282,7 +269,7 @@ describe CreateCampaignGift do
           Timecop.freeze(2020, 4, 5) do
             billing_subscription
             donation = force_create(:donation, :campaign => campaign, :nonprofit => nonprofit, :amount => 5000)
-            result = CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
+            result = CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
             expected = {donation_id: donation.id, campaign_gift_option_id: campaign_gift_option.id, created_at: Time.now, updated_at: Time.now, id: result.id, recurring_donation_id: nil}.with_indifferent_access
             expect(result.attributes).to eq expected
             expect(CampaignGift.first.attributes).to eq expected
@@ -295,7 +282,7 @@ describe CreateCampaignGift do
             billing_subscription
             donation = force_create(:donation, :campaign => campaign, :amount => 356, :nonprofit => nonprofit)
             rd = force_create(:recurring_donation, :amount => 356, :donation => donation)
-            result = CreateCampaignGift.create({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
+            result = CreateCampaignGift.create_from_ids({:donation_id => donation.id, :campaign_gift_option_id => campaign_gift_option.id})
             expected = {donation_id: donation.id, campaign_gift_option_id: campaign_gift_option.id, created_at: Time.now, updated_at: Time.now, id: result.id, recurring_donation_id: nil}.with_indifferent_access
             expect(result.attributes).to eq expected
             expect(CampaignGift.first.attributes).to eq expected

@@ -3,6 +3,6 @@ class CampaignGiftsController < ApplicationController
 
   # post /campaign_gifts
 	def create
-		json_saved CreateCampaignGift.create params[:campaign_gift]
+		json_saved CreateCampaignGift.create_from_ids params[:campaign_gift]
 	end
 end
