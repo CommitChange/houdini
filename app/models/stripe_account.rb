@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 class StripeAccount < ActiveRecord::Base
   attr_accessible  :object, :stripe_account_id
   has_one :nonprofit, primary_key: :stripe_account_id

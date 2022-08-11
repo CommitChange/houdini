@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 
 # DisputeCase contains all of the information necessary to build and access the objects used as part of a test case.
 class DisputeCase

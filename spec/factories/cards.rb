@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 FactoryBot.define do
   factory :card, aliases: [:active_card_1, :active_card_2, :card_base] do
     name {'card 1'} 

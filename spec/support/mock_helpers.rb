@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 module MockHelpers
   def self.payment_export_headers()
     ["Date",'Gross Amount',	'Fee Total',	'Net Amount','Type',	'Last Name',	'First Name','Full Name', 'Organization',	'Email',	'Phone',	'Address',	'City',	'State',	'Postal Code',	'Country', 'Supporter Id',	 'Designation', "Dedication Type",

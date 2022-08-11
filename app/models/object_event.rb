@@ -1,4 +1,4 @@
-# @license License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# @license License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 
 =begin
 An ObjectEvent represents a change that was made to an Houdini object. For example, when a supporter

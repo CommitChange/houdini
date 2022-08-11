@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 module InsertDuplicate
   def self.campaign(campaign_id, profile_id, new_nonprofit=nil)
     ParamValidation.new({:campaign_id => campaign_id, :profile_id => profile_id},

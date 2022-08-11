@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 require 'rails_helper'
 require 'controllers/support/shared_user_context'
 require 'controllers/support/new_controller_user_context'

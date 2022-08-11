@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 class ExportFormat < ActiveRecord::Base
   # name - string that refers to the name of the nonprofit
   # date_format - a string that refers to the desired date format

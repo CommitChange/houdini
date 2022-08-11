@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 RSpec.shared_context :general_shared_user_context do
   let(:user_as_np_admin) {
     __create_admin(nonprofit)

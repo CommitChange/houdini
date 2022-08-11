@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 FactoryBot.define do
   factory :stripe_card, aliases: [:stripe_card_base], class: 'Stripe::Card' do
     stripe_object_base
