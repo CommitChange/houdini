@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 describe CalculateSuggestedAmounts do
   describe '.calculate' do
     it 'param validation' do

@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 
 # InterpolationDictionary is a simple class for replacing braced variables,
 # like {{NAME}}, with a different value. We use this for email templates.

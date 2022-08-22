@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 class StripeCharge < ActiveRecord::Base
   attr_accessible  :object, :stripe_charge_id
   has_one :charge, primary_key: :stripe_charge_id, foreign_key: :stripe_charge_id

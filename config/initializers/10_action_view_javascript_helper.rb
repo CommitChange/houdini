@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 # Fix for CVE-2020-5267
 if Rails.version < '5.2.4.2'
   # from https://github.com/advisories/GHSA-65cv-r6x7-79hv

@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 #
 # based on https://github.com/jnunemaker/httparty/blob/b8f769e9f3133ec1dfa7fb2800ff3542d4248099/lib/httparty/logger/curl_formatter.rb which is
 # under the following license:

@@ -1,4 +1,4 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 class PosgresqlDateFormatValidator < ActiveModel::Validator
   # based on https://www.postgresql.org/docs/current/functions-formatting.html
   # must receive a { options: { attribute_name: <date attribute name> } } to do the validation

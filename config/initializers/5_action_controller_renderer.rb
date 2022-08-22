@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+# License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 if Rails.version < '5'
   # https://github.com/rails/rails/blob/801e399e42cab610860e307f2dd77c1edb6e1fac/actionpack/lib/action_controller/metal.rb
   module ActionController
