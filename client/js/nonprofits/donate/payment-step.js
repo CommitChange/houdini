@@ -11,7 +11,7 @@ const progressBar = require('../../components/progress-bar')
 const { CommitchangeFeeCoverageCalculator } = require('../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator')
 const { centsToDollars } = require('../../common/format')
 const cloneDeep = require('lodash/cloneDeep')
-const PostCharge = require('./donation-post').default
+const DonationSubmitter = require('./donation_submitter').default;
 
 const sepaTab = 'sepa'
 const cardTab = 'credit_card'
@@ -138,21 +138,24 @@ const postTracking = (utmParams, donationResponse) => {
   }
 }
 
-var posting = false // hack switch to prevent any kind of charge double post
-// Post either a recurring or one-time donation
+const donationSubmitter = new DonationSubmitter();
 const postDonation = (donation, paramsWithGift$) => {
   
-  if (posting) return flyd.stream()
-  else posting = true
-  
+
   const result$ = flyd.stream()
   const campaign_gift_option_id = paramsWithGift$() && (paramsWithGift$().gift_option_id || paramsWithGift$().gift_option && paramsWithGift$().gift_option.id);
   const plausible = window['plausible'];
-  PostCharge({
+  donationSubmitter.Submit({
     donation,
     campaign_gift_option_id,
     plausible
-  }).then(i => result$(i)).catch(i => result$(i))
+  }).then((i) => {
+    //if it's an object, that means this has completed.
+    if (typeof i === 'object') {
+      result$(i);
+    }
+  }).catch((i) => result$(i))
+  
   return result$;
 }
 
