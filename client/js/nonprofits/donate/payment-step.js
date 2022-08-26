@@ -11,6 +11,7 @@ const progressBar = require('../../components/progress-bar')
 const { CommitchangeFeeCoverageCalculator } = require('../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator')
 const { centsToDollars } = require('../../common/format')
 const cloneDeep = require('lodash/cloneDeep')
+const DonationSubmitter = require('./donation_submitter').default;
 
 const sepaTab = 'sepa'
 const cardTab = 'credit_card'
@@ -85,31 +86,19 @@ function init(state) {
       }
     }, [donationWithSepaId$, donationWithCardToken$, state.activePaymentTab$])
   )
-  const donationResp$ = flyd.flatMap(postDonation, state.donationParams$)
+  const donationResp$ = flyd.flatMap((donation) => postDonation(donation, paramsWithGift$), state.donationParams$)
 
   // Post the gift option, if necessary
   const paramsWithGift$ = flyd.filter(params => params.gift_option_id || params.gift_option && params.gift_option.id, state.params$)
-  const paidWithGift$ = flyd.map(
-    (result) => {
-      const hasParamsWithGift = paramsWithGift$() && (paramsWithGift$().gift_option_id || paramsWithGift$().gift_option.id)
-      if (result.error || !hasParamsWithGift) {
-        return result
-      }
-      else {
-        return postGiftOption(paramsWithGift$().gift_option_id || paramsWithGift$().gift_option.id, result)
-      }
-    }
-    , donationResp$
-  )
 
   state.error$ = flyd.mergeAll([
-    flyd.map(R.prop('error'), flyd.filter(resp => resp.error, paidWithGift$))
+    flyd.map(R.prop('error'), flyd.filter(resp => resp.error, donationResp$))
     , flyd.map(R.always(undefined), state.cardForm.form.submit$)
     , flyd.map(R.always(undefined), state.sepaForm.form.submit$)
     , state.cardForm.error$
     , state.sepaForm.error$
   ])
-  state.paid$ = flyd.filter(resp => !resp.error, paidWithGift$)
+  state.paid$ = flyd.filter(resp => !resp.error, donationResp$)
 
   // Control progress bar for card payment
   state.progress$ = flyd.scanMerge([
@@ -129,32 +118,12 @@ function init(state) {
   ])
 
   // post utm tracking details after donation is saved
-  flyd.map(
-    R.apply((utmParams, donationResponse) => postTracking(app.utmParams, donationResp$))
-    , state.paid$
-  )
-
-  flyd.map(
-    R.apply((donationResponse) => postSuccess(donationResp$))
-    , state.paid$
-  )
+  // flyd.map(
+  //   R.apply((utmParams, donationResponse) => postTracking(app.utmParams, donationResp$))
+  //   , state.paid$
+  // )
 
   return state
-}
-
-const postGiftOption = (campaign_gift_option_id, result) => {
-  return flyd.map(R.prop('body'), request({
-    path: '/campaign_gifts'
-    , method: 'post'
-    , send: {
-      campaign_gift: {
-        donation_id: result.json
-          ? result.json.donation.id // for recurring
-          : result.donation.id // for one-time
-        , campaign_gift_option_id
-      }
-    }
-  }).load)
 }
 
 const postTracking = (utmParams, donationResponse) => {
@@ -169,38 +138,25 @@ const postTracking = (utmParams, donationResponse) => {
   }
 }
 
-const postSuccess = (donationResponse) => {
-  try {
-    const plausible = window['plausible'];
-    if (plausible) {
-      const resp = donationResponse()
-      plausible('payment_succeeded', {props: {amount: resp && resp.charge && resp.charge.amount && (resp.charge.amount / 100)}});
+const donationSubmitter = new DonationSubmitter();
+const postDonation = (donation, paramsWithGift$) => {
+  
+
+  const result$ = flyd.stream()
+  const campaign_gift_option_id = paramsWithGift$() && (paramsWithGift$().gift_option_id || paramsWithGift$().gift_option && paramsWithGift$().gift_option.id);
+  const plausible = window['plausible'];
+  donationSubmitter.Submit({
+    donation,
+    campaign_gift_option_id,
+    plausible
+  }).then((i) => {
+    //if it's an object, that means this has completed.
+    if (typeof i === 'object') {
+      result$(i);
     }
-  }
-  catch(e) {
-    console.error(e)
-  }
-}
-
-var posting = false // hack switch to prevent any kind of charge double post
-// Post either a recurring or one-time donation
-const postDonation = (donation) => {
-  if (posting) return flyd.stream()
-  else posting = true
-  var prefix = `/nonprofits/${app.nonprofit_id}/`
-  var postfix = donation.recurring ? 'recurring_donations' : 'donations'
-
-  if (donation.weekly) {
-    donation.amount = Math.round(4.3 * donation.amount);
-  }
-  delete donation.weekly; // needs to be removed to be processed
-
-  if (donation.recurring) donation = { recurring_donation: donation }
-  return flyd.map(R.prop('body'), request({
-    path: prefix + postfix
-    , method: 'post'
-    , send: donation
-  }).load)
+  }).catch((i) => result$(i))
+  
+  return result$;
 }
 
 const paymentTabs = (state) => {

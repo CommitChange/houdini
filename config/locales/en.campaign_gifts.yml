@@ -1,0 +1,14 @@
+# License: CC0-1.0
+# Sample localization file for English. Add more files in this directory for other locales.
+# See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+en:
+  campaign_gifts:
+    errors:
+      campaign_gift_option_does_not_have_any_available_campaign_gifts: "does not have any available campaign gifts"
+      is_not_for_the_same_nonprofit_as_campaign_gift_option: is not for the same nonprofit as the campaign gift option
+      donation_already_has_a_campaign_gift: "already has a campaign gift"
+      needs_to_be_a_recurring_gift_of_at_least: "needs to be a recurring gift of at least %{amount}"
+      needs_to_be_a_one_time_gift_of_at_least: "needs to be a one time gift of at least %{amount}"
+      needs_a_campaign_gift_option_from_the_same_campaign: "needs a campaign gift option from the same campaign"
+

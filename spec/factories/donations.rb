@@ -10,6 +10,10 @@ FactoryBot.define do
       supporter {build(:supporter_base)}
     end
 
+    trait :and_campaign do
+      campaign {build(:campaign_with_things_set_1, nonprofit: nonprofit)}
+    end
+
     trait :and_campaign_gift do
       campaign { build(:campaign_with_things_set_1, nonprofit: nonprofit)}
       campaign_gifts {[
@@ -21,6 +25,10 @@ FactoryBot.define do
           )
         )]
       }
+    end
+
+    trait :and_recurring do
+      recurring_donation {build(:recurring_donation_base, amount: amount)}
     end
   end
   
