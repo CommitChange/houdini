@@ -139,31 +139,23 @@ function init(state) {
   ], { hidden: true })
 
   flyd.map((paid) => {
-    donationSubmitter.loading = false;
+    donationSubmitter.completed(error);
   }, state.paid$)
 
-  flyd.map(() => {
-    donationSubmitter.error = undefined;
-  }, state.cardForm.form.submit$)
-
-  flyd.map(() => {
-    donationSubmitter.error = undefined;
-  }, state.sepaForm.form.submit$)
-
   flyd.map((submit) => {
-    donationSubmitter.loading = true;
+    donationSubmitter.beginSubmit();
   }, state.cardForm.form.validSubmit$)
 
   flyd.map((submit) => {
-    donationSubmitter.loading = true;
+    donationSubmitter.beginSubmit();
   }, state.sepaForm.form.validSubmit$)
 
   flyd.map((error) => {
-    donationSubmitter.error = error;
+    donationSubmitter.reportError(error);
   }, state.cardForm.error$)
   
   flyd.map((error) => {
-    donationSubmitter.error = error;
+    donationSubmitter.reportError(error);
   }, state.sepaForm.error$)
 
   // post utm tracking details after donation is saved
