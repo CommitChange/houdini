@@ -47,6 +47,18 @@ function init(state) {
   function handleDonationAmountCalcEvent(e) {
     updateFromDonationAmountCalculator();
   }
+  
+  state.loading$ = flyd.stream();
+  state.error$ = flyd.stream();
+
+  function updateFromDonationSubmitter() {
+    state.loading$(donationSubmitter.loading);
+    state.error$(donationSubmitter.error);
+  }
+
+  function handleDonationSubmitterChanged(e) {
+    updateFromDonationSubmitter();
+  }
 
   function onInit() {
     donationAmountCalculator.inputAmount = state.donation$().amount
@@ -116,13 +128,6 @@ function init(state) {
     , donationResp$
   )
 
-  state.error$ = flyd.mergeAll([
-    flyd.map(R.prop('error'), flyd.filter(resp => resp.error, paidWithGift$))
-    , flyd.map(R.always(undefined), state.cardForm.form.submit$)
-    , flyd.map(R.always(undefined), state.sepaForm.form.submit$)
-    , state.cardForm.error$
-    , state.sepaForm.error$
-  ])
   state.paid$ = flyd.filter(resp => !resp.error, paidWithGift$)
 
   // Control progress bar for card payment
@@ -137,6 +142,14 @@ function init(state) {
     donationSubmitter.loading = false;
   }, state.paid$)
 
+  flyd.map(() => {
+    donationSubmitter.error = undefined;
+  }, state.cardForm.form.submit$)
+
+  flyd.map(() => {
+    donationSubmitter.error = undefined;
+  }, state.sepaForm.form.submit$)
+
   flyd.map((submit) => {
     donationSubmitter.loading = true;
   }, state.cardForm.form.validSubmit$)
@@ -146,32 +159,12 @@ function init(state) {
   }, state.sepaForm.form.validSubmit$)
 
   flyd.map((error) => {
-    if (error) {
-      donationSubmitter.loading = false;
-    }
+    donationSubmitter.error = error;
   }, state.cardForm.error$)
   
   flyd.map((error) => {
-    if (error) {
-      donationSubmitter.loading = false;
-    }
+    donationSubmitter.error = error;
   }, state.sepaForm.error$)
-
-  flyd.map((error) => {
-    if (error) {
-      donationSubmitter.loading = false;
-    }
-      
-  }, state.error$)
-
-  // state.loading$ = flyd.mergeAll([
-  //   flyd.map(R.always(true), state.cardForm.form.validSubmit$)
-  //   , flyd.map(R.always(true), state.sepaForm.form.validSubmit$)
-  //   , flyd.map(R.always(false), state.paid$)
-  //   , flyd.map(R.always(false), state.cardForm.error$)
-  //   , flyd.map(R.always(false), state.sepaForm.error$)
-  //   , flyd.map(R.always(false), state.error$)
-  // ])
 
   // post utm tracking details after donation is saved
   flyd.map(
