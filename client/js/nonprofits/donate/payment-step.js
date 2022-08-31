@@ -133,14 +133,45 @@ function init(state) {
     , [flyd.filter(R.identity, state.error$), R.always({ hidden: true })] // Hide when an error shows up
   ], { hidden: true })
 
-  state.loading$ = flyd.mergeAll([
-    flyd.map(R.always(true), state.cardForm.form.validSubmit$)
-    , flyd.map(R.always(true), state.sepaForm.form.validSubmit$)
-    , flyd.map(R.always(false), state.paid$)
-    , flyd.map(R.always(false), state.cardForm.error$)
-    , flyd.map(R.always(false), state.sepaForm.error$)
-    , flyd.map(R.always(false), state.error$)
-  ])
+  flyd.map((paid) => {
+    donationSubmitter.loading = false;
+  }, state.paid$)
+
+  flyd.map((submit) => {
+    donationSubmitter.loading = true;
+  }, state.cardForm.form.validSubmit$)
+
+  flyd.map((submit) => {
+    donationSubmitter.loading = true;
+  }, state.sepaForm.form.validSubmit$)
+
+  flyd.map((error) => {
+    if (error) {
+      donationSubmitter.loading = false;
+    }
+  }, state.cardForm.error$)
+  
+  flyd.map((error) => {
+    if (error) {
+      donationSubmitter.loading = false;
+    }
+  }, state.sepaForm.error$)
+
+  flyd.map((error) => {
+    if (error) {
+      donationSubmitter.loading = false;
+    }
+      
+  }, state.error$)
+
+  // state.loading$ = flyd.mergeAll([
+  //   flyd.map(R.always(true), state.cardForm.form.validSubmit$)
+  //   , flyd.map(R.always(true), state.sepaForm.form.validSubmit$)
+  //   , flyd.map(R.always(false), state.paid$)
+  //   , flyd.map(R.always(false), state.cardForm.error$)
+  //   , flyd.map(R.always(false), state.sepaForm.error$)
+  //   , flyd.map(R.always(false), state.error$)
+  // ])
 
   // post utm tracking details after donation is saved
   flyd.map(
