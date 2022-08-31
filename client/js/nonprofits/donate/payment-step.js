@@ -9,6 +9,7 @@ const cardForm = require('../../components/card-form.es6')
 const sepaForm = require('../../components/sepa-form.es6')
 const progressBar = require('../../components/progress-bar')
 const DonationAmountCalculator = require('./donation_submitter/DonationAmountCalculator').default
+const DonationSubmitter = require('./donation_submitter').default
 const { centsToDollars } = require('../../common/format')
 const cloneDeep = require('lodash/cloneDeep')
 
@@ -30,6 +31,8 @@ function init(state) {
   
   const donationAmountCalculator = new DonationAmountCalculator(app.nonprofit.feeStructure);
 
+  const donationSubmitter = new DonationSubmitter()
+
   // Give a donation of value x, this returns x + estimated fees (using fee coverage formula) if fee coverage is selected OR
   // x if fee coverage is not selected
   state.donationTotal$ = flyd.stream();
@@ -50,10 +53,29 @@ function init(state) {
   
   state.loading$ = flyd.stream();
   state.error$ = flyd.stream();
+  // Control progress bar for card payment
+  state.progress$ = flyd.stream({hidden:true});
+
+  function updateProgress() {
+    const progress = donationSubmitter.progress;
+
+    if (progress) {
+      if (progress === 20) {
+        state.progress$({status: I18n.t('nonprofits.donate.payment.loading.checking_card'), percentage: 20})
+      }
+      else if (progress === 100) {
+        state.progress$({status: I18n.t('nonprofits.donate.payment.loading.sending_payment'), percentage: 100})
+      }
+    }
+    else {
+      state.progress$({hidden:true})
+    }
+  }
 
   function updateFromDonationSubmitter() {
     state.loading$(donationSubmitter.loading);
     state.error$(donationSubmitter.error);
+    updateProgress();
   }
 
   function handleDonationSubmitterChanged(e) {
@@ -68,10 +90,12 @@ function init(state) {
 
   state.onInsert = ()  => {
     donationAmountCalculator.addEventListener('updated', handleDonationAmountCalcEvent)
+    donationSubmitter.addEventListener('updated', handleDonationSubmitterChanged)
   }
 
   state.onRemove = () => {
     donationAmountCalculator.removeEventListener('updated', handleDonationAmountCalcEvent)
+    donationSubmitter.removeEventListener('updated', handleDonationSubmitterChanged)
   }
   
   flyd.combine((donation$, coverFees$) => {
@@ -130,17 +154,13 @@ function init(state) {
 
   state.paid$ = flyd.filter(resp => !resp.error, paidWithGift$)
 
-  // Control progress bar for card payment
-  state.progress$ = flyd.scanMerge([
-    [state.cardForm.form.validSubmit$, R.always({ status: I18n.t('nonprofits.donate.payment.loading.checking_card'), percentage: 20 })]
-    , [state.cardForm.saved$, R.always({ status: I18n.t('nonprofits.donate.payment.loading.sending_payment'), percentage: 100 })]
-    , [state.cardForm.error$, R.always({ hidden: true })] // Hide when an error shows up
-    , [flyd.filter(R.identity, state.error$), R.always({ hidden: true })] // Hide when an error shows up
-  ], { hidden: true })
-
   flyd.map((paid) => {
-    donationSubmitter.completed(error);
+    donationSubmitter.completed();
   }, state.paid$)
+
+  flyd.map((saved) => {
+    donationSubmitter.savedCard();
+  }, state.cardForm.saved$);
 
   flyd.map((submit) => {
     donationSubmitter.beginSubmit();

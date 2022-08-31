@@ -1,9 +1,5 @@
 // License: LGPL-3.0-or-later
-
-import { first } from "lodash";
 import DonationSubmitterEvents from "./DonationSubmitterEvents";
-
-type DonationSubmitterState = 'ready'|'running'| 'cardsaved'|'completed'
 
 export type EventTypes = 'beginSubmit' | 'savedCard' | 'errored';
 
@@ -71,14 +67,13 @@ export default class DonationSubmitter implements EventTarget {
     }
   }
 
-
-  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+  addEventListener(type: 'updated', listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
     this.eventTarget.addEventListener(type, listener, options);
   }
   dispatchEvent(event: Event): boolean {
     return this.eventTarget.dispatchEvent(event);
   }
-  removeEventListener(type: string, callback: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void {
+  removeEventListener(type: 'updated', callback: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void {
     this.eventTarget.removeEventListener(type, callback, options);
   }
 }
