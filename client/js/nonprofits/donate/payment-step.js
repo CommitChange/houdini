@@ -155,7 +155,7 @@ function init(state) {
   state.paid$ = flyd.filter(resp => !resp.error, paidWithGift$)
 
   flyd.map((paid) => {
-    donationSubmitter.completed();
+    donationSubmitter.completed(donationResp$());
   }, state.paid$)
 
   flyd.map((saved) => {
@@ -181,11 +181,6 @@ function init(state) {
   // post utm tracking details after donation is saved
   flyd.map(
     R.apply((utmParams, donationResponse) => postTracking(app.utmParams, donationResp$))
-    , state.paid$
-  )
-
-  flyd.map(
-    R.apply((donationResponse) => postSuccess(donationResp$))
     , state.paid$
   )
 

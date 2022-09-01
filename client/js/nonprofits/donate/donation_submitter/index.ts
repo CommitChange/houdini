@@ -3,11 +3,11 @@ import DonationSubmitterEvents from "./DonationSubmitterEvents";
 
 export type EventTypes = 'beginSubmit' | 'savedCard' | 'errored';
 
-type Events = {
-  type: 'beginSubmit' |'savedCard' | 'completed'
-} | {
-  type: 'errored', error:string
-};
+type WindowWithPlausible = Window & {plausible?:(eventType:string, val:any)  => void};
+
+const winWithPlausible = window as unknown as WindowWithPlausible;
+
+export type DonationResult = {charge?: {amount?:number}}
 
 export default class DonationSubmitter implements EventTarget {
 
@@ -43,6 +43,23 @@ export default class DonationSubmitter implements EventTarget {
     }
   }
 
+  private postSuccess(resp?:DonationResult):void {
+    const plausible = winWithPlausible.plausible;
+    try {
+      if (plausible) {
+        plausible('payment_succeeded', {
+            props: {
+              amount: resp?.charge?.amount && (resp.charge.amount / 100)
+            }
+          }
+        );
+      }
+    }
+    catch(e) {
+      console.error(e)
+    }
+  }
+
   public beginSubmit():void {
     if (this.events.push({type: 'beginSubmit'})) {
       this.dispatchEvent(new Event('updated'));
@@ -61,9 +78,11 @@ export default class DonationSubmitter implements EventTarget {
     }
   }
 
-  public completed(): void {
-    if (this.events.push({type: 'completed'})) {
+  public completed(result:DonationResult): void {
+    if (this.events.push({type: 'completed', result})) {
       this.dispatchEvent(new Event('updated'));
+
+      this.postSuccess(result);
     }
   }
 

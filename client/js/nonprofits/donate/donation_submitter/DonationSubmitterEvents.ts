@@ -1,21 +1,25 @@
 import last from 'lodash/last';
 import isEqual from 'lodash/isEqual'
+import { DonationResult } from '.';
 
 
 
-export type Events = {
+export type EventObjects = {
   type: 'beginSubmit' |'savedCard' | 'completed'
 } | {
   type: 'errored', error:string
+} | {
+  type: 'completed',
+  result: DonationResult,
 };
 
 
 
 export default class DonationSubmitterEvents  {
 
-  private events:Array<Events> = []
+  private events:Array<EventObjects> = []
   
-  push(event: Events): Events | undefined {
+  push(event: EventObjects): EventObjects | undefined {
     if (!this.top) {
       this.events.push(event)
       return event;
@@ -27,7 +31,7 @@ export default class DonationSubmitterEvents  {
     return undefined;
   }
 
-  get top(): Events | undefined {
+  get top(): EventObjects | undefined {
     return last(this.events);
   }
 
