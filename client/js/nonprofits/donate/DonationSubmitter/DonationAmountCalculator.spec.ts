@@ -57,7 +57,7 @@ describe('DonationAmountCalculator', () => {
     it('fires an updated event when amount is set', () => {
       const calc = new DonationAmountCalculator(feesStructure)
       const updatedEventListener = jest.fn();
-      calc.addEventListener('updated', updatedEventListener);
+      calc.addEventListener('updated', updatedEventListener)
       calc.inputAmount = 300;
       expect(updatedEventListener).toHaveBeenCalled();
     })
@@ -65,7 +65,7 @@ describe('DonationAmountCalculator', () => {
     it('fires an updated event when coverFees is set', () => {
       const calc = new DonationAmountCalculator(feesStructure)
       const updatedEventListener = jest.fn();
-      calc.addEventListener('updated', updatedEventListener);
+      calc.addEventListener('updated', updatedEventListener)
       calc.coverFees = true;
 
       expect(updatedEventListener).toHaveBeenCalled();

@@ -1,3 +1,4 @@
+// License: LGPL-3.0-or-later
 import last from 'lodash/last';
 import isEqual from 'lodash/isEqual'
 

@@ -8,8 +8,8 @@ const request = require('../../common/request')
 const cardForm = require('../../components/card-form.es6')
 const sepaForm = require('../../components/sepa-form.es6')
 const progressBar = require('../../components/progress-bar')
-const DonationAmountCalculator = require('./donation_submitter/DonationAmountCalculator').default
-const DonationSubmitter = require('./donation_submitter').default
+const DonationAmountCalculator = require('./DonationSubmitter/DonationAmountCalculator').default
+const DonationSubmitter = require('./DonationSubmitter').default
 const { centsToDollars } = require('../../common/format')
 const cloneDeep = require('lodash/cloneDeep')
 
@@ -31,7 +31,7 @@ function init(state) {
   
   const donationAmountCalculator = new DonationAmountCalculator(app.nonprofit.feeStructure);
 
-  const donationSubmitter = new DonationSubmitter()
+  const donationSubmitter = new DonationSubmitter(() => window['plausible'])
 
   // Give a donation of value x, this returns x + estimated fees (using fee coverage formula) if fee coverage is selected OR
   // x if fee coverage is not selected
@@ -155,19 +155,19 @@ function init(state) {
   state.paid$ = flyd.filter(resp => !resp.error, paidWithGift$)
 
   flyd.map((paid) => {
-    donationSubmitter.completed(donationResp$());
+    donationSubmitter.reportCompleted(donationResp$());
   }, state.paid$)
 
   flyd.map((saved) => {
-    donationSubmitter.savedCard();
+    donationSubmitter.reportSavedCard();
   }, state.cardForm.saved$);
 
   flyd.map((submit) => {
-    donationSubmitter.beginSubmit();
+    donationSubmitter.reportBeginSubmit();
   }, state.cardForm.form.validSubmit$)
 
   flyd.map((submit) => {
-    donationSubmitter.beginSubmit();
+    donationSubmitter.reportBeginSubmit();
   }, state.sepaForm.form.validSubmit$)
 
   flyd.map((error) => {
@@ -213,19 +213,6 @@ const postTracking = (utmParams, donationResponse) => {
       , method: 'post'
       , send: params
     }).load)
-  }
-}
-
-const postSuccess = (donationResponse) => {
-  try {
-    const plausible = window['plausible'];
-    if (plausible) {
-      const resp = donationResponse()
-      plausible('payment_succeeded', {props: {amount: resp && resp.charge && resp.charge.amount && (resp.charge.amount / 100)}});
-    }
-  }
-  catch(e) {
-    console.error(e)
   }
 }
 
