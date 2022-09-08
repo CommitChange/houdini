@@ -190,16 +190,7 @@ let targets = {
 let mergeToTargets = {
   devtool: 'inline-source-map',
 }
-
-if (inProduction)
-    mergeToTargets = {
-        plugins: [
-            new UglifyJsPlugin(),
-            new CompressionPlugin({
-              asset: '[path].gz'
-            })
-          ]}
-let output = []
+const output = [];
 for(let name in targets){
   output.push(merge(targets[name], mergeToTargets));
 }
