@@ -1,9 +1,16 @@
 // License: LGPL-3.0-or-later
 
 import StateManager from './StateManager';
+import { PostDonationResult } from './types';
 
 describe('StateManager', () => {
-
+  function basicDonationResult():PostDonationResult {
+    return {
+      payment: {},
+      donation: {id:  1},
+      activity: [],
+    }
+  }
   interface StateManagerMock {state: StateManager, beginSubmit:jest.Mock, errored: jest.Mock, savedCard:jest.Mock, completed:jest.Mock};
   function SetupStateManager(): StateManagerMock {
     const ret = {
@@ -123,7 +130,7 @@ describe('StateManager', () => {
 
   describe("when beginSubmit and then completed", () => {
     
-    const donationResult = {};
+    const donationResult = basicDonationResult();
     function prepare(): StateManagerMock {
       const mocked = SetupStateManager();
       mocked.state.reportBeginSubmit();
@@ -364,7 +371,7 @@ describe('StateManager', () => {
 
   describe("when errored and then re-attempted", () => {
     const error = "Error message";
-    const donationResult = {};
+    const donationResult = basicDonationResult();
     function prepare(): StateManagerMock {
       const mocked = SetupStateManager();
       mocked.state.reportBeginSubmit();

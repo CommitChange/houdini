@@ -1,7 +1,7 @@
 // License: LGPL-3.0-or-later
 import EventStack from "./EventStack";
 
-export type DonationResult = {charge?: {amount?:number}}
+import { PostDonationResult as DonationResult } from "./types";
 
 export type EventObjects = {
   type: 'beginSubmit' |'savedCard' 

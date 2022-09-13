@@ -1,10 +1,11 @@
 // License: LGPL-3.0-or-later
 
 import {GetPlausible, paymentSucceededPlausible} from './plausibleWrapper';
+import { postCampaignGift } from './postCampaignGift';
 
 import StateManager  from "./StateManager";
-
-export type DonationResult = {charge?: {amount?:number}}
+import { PostDonationResult } from './types';
+type DonationResult = PostDonationResult
 
 export type EventObjects = {
   type: 'beginSubmit' |'savedCard' | 'completed'
@@ -15,6 +16,11 @@ export type EventObjects = {
   result: DonationResult,
 };
 
+interface DonationSubmitterProps {
+  getPlausible?:GetPlausible,
+  campaign_gift_option_id?:number;
+}
+
 export default class DonationSubmitter implements EventTarget {
 
   
@@ -22,12 +28,13 @@ export default class DonationSubmitter implements EventTarget {
 
   private eventTarget = new EventTarget();
 
-  constructor(private readonly _getPlausible?:GetPlausible) {
+  constructor(private readonly props:DonationSubmitterProps) {
 
     Object.bind(this, this.handleBeginSubmit);
     Object.bind(this, this.handleSavedCard);
     Object.bind(this, this.handleErrored);
     Object.bind(this, this.handleCompleted);
+    Object.bind(this, this.postCampaignGift);
 
     this.stateManager.addEventListener('beginSubmit', (evt:Event) => this.handleBeginSubmit(evt));
     this.stateManager.addEventListener('savedCard', (evt:Event) => this.handleSavedCard(evt));
@@ -58,13 +65,24 @@ export default class DonationSubmitter implements EventTarget {
     return this.stateManager.result;
   }
 
-  private postSuccess():void {
-
+  private async postSuccess():Promise<void> {
+    await this.postCampaignGift();
     try {
-     paymentSucceededPlausible({getPlausible: this._getPlausible, result: this.result});
+     paymentSucceededPlausible({getPlausible: this.props.getPlausible, result: this.result});
     }
     catch(e) {
       console.error(e)
+    }
+  }
+
+  private async postCampaignGift():Promise<void> {
+    try {
+      await postCampaignGift({result: this.result, 
+        campaign_gift_option_id: this.props.campaign_gift_option_id
+      })
+    }
+    catch (_e){
+      //...ignore!
     }
   }
 
@@ -94,9 +112,15 @@ export default class DonationSubmitter implements EventTarget {
     this.eventTarget.removeEventListener(type, callback, options);
   }
 
-  private handleCompleted(_evt: Event) {
-    this.postSuccess();
-    this.dispatchEvent(new Event('updated'));
+  private async handleCompleted(_evt: Event):Promise<void> {
+    try {
+      await this.postSuccess();
+    }
+    finally {
+      this.dispatchEvent(new Event('updated'));
+    }
+    
+    
   }
   
   private handleErrored(evt: Event) {

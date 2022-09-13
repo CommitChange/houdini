@@ -1,20 +1,34 @@
 // License: LGPL-3.0-or-later
-import DonationSubmitter, { DonationResult } from '.';
+import DonationSubmitter from '.';
+import {waitFor} from '@testing-library/dom';
+
 jest.mock('./plausibleWrapper')
+jest.mock('./postCampaignGift')
 
 import {paymentSucceededPlausible} from './plausibleWrapper';
+import {postCampaignGift} from './postCampaignGift';
+import { PostDonationResult } from './types';
 
 const mockedPaymentSucceeededPlausible = paymentSucceededPlausible as jest.Mock;
+const mockedPostCampaignGift = postCampaignGift as jest.Mock;
 
+function basicDonationResult():PostDonationResult {
+  return {
+    payment: {},
+    donation: {id:  1},
+    activity: [],
+  }
+}
 describe('DonationSubmitter', () => {
 
   beforeEach(() => {
     mockedPaymentSucceeededPlausible.mockClear();
+    mockedPostCampaignGift.mockClear();
   })
   
   function SetupDonationSubmitter(updated=jest.fn(), getPlausible=jest.fn()) {
     const ret = {
-      submitter: new DonationSubmitter(getPlausible),
+      submitter: new DonationSubmitter({getPlausible}),
       updated,
       getPlausible
     };
@@ -62,10 +76,10 @@ describe('DonationSubmitter', () => {
       expect(updated).not.toHaveBeenCalled()
     })
 
-    it('has not called plausible', () => {
+    it('has not called post success callbacks', () => {
       prepare();
       expect(mockedPaymentSucceeededPlausible).not.toHaveBeenCalled();
-
+      expect(mockedPostCampaignGift).not.toHaveBeenCalled();
     });
   })
 
@@ -123,16 +137,16 @@ describe('DonationSubmitter', () => {
       expect(updated).toHaveBeenCalledTimes(2);
     })
 
-    it('has not called plausible', () => {
+    it('has not called post success callbacks', () => {
       prepare();
       expect(mockedPaymentSucceeededPlausible).not.toHaveBeenCalled();
-
+      expect(mockedPostCampaignGift).not.toHaveBeenCalled();
     });
   })
 
   describe("when beginSubmit and then completed", () => {
     
-    const donationResult = { };
+    const donationResult = basicDonationResult();
     function prepare(): ReturnType<typeof SetupDonationSubmitter> {
       const mocked = SetupDonationSubmitter();
       mocked.submitter.reportBeginSubmit();
@@ -172,29 +186,22 @@ describe('DonationSubmitter', () => {
       expect(state.progress).toBeUndefined();
     })
 
-    it('has called beginSubmit, savedCard and completed', () => {
+    it('has called beginSubmit, savedCard and completed', async () => {
       const {updated} = prepare();
 
-      expect(updated).toHaveBeenCalledTimes(3);
+      waitFor(() => expect(updated).toHaveBeenCalledTimes(3));
     })
 
-    it('calling completed twice only fires it once', () => {
-      const {submitter: state, updated} = prepare();
-      state.reportCompleted(donationResult);
-
-      expect(updated).toHaveBeenCalledTimes(3)
-    })
-
-    it('has called plausible', () => {
+    it('has called post success callbacks', async () => {
       prepare();
-      expect(mockedPaymentSucceeededPlausible).toHaveBeenCalled();
-
+      waitFor(() => expect(mockedPaymentSucceeededPlausible).toHaveBeenCalled());
+      waitFor(() => expect(mockedPostCampaignGift).toHaveBeenCalled());
     });
   })
 
   describe("when beginSubmit and then errored", () => {
     
-    const error = "Error message"
+    const error = "Error message";
 
     function prepare(): ReturnType<typeof SetupDonationSubmitter> {
       const mocked = SetupDonationSubmitter();
@@ -249,10 +256,10 @@ describe('DonationSubmitter', () => {
       
     })
 
-    it('has not called plausible', () => {
+    it('has not called post success callbacks', () => {
       prepare();
       expect(mockedPaymentSucceeededPlausible).not.toHaveBeenCalled();
-
+      expect(mockedPostCampaignGift).not.toHaveBeenCalled();
     });
   })
 
@@ -312,10 +319,10 @@ describe('DonationSubmitter', () => {
       expect(updated).toHaveBeenCalledTimes(3);
     })
 
-    it('has not called plausible', () => {
+    it('has not called post success callbacks', () => {
       prepare();
       expect(mockedPaymentSucceeededPlausible).not.toHaveBeenCalled();
-
+      expect(mockedPostCampaignGift).not.toHaveBeenCalled();
     });
   });
 
@@ -377,7 +384,7 @@ describe('DonationSubmitter', () => {
 
   describe("when errored and then re-attempted", () => {
     const error = "Error message";
-    const donationResult:DonationResult = { charge: undefined };
+    const donationResult = basicDonationResult();
     function prepare(): ReturnType<typeof SetupDonationSubmitter> {
       const mocked = SetupDonationSubmitter(jest.fn(), jest.fn());
       mocked.submitter.reportBeginSubmit();
@@ -419,15 +426,16 @@ describe('DonationSubmitter', () => {
       expect(state.progress).toBeUndefined();
     })
 
-    it('has called beginSubmit, savedCard and errored', () => {
+    it('has called beginSubmit, savedCard and errored', async () => {
       const {updated} = prepare();
 
-      expect(updated).toHaveBeenCalledTimes(6);
+      waitFor(() => expect(updated).toHaveBeenCalledTimes(6));
     });
 
-    it('has called plausible', () => {
+    it('has called post success callbacks', () => {
       prepare();
-      expect(mockedPaymentSucceeededPlausible).toHaveBeenCalled();
+      waitFor(() => expect(mockedPaymentSucceeededPlausible).toHaveBeenCalled());
+      waitFor(() => expect(mockedPostCampaignGift).toHaveBeenCalled());
     });
   })
 
