@@ -6,7 +6,7 @@
     "noImplicitAny": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "ES2015",
     "jsx": "react",
     "experimentalDecorators": true,
     "baseUrl": "./",
