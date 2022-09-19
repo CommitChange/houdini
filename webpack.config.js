@@ -194,10 +194,10 @@ let mergeToTargets = {
 if (inProduction)
     mergeToTargets = {
         plugins: [
-            new UglifyJsPlugin(),
-            new CompressionPlugin({
-              asset: '[path].gz'
-            })
+           new UglifyJsPlugin(),
+            // new CompressionPlugin({
+            //   asset: '[path].gz'
+            // })
           ]}
 let output = []
 for(let name in targets){
