@@ -11,7 +11,7 @@ exports[`Wizard Move back on disabled make first invalid so move back there 1`] 
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={true} className=\\"wizard-index-label is-current is-accessible\\" style={{...}} id=\\"tab1\\" role=\\"tab\\">
-                    <span id=\\"tab1\\" tabIndex={0} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
+                    <span id=\\"tab1\\" tabIndex={0} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
                       Label1
                     </span>
                   </Tab>
@@ -20,7 +20,7 @@ exports[`Wizard Move back on disabled make first invalid so move back there 1`] 
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label\\" style={{...}} id=\\"tab2\\" role=\\"tab\\">
-                    <span id=\\"tab2\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label\\" style={{...}}>
+                    <span id=\\"tab2\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label\\" style={{...}}>
                       Label2
                     </span>
                   </Tab>
@@ -29,7 +29,7 @@ exports[`Wizard Move back on disabled make first invalid so move back there 1`] 
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label\\" style={{...}} id=\\"tab3\\" role=\\"tab\\">
-                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label\\" style={{...}}>
+                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label\\" style={{...}}>
                       Label3
                     </span>
                   </Tab>
@@ -42,21 +42,21 @@ exports[`Wizard Move back on disabled make first invalid so move back there 1`] 
           <form onSubmit={[Function]}>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab1\\" active={true} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab1\\">
+                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab1\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab2\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab2\\">
+                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab2\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab3\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
+                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
@@ -80,7 +80,7 @@ exports[`Wizard Move back on disabled make first invalid so move back there 2`] 
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={true} className=\\"wizard-index-label is-current is-accessible\\" style={{...}} id=\\"tab1\\" role=\\"tab\\">
-                    <span id=\\"tab1\\" tabIndex={0} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
+                    <span id=\\"tab1\\" tabIndex={0} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
                       Label1
                     </span>
                   </Tab>
@@ -89,7 +89,7 @@ exports[`Wizard Move back on disabled make first invalid so move back there 2`] 
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label\\" style={{...}} id=\\"tab2\\" role=\\"tab\\">
-                    <span id=\\"tab2\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label\\" style={{...}}>
+                    <span id=\\"tab2\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label\\" style={{...}}>
                       Label2
                     </span>
                   </Tab>
@@ -98,7 +98,7 @@ exports[`Wizard Move back on disabled make first invalid so move back there 2`] 
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label\\" style={{...}} id=\\"tab3\\" role=\\"tab\\">
-                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label\\" style={{...}}>
+                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label\\" style={{...}}>
                       Label3
                     </span>
                   </Tab>
@@ -111,21 +111,21 @@ exports[`Wizard Move back on disabled make first invalid so move back there 2`] 
           <form onSubmit={[Function]}>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab1\\" active={true} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab1\\">
+                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab1\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab2\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab2\\">
+                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab2\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab3\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
+                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
@@ -149,7 +149,7 @@ exports[`Wizard Move back on disabled make second invalid so move back there 1`]
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab1\\" role=\\"tab\\">
-                    <span id=\\"tab1\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab1\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label1
                     </span>
                   </Tab>
@@ -158,7 +158,7 @@ exports[`Wizard Move back on disabled make second invalid so move back there 1`]
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={true} className=\\"wizard-index-label is-current is-accessible\\" style={{...}} id=\\"tab2\\" role=\\"tab\\">
-                    <span id=\\"tab2\\" tabIndex={0} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
+                    <span id=\\"tab2\\" tabIndex={0} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
                       Label2
                     </span>
                   </Tab>
@@ -167,7 +167,7 @@ exports[`Wizard Move back on disabled make second invalid so move back there 1`]
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label\\" style={{...}} id=\\"tab3\\" role=\\"tab\\">
-                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label\\" style={{...}}>
+                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label\\" style={{...}}>
                       Label3
                     </span>
                   </Tab>
@@ -180,21 +180,21 @@ exports[`Wizard Move back on disabled make second invalid so move back there 1`]
           <form onSubmit={[Function]}>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab1\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab1\\">
+                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab1\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab2\\" active={true} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab2\\">
+                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab2\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab3\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
+                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
@@ -218,7 +218,7 @@ exports[`Wizard first tab is active 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={true} className=\\"wizard-index-label is-current is-accessible\\" style={{...}} id=\\"tab1\\" role=\\"tab\\">
-                    <span id=\\"tab1\\" tabIndex={0} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
+                    <span id=\\"tab1\\" tabIndex={0} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
                       Label1
                     </span>
                   </Tab>
@@ -227,7 +227,7 @@ exports[`Wizard first tab is active 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab2\\" role=\\"tab\\">
-                    <span id=\\"tab2\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab2\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label2
                     </span>
                   </Tab>
@@ -236,7 +236,7 @@ exports[`Wizard first tab is active 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab3\\" role=\\"tab\\">
-                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label3
                     </span>
                   </Tab>
@@ -249,21 +249,21 @@ exports[`Wizard first tab is active 1`] = `
           <form onSubmit={[Function]}>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab1\\" active={true} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab1\\">
+                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab1\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab2\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab2\\">
+                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab2\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab3\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
+                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
@@ -287,7 +287,7 @@ exports[`Wizard go to the second tab go to next via backend 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab1\\" role=\\"tab\\">
-                    <span id=\\"tab1\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab1\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label1
                     </span>
                   </Tab>
@@ -296,7 +296,7 @@ exports[`Wizard go to the second tab go to next via backend 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={true} className=\\"wizard-index-label is-current is-accessible\\" style={{...}} id=\\"tab2\\" role=\\"tab\\">
-                    <span id=\\"tab2\\" tabIndex={0} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
+                    <span id=\\"tab2\\" tabIndex={0} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
                       Label2
                     </span>
                   </Tab>
@@ -305,7 +305,7 @@ exports[`Wizard go to the second tab go to next via backend 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab3\\" role=\\"tab\\">
-                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label3
                     </span>
                   </Tab>
@@ -318,21 +318,21 @@ exports[`Wizard go to the second tab go to next via backend 1`] = `
           <form onSubmit={[Function]}>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab1\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab1\\">
+                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab1\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab2\\" active={true} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab2\\">
+                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab2\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab3\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
+                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
@@ -356,7 +356,7 @@ exports[`Wizard go to the second tab set via next click 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab1\\" role=\\"tab\\">
-                    <span id=\\"tab1\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab1\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label1
                     </span>
                   </Tab>
@@ -365,7 +365,7 @@ exports[`Wizard go to the second tab set via next click 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={true} className=\\"wizard-index-label is-current is-accessible\\" style={{...}} id=\\"tab2\\" role=\\"tab\\">
-                    <span id=\\"tab2\\" tabIndex={0} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
+                    <span id=\\"tab2\\" tabIndex={0} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
                       Label2
                     </span>
                   </Tab>
@@ -374,7 +374,7 @@ exports[`Wizard go to the second tab set via next click 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab3\\" role=\\"tab\\">
-                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label3
                     </span>
                   </Tab>
@@ -387,21 +387,21 @@ exports[`Wizard go to the second tab set via next click 1`] = `
           <form onSubmit={[Function]}>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab1\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab1\\">
+                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab1\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab2\\" active={true} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab2\\">
+                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab2\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab3\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
+                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
@@ -425,7 +425,7 @@ exports[`Wizard go to the second tab set via tab click 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab1\\" role=\\"tab\\">
-                    <span id=\\"tab1\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab1\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab1-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label1
                     </span>
                   </Tab>
@@ -434,7 +434,7 @@ exports[`Wizard go to the second tab set via tab click 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={true} className=\\"wizard-index-label is-current is-accessible\\" style={{...}} id=\\"tab2\\" role=\\"tab\\">
-                    <span id=\\"tab2\\" tabIndex={0} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
+                    <span id=\\"tab2\\" tabIndex={0} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={true} aria-controls=\\"tab2-panel\\" className=\\"wizard-index-label is-current is-accessible\\" style={{...}}>
                       Label2
                     </span>
                   </Tab>
@@ -443,7 +443,7 @@ exports[`Wizard go to the second tab set via tab click 1`] = `
               <InjectIntl(WizardTab) tab={{...}} widthPercentage={33.333333333333336} disableTabs={false}>
                 <WizardTab tab={{...}} widthPercentage={33.333333333333336} disableTabs={false} intl={{...}}>
                   <Tab tag=\\"span\\" active={false} className=\\"wizard-index-label is-accessible\\" style={{...}} id=\\"tab3\\" role=\\"tab\\">
-                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound ]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
+                    <span id=\\"tab3\\" tabIndex={-1} onFocus={[Function: bound handleFocus]} role=\\"tab\\" aria-selected={false} aria-controls=\\"tab3-panel\\" className=\\"wizard-index-label is-accessible\\" style={{...}}>
                       Label3
                     </span>
                   </Tab>
@@ -456,21 +456,21 @@ exports[`Wizard go to the second tab set via tab click 1`] = `
           <form onSubmit={[Function]}>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab1\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab1\\">
+                <div className=\\"wizard-step\\" id=\\"tab1-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab1\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab2\\" active={true} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab2\\">
+                <div className=\\"wizard-step\\" id=\\"tab2-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={false} aria-describedby=\\"tab2\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
             </WizardPanel>
             <WizardPanel tab={{...}}>
               <TabPanel tabId=\\"tab3\\" active={false} className=\\"wizard-step\\" tag=\\"div\\">
-                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound ]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
+                <div className=\\"wizard-step\\" id=\\"tab3-panel\\" onKeyDown={[Function: bound handleKeyDown]} role=\\"tabpanel\\" style={{...}} aria-hidden={true} aria-describedby=\\"tab3\\">
                   <button onClick={[Function: res]} />
                 </div>
               </TabPanel>
