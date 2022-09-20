@@ -295,6 +295,9 @@ pending_gross: 0,
         count: 2,
         entity: d)
     end
+
+    # defmanual_balance_adjustment
+    #   b =manual_balance_adjustment_create()
   
 
     def refund_create(**args)
