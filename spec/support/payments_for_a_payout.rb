@@ -57,6 +57,11 @@ shared_context 'payments for a payout' do
       @inner_entities.map{|k,v| [k, v.entity]}.to_h
     end
 
+    def expected
+      {
+        gross_amount: entities.sum(&:gross_amount)
+        fee_total: entities.sum(&:fee_total)
+
     def payments
       entities.map do |k,v|
         output = nil
@@ -66,7 +71,10 @@ shared_context 'payments for a payout' do
           output = [v.payment, v.charge.payment]
         elsif (v.is_a? Dispute)
           output = v.dispute_transactions.map{|dt| dt.payment}.concat([v.charge.payment])
+        elsif (v.is_a? ManualBalanceAdjustment)
+          output = [v.payment, v.entity.payment]
         end
+
         output
       end.flatten.uniq
     end
@@ -88,7 +96,17 @@ shared_context 'payments for a payout' do
             output << v.charge.payment
           end
           output = output.concat(v.dispute_transactions.select{|i| !i.disbursed}.map{|dt|dt.payment})
+
+        elsif (v.is_a? ManualBalanceAdjustment)
+
+          if (v.entity.status == 'available')
+            output << v.entity.payment
+          end
+          if !v.disbursed
+            output << v.payment
+          end
         end
+      
         output
       end.flatten.uniq
     end
@@ -110,6 +128,8 @@ shared_context 'payments for a payout' do
         output[:dispute_paid] = dispute_paid
         output[:dispute_under_review] = dispute_under_review
         output[:dispute_needs_response] = dispute_needs_response
+        # output[:manual_balance_adjustment] = manual_balance_adjustment
+        output[:manual_balance_adjustment_disbursed] = manual_balance_adjustment_disbursed
         # output[:partial_dispute_lost] = partial_dispute_lost
         # output[:partial_dispute_won] = partial_dispute_won
         # output[:partial_refund] = partial_refund
@@ -296,8 +316,15 @@ pending_gross: 0,
         entity: d)
     end
 
-    # defmanual_balance_adjustment
-    #   b =manual_balance_adjustment_create()
+    # gross -300, net -450, fee_total: -450
+    def manual_balance_adjustment
+      manual_balance_adjustment_create(gross_amount: 0, fee_total: -400, charge_args: {gross_amount: 100, fee_total: -50, status:'available'})
+    end
+
+    # gross 100, net 50, fee_total -50
+    def manual_balance_adjustment_disbursed
+      manual_balance_adjustment_create(gross_amount: 0, fee_total: -400, disbursed: true, charge_args: {gross_amount: 100, fee_total: -50, status:'available'})
+    end
   
 
     def refund_create(**args)
@@ -335,6 +362,21 @@ pending_gross: 0,
       other_args = args.except(:gross_amount, :fee_total)
       force_create(:charge, nonprofit:@nonprofit, amount: gross_amount, 
         payment: payment_create(gross_amount: gross_amount, fee_total: fee_total, net_amount: gross_amount + fee_total), **other_args)
+    end
+
+    def manual_balance_adjustment_create(**args)
+
+      gross_amount = args[:gross_amount]
+      fee_total = args[:fee_total] || 0
+      charge_args = args[:charge_args]
+      args = args.except(:charge_args, :gross_amount, :fee_total)
+
+      create(:manual_balance_adjustment,
+        gross_amount: gross_amount,
+        fee_total: fee_total,
+        payment: payment_create(gross_amount: gross_amount, fee_total: fee_total, net_amount: gross_amount + fee_total),
+        entity: charge_create(charge_args), **args )
+
     end
 
     def payment_create(**args)
