@@ -26,14 +26,7 @@ class Refund < ActiveRecord::Base
 	scope :not_disbursed, ->{where(disbursed: [nil, false])}
 	scope :disbursed, ->{where(disbursed: [true])}
 
-	has_many  :manual_balance_adjustments, as: :entity do
-		def create_with_payment(args={})
-			create(args.merge(payment: Payment.new(
-				nonprofit: proxy_association.target.nonprofi
-				)
-			))
-		end
-	end
+	has_many  :manual_balance_adjustments, as: :entity
 
 end
 
