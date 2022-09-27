@@ -13,6 +13,9 @@ class ManualBalanceAdjustment < ActiveRecord::Base
   scope :not_disbursed, ->{where(disbursed: [nil, false])}
 	scope :disbursed, ->{where(disbursed: [true])}
 
+
+  def create_with_payment(args={})
+    create
   def gross_amount=(gross_amount)
     write_attribute(:gross_amount, gross_amount)
     calculate_net
