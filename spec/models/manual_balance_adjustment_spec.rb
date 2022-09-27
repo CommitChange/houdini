@@ -53,8 +53,8 @@ RSpec.describe ManualBalanceAdjustment, type: :model do
         manual_balance = create(:manual_balance_adjustment, :with_entity_and_payment, disbursed: true)
         Timecop.freeze(Time.new(2020,2, 1)) do
           expect(QueryPayments.nonprofit_balances(manual_balance.nonprofit.id)).to eq({
-            'available_gross' => 0,
-            'pending_gross' => 0
+            'available' =>  {'gross' =>0, 'net' => 0},
+            'pending' => {'gross' => 0, 'net' => 0}
           })
         end
       end
@@ -65,8 +65,8 @@ RSpec.describe ManualBalanceAdjustment, type: :model do
         manual_balance = create(:manual_balance_adjustment, :with_entity_and_payment)
         Timecop.freeze(Time.new(2020,2, 1)) do
           expect(QueryPayments.nonprofit_balances(manual_balance.nonprofit.id)).to eq({
-            'available_gross' => -100,
-            'pending_gross' => 0
+            'available' => {'gross'=> 0, 'net' => -100},
+            'pending' => {'gross' => 0, 'net' => 0}
           })
         end
       end

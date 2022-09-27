@@ -57,11 +57,6 @@ shared_context 'payments for a payout' do
       @inner_entities.map{|k,v| [k, v.entity]}.to_h
     end
 
-    def expected
-      {
-        gross_amount: entities.sum(&:gross_amount)
-        fee_total: entities.sum(&:fee_total)
-
     def payments
       entities.map do |k,v|
         output = nil
@@ -128,7 +123,7 @@ shared_context 'payments for a payout' do
         output[:dispute_paid] = dispute_paid
         output[:dispute_under_review] = dispute_under_review
         output[:dispute_needs_response] = dispute_needs_response
-        # output[:manual_balance_adjustment] = manual_balance_adjustment
+        output[:manual_balance_adjustment] = manual_balance_adjustment
         output[:manual_balance_adjustment_disbursed] = manual_balance_adjustment_disbursed
         # output[:partial_dispute_lost] = partial_dispute_lost
         # output[:partial_dispute_won] = partial_dispute_won
@@ -316,14 +311,30 @@ pending_gross: 0,
         entity: d)
     end
 
-    # gross -300, net -450, fee_total: -450
+    # gross 100, net -350, fee_total: -450
     def manual_balance_adjustment
-      manual_balance_adjustment_create(gross_amount: 0, fee_total: -400, charge_args: {gross_amount: 100, fee_total: -50, status:'available'})
+      adj = manual_balance_adjustment_create(gross_amount: 0, fee_total: -400, charge_args: {gross_amount: 100, fee_total: -50, status:'available'})
+      OpenStruct.new(
+        gross_amount: 100,
+        fee_total: -450,
+        net_amount: -350,
+        pending_net: 0,
+        pending_gross: 0,
+        count: 2,
+        entity: adj)
     end
 
     # gross 100, net 50, fee_total -50
     def manual_balance_adjustment_disbursed
-      manual_balance_adjustment_create(gross_amount: 0, fee_total: -400, disbursed: true, charge_args: {gross_amount: 100, fee_total: -50, status:'available'})
+      adj = manual_balance_adjustment_create(gross_amount: 0, fee_total: -400, disbursed: true, charge_args: {gross_amount: 100, fee_total: -50, status:'available'})
+      OpenStruct.new(
+        gross_amount: 100,
+        fee_total: -50,
+        net_amount: 50,
+        pending_net: 0,
+        pending_gross: 0,
+        count: 1,
+        entity: adj)
     end
   
 
