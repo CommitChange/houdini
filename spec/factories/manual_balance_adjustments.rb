@@ -5,8 +5,6 @@ FactoryBot.define do
 
     trait :with_entity_and_payment do
       entity {create(:charge_base)}
-      payment { build(:payment, gross_amount: gross_amount, fee_total: fee_total, net_amount: fee_total + gross_amount, 
-        supporter: entity.supporter, nonprofit: entity.nonprofit, date: Time.current)}
     end
   end
 end
