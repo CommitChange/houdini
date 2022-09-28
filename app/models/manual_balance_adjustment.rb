@@ -33,12 +33,14 @@ class ManualBalanceAdjustment < ActiveRecord::Base
 
   def add_payment
     unless self.payment
-      build_payment(supporter:self.entity.supporter, nonprofit: self.entity.nonprofit, kind: "ManualAdjustment",
-        gross_amount: self.gross_amount || 0,
-        fee_total: self.fee_total || 0,
-        net_amount: self.net_amount,
-        date: Time.current
-      )
+      if self.entity
+        build_payment(supporter:self.entity.supporter, nonprofit: self.entity.nonprofit, kind: "ManualAdjustment",
+          gross_amount: self.gross_amount || 0,
+          fee_total: self.fee_total || 0,
+          net_amount: self.net_amount,
+          date: Time.current
+        )
+      end
     end
   end
 end
