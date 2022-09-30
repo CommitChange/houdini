@@ -15,6 +15,10 @@ module QueryPayments
   # * For refunds and disputes, the gross_amount should be negative since we're decreasing the nonprofit's balance
   #
   # In effect, we're getting the list of payments which haven't been paid out in a some fashion. This is not a great design but it works mostly.
+
+  #
+  # @param [Hash] options
+  # @option options [Time] :date the time by which payments must have occurred to be included in a payout. Default is (Time.current + 1.day).beginning_of_day
   def self.ids_for_payout(npo_id, options={})
     end_of_day = (Time.current + 1.day).beginning_of_day
     Qx.select('DISTINCT payments.id')
@@ -50,15 +54,21 @@ module QueryPayments
 
   
 
-
-  def self.nonprofit_balances(npo_id)
-    payout_totals = QueryPayments.get_payout_totals(QueryPayments.ids_for_payout(npo_id))
+  # @param [Hash] opts
+  # @option [Array] :except ids of payments which should be treated as part of the balance
+  def self.nonprofit_balances(npo_id, opts={})
+    payout_totals = QueryPayments.get_payout_totals(QueryPayments.ids_for_payout(npo_id) - (opts[:except] || []))
     
     pending = Nonprofit.find(npo_id).payments.pending_totals
     {
       'available' => {'net' => payout_totals['net_amount'] || 0, 'gross' => payout_totals['gross_amount'] || 0},
       'pending' => {'net' => pending['net'] || 0, 'gross' => pending['gross'] || 0}
       }
+  end
+
+  # @param [Hash] opts
+  # @option [Array] :except ids of payments which should be treated as part of the balance
+  def self.nonprofit_balances_from_beginning(npo_id, opts={})
   end
 
 

@@ -66,6 +66,37 @@ class Nonprofit < ActiveRecord::Base
       net, gross = pending.pluck('SUM("payments"."net_amount") AS net, SUM("payments"."gross_amount") AS gross').first
       {'net' => net, 'gross' => gross}
     end
+
+
+    def balance_from_beginning(opts={})
+      nonprofit = proxy_association.owner
+
+      except_payments = opts[:except_payments] || []
+      all_payments =  Qx.select('DISTINCT payments.id')
+        .from(:payments)
+        .left_join(:charges, 'charges.payment_id=payments.id')
+        .add_left_join(:refunds, 'refunds.payment_id=payments.id')
+        .add_left_join(:dispute_transactions, 'dispute_transactions.payment_id=payments.id')
+        .add_left_join(:manual_balance_adjustments, "manual_balance_adjustments.payment_id=payments.id")
+        .where('payments.nonprofit_id=$id', id: nonprofit.id)
+        .and_where("refunds.payment_id IS NOT NULL OR charges.payment_id IS NOT NULL OR dispute_transactions.payment_id IS NOT NULL OR manual_balance_adjustments.payment_id IS NOT NULL")
+        .and_where("charges.id IS NULL OR (charges.status !='pending' AND charges.status != 'failed')")
+      if (except_payments.any?)
+        all_payments = all_payments.and_where("payments.id NOT IN ($except_payments)", except_payments:except_payments)
+      end
+      all_payments = all_payments.execute.map{|i| i['id']}
+
+      payments_balance = QueryPayments.get_payout_totals(all_payments)
+      except_payouts = opts[:except_payouts] || []
+
+      results = proxy_association.owner.payouts.paid
+      if (except_payouts.any?)
+        results = results.where("payouts.id NOT IN (?)", except_payouts)
+      end
+      payout_gross, payout_fee, payout_net = results.pluck("SUM(gross_amount), SUM(fee_total), SUM(net_amount)").first
+      
+      {net_amount: payments_balance['net_amount'] - payout_net, gross_amount: payments_balance['gross_amount'] - payout_gross}
+    end
   end
   has_many :transactions, through: :supporters
   has_many :supporters, dependent: :destroy
