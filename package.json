@@ -49,7 +49,7 @@
     "@types/whatwg-fetch": "0.0.33",
     "babel-loader": "^8",
     "bootstrap": "^3.4.1",
-    "bootstrap-loader": "github:houdiniproject/bootstrap-loader#compiled_namespaced",
+    "bootstrap-loader": "github:houdiniproject/bootstrap-loader#compiled_namespaced_3",
     "bootstrap-sass": "^3.4.1",
     "cssnano": "^4.1.10",
     "enzyme": "^3.8.0",
