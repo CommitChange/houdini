@@ -47,7 +47,6 @@
     "@types/velocity-animate": "^1.2.33",
     "@types/whatwg-fetch": "0.0.33",
     "babel-loader": "^8",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "bootstrap": "^3.4.1",
     "bootstrap-loader": "github:houdiniproject/bootstrap-loader#compiled_namespaced",
     "bootstrap-sass": "^3.4.1",
