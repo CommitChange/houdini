@@ -6,7 +6,7 @@ var request = require('../../../common/super-agent-promise')
 var create_card = require('../../../cards/create')
 var formToObj = require('../../../common/form-to-object')
 
-const {CommitchangeFeeCoverageCalculator} = require('../../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator')
+const {CommitchangeFeeCoverageCalculator} = require('../../../../legacy_react/src/lib/payments/commitchange_fee_coverage_calculator')
 
 
 var wiz = {}

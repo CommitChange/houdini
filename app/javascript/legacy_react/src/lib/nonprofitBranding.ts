@@ -1,5 +1,5 @@
 // License: LGPL-3.0-or-later
-import color = require('color')
+import color from 'color';
 import { Color } from 'csstype';
 
 interface CustomBrandColors {

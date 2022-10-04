@@ -14,9 +14,9 @@ const uniqueId = require('lodash/uniqueId')
 const request = require('../../common/request')
 const createCardStream = require('../../cards/create-frp.es6')
 
-const create_card_element = require('../../../../javascripts/src/lib/create_card_element.ts')
+const create_card_element = require('../../../legacy_react/src/lib/create_card_element.ts')
 
-const grecaptchaPromised = require('../../../../javascripts/src/lib/grecaptcha_during_payment').default
+const grecaptchaPromised = require('../../../legacy_react/src/lib/grecaptcha_during_payment').default
 
 // A component for filling out card data, validating it, saving the card to
 // stripe, and then saving a tokenized copy to our servers.

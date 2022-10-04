@@ -10,7 +10,7 @@ const autocomplete = require('../components/address-autocomplete-viewscript');
 
 autocomplete.initScript();
 
-const CommitchangeFeeCoverageCalculator = require('../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator').CommitchangeFeeCoverageCalculator;
+const CommitchangeFeeCoverageCalculator = require('../../legacy_react/src/lib/payments/commitchange_fee_coverage_calculator').CommitchangeFeeCoverageCalculator;
 
 
 appl.def('discounts.apply', function (node) {

@@ -8,8 +8,8 @@ const request = require('../../common/request')
 const cardForm = require('./card-form.es6')
 const format = require('../../common/format')
 const progressBar = require('../../components/progress-bar')
-const {CommitchangeFeeCoverageCalculator} = require('../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator')
-const {Money} = require('../../../../javascripts/src/lib/money')
+const {CommitchangeFeeCoverageCalculator} = require('../../../legacy_react/src/lib/payments/commitchange_fee_coverage_calculator')
+const {Money} = require('../../../legacy_react/src/lib/money')
 const {centsToDollars} = require('../../common/format')
 
 function init(params$, donation$) {

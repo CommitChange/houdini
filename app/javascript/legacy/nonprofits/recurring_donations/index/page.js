@@ -10,7 +10,7 @@ var format = require('../../../common/format')
 appl.def('is_usa', format.geography.isUS)
 require('./tour')
 
-const {CommitchangeFeeCoverageCalculator} = require('../../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator')
+const {CommitchangeFeeCoverageCalculator} = require('../../../../legacy_react/src/lib/payments/commitchange_fee_coverage_calculator')
 
 appl.def('readable_interval', require('../readable_interval'))
 

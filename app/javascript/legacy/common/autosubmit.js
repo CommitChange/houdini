@@ -1,7 +1,7 @@
 // License: LGPL-3.0-or-later
 var confirmation = require('./confirmation')
 var notification = require('./notification')
-const grecaptchaPromised = require('../../../javascripts/src/lib/grecaptcha').default
+const grecaptchaPromised = require('../../legacy_react/src/lib/grecaptcha').default
 
 $('form[autosubmit]').submit(function(e) {
 	var self = this

@@ -9,7 +9,7 @@
 
 var request = require('../common/super-agent-promise')
 var format_err = require('../common/format_response_error')
-const grecaptcha_during_payment = require('../../../javascripts/src/lib/grecaptcha_during_payment').default
+const grecaptcha_during_payment = require('../../legacy_react/src/lib/grecaptcha_during_payment').default
 
 module.exports = create_card
 

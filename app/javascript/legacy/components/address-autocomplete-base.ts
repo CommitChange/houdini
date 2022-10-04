@@ -1,5 +1,5 @@
 // License: LGPL-3.0-or-later
-import get = require('lodash/get');
+import get  from 'lodash/get';
 declare const app:{google_api: string};
 
 declare const window: Window & { googleAutocomplete: GoogleAutocompleteObject }

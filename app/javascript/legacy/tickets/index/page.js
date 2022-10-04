@@ -13,7 +13,7 @@ require('../../common/restful_resource')
 require('../../components/tables/filtering/apply_filter')('tickets')
 require('./delete-ticket')
 
-const { CommitchangeFeeCoverageCalculator } = require('../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator')
+const { CommitchangeFeeCoverageCalculator } = require('../../../legacy_react/src/lib/payments/commitchange_fee_coverage_calculator')
 
 function metricsFetch() {
   appl.def('loading_metrics', true)

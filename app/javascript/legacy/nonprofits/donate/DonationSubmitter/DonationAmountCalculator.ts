@@ -1,5 +1,5 @@
 // License: LGPL-3.0-or-later
-import {CommitchangeFeeCoverageCalculator} from '../../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator'
+import {CommitchangeFeeCoverageCalculator} from '../../../../legacy_react/src/lib/payments/commitchange_fee_coverage_calculator'
 
 interface CalcResult {
   /**
