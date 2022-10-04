@@ -1,6 +1,6 @@
 {
   "bootstrapVersion": 3,
-  "styleLoaders": ["style", "css", "sass"],
+  "styleLoaders": ["css", "sass"],
   "extractStyles": true,
   "styles": {
     "mixins": true,
