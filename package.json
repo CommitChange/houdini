@@ -63,7 +63,6 @@
     "msw": "^0.36.8",
     "postcss-cssnext": "^2.9.0",
     "postcss-import": "^9.1.0",
-    "postcss-loader": "^2.1.1",
     "resolve-url-loader": "^2.3.0",
     "sass-loader": "^7.3.1",
     "string-replace-loader": "^2.1.1",
