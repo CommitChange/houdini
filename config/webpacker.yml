@@ -47,6 +47,9 @@ default: &default
     - .gif
     - .jpeg
     - .jpg
+    - .ts
+    - .tsx
+    - .es6
 
 development:
   <<: *default
