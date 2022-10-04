@@ -58,11 +58,11 @@ export class PutDonation {
     }
 
     if (extraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, extraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...extraJQueryAjaxSettings};
     }
 
     if (this.defaultExtraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, this.defaultExtraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...this.defaultExtraJQueryAjaxSettings};
     }
 
     let dfd = $.Deferred();

@@ -53,11 +53,11 @@ export class StripeAccountVerification {
     }
 
     if (extraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, extraJQueryAjaxSettings);
+      requestOptions = { ...requestOptions, ...extraJQueryAjaxSettings};
     }
 
     if (this.defaultExtraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, this.defaultExtraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...this.defaultExtraJQueryAjaxSettings};
     }
 
     let dfd = $.Deferred();
@@ -111,11 +111,11 @@ export class StripeAccountVerification {
     }
 
     if (extraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, extraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...extraJQueryAjaxSettings};
     }
 
     if (this.defaultExtraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, this.defaultExtraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...this.defaultExtraJQueryAjaxSettings};
     }
 
     let dfd = $.Deferred();
@@ -170,11 +170,11 @@ public postAccountLink(nonprofitId: number, returnLocation?:string, extraJQueryA
     }
 
     if (extraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, extraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...extraJQueryAjaxSettings};
     }
 
     if (this.defaultExtraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, this.defaultExtraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...this.defaultExtraJQueryAjaxSettings};
     }
 
     let dfd = $.Deferred();

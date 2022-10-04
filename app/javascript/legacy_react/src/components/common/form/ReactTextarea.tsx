@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import {InjectedIntlProps, injectIntl} from 'react-intl';
-import {Field} from "../../../../../types/mobx-react-form";
+import {Field} from "../../../../../../../types/mobx-react-form";
 import {InputHTMLAttributes, ReactText, TextareaHTMLAttributes} from "react";
 import {action, observable} from "mobx";
 import {ReactInputProps} from "./react_input_props";

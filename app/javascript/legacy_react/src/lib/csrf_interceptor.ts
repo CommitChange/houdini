@@ -6,6 +6,6 @@
  * @returns {false | void}
  */
 export function CSRFInterceptor(this:any, jqXHR:JQuery.jqXHR, settings: JQuery.AjaxSettings<any>): false|void {
-    jqXHR.setRequestHeader('X-CSRF-Token', (<any>window)._csrf)
+    jqXHR.setRequestHeader('X-CSRF-Token', (window as any)._csrf)
 }
 

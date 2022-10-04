@@ -88,11 +88,11 @@ export class NonprofitApi {
         }
 
         if (extraJQueryAjaxSettings) {
-            requestOptions = (<any>Object).assign(requestOptions, extraJQueryAjaxSettings);
+            requestOptions = {...requestOptions, ...extraJQueryAjaxSettings};
         }
 
         if (this.defaultExtraJQueryAjaxSettings) {
-            requestOptions = (<any>Object).assign(requestOptions, this.defaultExtraJQueryAjaxSettings);
+            requestOptions = {...requestOptions, ...this.defaultExtraJQueryAjaxSettings};
         }
 
         let dfd = $.Deferred();
@@ -103,7 +103,7 @@ export class NonprofitApi {
                     if(false){}
                     else if (xhr.status == 200 && 200 >= 400)
                     {
-                        dfd.reject(new models.NonprofitException(<models.Nonprofit>xhr.responseJSON))
+                        dfd.reject(new models.NonprofitException(xhr.responseJSON as models.Nonprofit))
                     }
 
                     else
@@ -160,11 +160,11 @@ export class NonprofitApi {
         }
 
         if (extraJQueryAjaxSettings) {
-            requestOptions = (<any>Object).assign(requestOptions, extraJQueryAjaxSettings);
+            requestOptions = {...requestOptions, ...extraJQueryAjaxSettings};
         }
 
         if (this.defaultExtraJQueryAjaxSettings) {
-            requestOptions = (<any>Object).assign(requestOptions, this.defaultExtraJQueryAjaxSettings);
+            requestOptions = {...requestOptions, ...this.defaultExtraJQueryAjaxSettings};
         }
 
         let dfd = $.Deferred();
@@ -175,12 +175,12 @@ export class NonprofitApi {
                     if(false){}
                     else if (xhr.status == 201 && 201 >= 400)
                     {
-                        dfd.reject(new models.NonprofitException(<models.Nonprofit>xhr.responseJSON))
+                        dfd.reject(new models.NonprofitException(xhr.responseJSON as models.Nonprofit))
                     }
 
                     else if (xhr.status == 400 && 400 >= 400)
                     {
-                        dfd.reject(new models.ValidationErrorsException(<models.ValidationErrors>xhr.responseJSON))
+                        dfd.reject(new models.ValidationErrorsException(xhr.responseJSON as models.ValidationErrors))
                     }
 
                     else

@@ -1,8 +1,8 @@
-import React = require("react");
+import React from "react";
 import { action, observable } from "mobx";
 import { Transition } from "react-transition-group";
 import { CloseButton } from "./svg/CloseButton";
-import color = require("color");
+import color from "color";
 import { observer } from "mobx-react";
 import ScreenReaderOnlyText from "./ScreenReaderOnlyText";
 

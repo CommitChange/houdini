@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { observer, inject} from 'mobx-react';
 import {InjectedIntlProps, injectIntl, FormattedMessage} from 'react-intl';
-import {Field, FieldDefinition, Form, initializationDefinition} from "../../../../types/mobx-react-form";
+import {Field, FieldDefinition, Form, initializationDefinition} from "../../../../../../types/mobx-react-form";
 import {Validations} from "../../lib/vjf_rules";
 import {WebLoginModel, WebUserSignInOut} from "../../lib/api/sign_in";
 

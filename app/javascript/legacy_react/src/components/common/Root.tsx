@@ -35,7 +35,7 @@ export default class Root extends React.Component<RootProps, {}> {
   }
   render() {
     if (!this.apiManager){
-      this.apiManager = new ApiManager(APIS.concat(CustomAPIS.APIS as Array<any>), CSRFInterceptor)
+      this.apiManager = new ApiManager(APIS.concat(CustomAPIS.APIS as any[]), CSRFInterceptor)
     }
 
     return <IntlProvider locale={I18n.locale} defaultLocale={I18n.defaultLocale} messages={convert(I18n.translations[I18n.locale])}>

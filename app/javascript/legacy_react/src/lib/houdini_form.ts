@@ -3,7 +3,7 @@ import {Field, FieldDefinition, Form, initializationDefinition} from "mobx-react
 import {action, computed, IValueDidChange, observable, runInAction} from 'mobx'
 import * as _ from 'lodash'
 import {ValidationErrorsException} from "../../api";
-import validator = require("validator");
+import validator  from "validator";
 
 
 export class HoudiniForm extends Form {

@@ -1,6 +1,6 @@
 // License: LGPL-3.0-or-later
 import * as React from 'react';
-import omit =  require('lodash/omit');
+import omit from 'lodash/omit';
 
 export interface ProgressableButtonProps
 {

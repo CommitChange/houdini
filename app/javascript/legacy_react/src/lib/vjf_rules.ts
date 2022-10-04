@@ -1,8 +1,8 @@
 // License: LGPL-3.0-or-later
 import * as Regex from './regex'
 import {Field, Form} from "mobx-react-form";
-import moment = require("moment");
-import _ = require('lodash');
+import moment from "moment";
+import _  from 'lodash';
 
 
 interface ValidationInput {

@@ -1,7 +1,7 @@
 // License: LGPL-3.0-or-later
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import AriaModal = require('react-aria-modal');
+import AriaModal from 'react-aria-modal';
 import { VelocityTransitionGroup } from 'velocity-react';
 import 'velocity-animate';
 import 'velocity-animate/velocity.ui';

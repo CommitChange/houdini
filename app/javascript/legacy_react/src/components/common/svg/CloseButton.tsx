@@ -1,5 +1,5 @@
 // License: LGPL-3.0-or-later
-import React = require("react");
+import React from "react";
 interface CloseButtonProps {
   backgroundCircleStyle:React.CSSProperties
   foregroundCircleStyle:React.CSSProperties

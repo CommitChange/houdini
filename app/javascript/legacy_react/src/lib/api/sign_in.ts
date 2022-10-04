@@ -4,7 +4,7 @@ import {Configuration} from "../../../api/configuration";
 
 export class WebUserSignInOut {
   protected basePath = '/';
-  public defaultHeaders: Array<string> = [];
+  public defaultHeaders: string[] = [];
   public defaultExtraJQueryAjaxSettings?: JQueryAjaxSettings = null;
   public configuration: Configuration = new Configuration();
 
@@ -58,11 +58,11 @@ export class WebUserSignInOut {
     }
 
     if (extraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, extraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...extraJQueryAjaxSettings};
     }
 
     if (this.defaultExtraJQueryAjaxSettings) {
-      requestOptions = (<any>Object).assign(requestOptions, this.defaultExtraJQueryAjaxSettings);
+      requestOptions = {...requestOptions, ...this.defaultExtraJQueryAjaxSettings};
     }
 
     let dfd = $.Deferred();

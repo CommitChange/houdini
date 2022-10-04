@@ -27,10 +27,9 @@ export class ApiManager {
       let newed = new i()
       if (beforeSendInterceptors && beforeSendInterceptors.length > 0) {
         let a: JQuery.AjaxSettings<any> = {
-          beforeSend: <any>((jqXHR:JQuery.jqXHR, settings:JQuery.AjaxSettings<any>) : false|void => {
+          beforeSend: ((jqXHR:JQuery.jqXHR, settings:JQuery.AjaxSettings<any>) : false|void => {
             _.forEach(beforeSendInterceptors, (i:Interceptor) => i(jqXHR, settings))
-            return
-          })
+          }) as any
         }
         newed.defaultExtraJQueryAjaxSettings = a
       }
@@ -39,16 +38,6 @@ export class ApiManager {
     })
   }
 
-  /**
-   * Retrieves the Api instance for class you request
-   *
-   * @example
-   * //returns the nonprofit API
-   * api.get(NonprofitApi)
-   * @param {{new(): T}} c class of the Api you'd like to use
-   * @throws ApiMissingException when you pass in a class which isn't in the list of managed APIs
-   * @returns {T} instance of the Api
-   */
   get<T>(c: { new(): T }): T {
     let result = _.find(this.apis, (i) => {
       return i instanceof c
