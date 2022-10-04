@@ -13194,11 +13194,6 @@ webpack-sources@^1.0.1:
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack-sweet-entry@^1.1.4:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/webpack-sweet-entry/-/webpack-sweet-entry-1.1.5.tgz#07fea3eb8168c1efa409a87205ccc425593284c9"
-  integrity sha512-AbGUO7qPh305dBpolzAi32z8+SPt9BzJRxKTpLJvHUtPuu1YawX1n3e19Uhrd658rglZhN2NRBSml5W9ePsXdQ==
-
 webpack@^4, webpack@^4.41.2:
   version "4.46.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.46.0.tgz#bf9b4404ea20a073605e0a011d188d77cb6ad542"
