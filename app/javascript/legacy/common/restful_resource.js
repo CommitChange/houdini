@@ -18,7 +18,7 @@
 	*   ajax.create donations form_object
 	*/
 
-var request = require('../common/client')
+var request = require('./client')
 
 var restful_resource = {}
 module.exports = restful_resource
