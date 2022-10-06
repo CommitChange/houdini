@@ -1,0 +1,2 @@
+
+require('../legacy/page.js')
