@@ -240,6 +240,17 @@ module QueryPayments
       end
     end
 
+    if query.has_key? :supporter_covered_fee
+
+      if query[:supporter_covered_fee]
+        expr = expr.join("misc_payment_infos", "misc_payment_infos.payment_id = payments.id")
+        expr = expr.where("COALESCE(misc_payment_infos.fee_covered, false)")
+      else
+        expr = expr.left_outer_join("misc_payment_infos", "misc_payment_infos.payment_id = payments.id")
+        expr = expr.where("misc_payment_infos.id IS NULL OR NOT COALESCE(misc_payment_infos.fee_covered, false)")
+      end
+    end
+
     #we have the first part of the search. We need to create the second in certain situations
     filtered_payment_id_search = expr.parse
 
