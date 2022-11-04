@@ -251,6 +251,12 @@ module QueryPayments
       end
     end
 
+    if query.has_key? :online_payments_only
+      if query[:online_payments_only]
+        expr = expr.join(:charges, "charges.payment_id = payments.id AND charges.status != $status", status: 'failed')
+      end
+    end
+
     #we have the first part of the search. We need to create the second in certain situations
     filtered_payment_id_search = expr.parse
 
