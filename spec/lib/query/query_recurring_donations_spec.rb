@@ -257,7 +257,7 @@ describe QueryRecurringDonations do
       force_create(:recurring_donation, amount: 200, active: true, n_failures: 0, end_date: Time.current + 1.day, nonprofit: @nonprofit, donation: force_create(:donation), edit_token: "edit_token_6")
   ]}
 
-  let(:completed) {[
+  let(:fulfilled) {[
     force_create(:recurring_donation, amount: 100, active: true, n_failures: 0, end_date: Time.current - 1.day, nonprofit: @nonprofit, donation: force_create(:donation), edit_token: "edit_token_5"),
   ]}
 
@@ -268,7 +268,7 @@ describe QueryRecurringDonations do
 
 
 
-      @recurring_donations = [].concat(failed).concat(cancelled).concat(active).concat(completed)
+      @recurring_donations = [].concat(failed).concat(cancelled).concat(active).concat(fulfilled)
       @root_url ='https://localhost:8080'
     end
 
@@ -294,14 +294,14 @@ describe QueryRecurringDonations do
       expect(rows[0]["Status"]).to eq "active"
     end
 
-    it 'retrieves completed' do
-      rows = CSV.parse(Format::Csv.from_array(QueryRecurringDonations::for_export_enumerable(@nonprofit.id, {:completed => true, :root_url => 'https://localhost:8080/'}).to_a), headers: true)
+    it 'retrieves fulfilled' do
+      rows = CSV.parse(Format::Csv.from_array(QueryRecurringDonations::for_export_enumerable(@nonprofit.id, {:fulfilled => true, :root_url => 'https://localhost:8080/'}).to_a), headers: true)
 
 
       expect(rows.length).to eq(1)
       expect(rows[0].headers).to eq(headers)
       expect(rows[0]["Amount"]).to eq("$1.00")
-      expect(rows[0]["Status"]).to eq "completed"
+      expect(rows[0]["Status"]).to eq "fulfilled"
       expect(rows[0]["Donation Management Url"]).to eq('')
 
     end

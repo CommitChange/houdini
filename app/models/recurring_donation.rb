@@ -6,12 +6,12 @@ class RecurringDonation < ActiveRecord::Base
   # * active
   # * cancelled
   # * failed
-  # * completed
+  # * fulfilled
 
   # the conditions for those statuses are as follows
   # if the field 'active' is false, then "cancelled"
   # else if n_failures is at least 3, then "failed"
-  # else if the end_date is set and in the past, "completed"
+  # else if the end_date is set and in the past, "fulfilled"
   # else "active"
 
 
@@ -50,8 +50,8 @@ class RecurringDonation < ActiveRecord::Base
   scope :annual,   -> {where(time_unit: 'year', interval: 1)}
   scope :failed, -> {where('n_failures >= 3')}
   scope :unfailed, -> {where('n_failures < 3')}
-  scope :completed, -> {where('recurring_donations.end_date < ?', Time.current.to_date)}
-  scope :uncompleted, -> {where('recurring_donations.end_date IS NULL OR recurring_donations.end_date IS >= ?', Time.current.to_date)}
+  scope :fulfilled, -> {where('recurring_donations.end_date < ?', Time.current.to_date)}
+  scope :unfulfilled, -> {where('recurring_donations.end_date IS NULL OR recurring_donations.end_date IS >= ?', Time.current.to_date)}
 
   scope :may_attempt_again, -> {where('recurring_donations.active AND (recurring_donations.end_date IS NULL OR recurring_donations.end_date > ?) AND recurring_donations.n_failures < 3', Time.current)}
 
