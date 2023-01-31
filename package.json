@@ -148,7 +148,7 @@
     "superagent": "^7.1.5",
     "text-mask": "0.0.2",
     "uuid": "2.0.2",
-    "validator": "^9.4.1",
+    "validator": "^13.7.0",
     "vdom-thunk": "3.0.0",
     "velocity-react": "^1.4.1",
     "view-script": "0.3.6",
