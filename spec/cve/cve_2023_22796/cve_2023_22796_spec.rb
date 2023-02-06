@@ -1,10 +1,9 @@
 # from https://github.com/rails/rails/blob/0ecaaf76d1b79cf2717cdac754e55b4114ad6599/activesupport/test/inflector_test.rb#L4
 require 'rails_helper'
-require_relative './inflector_test_cases'
-include InflectorTestCases
 
 describe 'inflector test' do
 
+  require_relative './inflector_test_cases'
 
   it 'handles acronyms' do 
     ActiveSupport::Inflector.inflections do |inflect|
@@ -56,22 +55,22 @@ describe 'inflector test' do
   end
 
   it 'handles underscores' do
-    CamelToUnderscore.each do |camel, underscore|
+    InflectorTestCases::CamelToUnderscore.each do |camel, underscore|
       assert_equal(underscore, ActiveSupport::Inflector.underscore(camel))
     end
-    CamelToUnderscoreWithoutReverse.each do |camel, underscore|
+    InflectorTestCases::CamelToUnderscoreWithoutReverse.each do |camel, underscore|
       assert_equal(underscore, ActiveSupport::Inflector.underscore(camel))
     end
   end
 
   it 'handles underscore with slashes' do
-    CamelWithModuleToUnderscoreWithSlash.each do |camel, underscore|
+    InflectorTestCases::CamelWithModuleToUnderscoreWithSlash.each do |camel, underscore|
       assert_equal(underscore, ActiveSupport::Inflector.underscore(camel))
     end
   end
 
   it 'handles underscore as reverse of dasherize' do
-    UnderscoresToDashes.each_key do |underscored|
+    InflectorTestCases::UnderscoresToDashes.each_key do |underscored|
       assert_equal(underscored, ActiveSupport::Inflector.underscore(ActiveSupport::Inflector.dasherize(underscored)))
     end
   end
