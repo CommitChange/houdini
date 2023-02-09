@@ -4,7 +4,27 @@ require 'rails_helper'
 describe 'inflector test' do
 
   require_relative './inflector_test_cases'
+  around(:each) do |example|
+    with_dup do
+      example.run
+    end
+  end
 
+  # from https://github.com/rails/rails/blob/0ecaaf76d1b79cf2717cdac754e55b4114ad6599/activesupport/test/inflector_test.rb#L524-L536
+  # Dups the singleton and yields, restoring the original inflections later.
+  # Use this in tests what modify the state of the singleton.
+  #
+  # This helper is implemented by setting @__instance__ because in some tests
+  # there are module functions that access ActiveSupport::Inflector.inflections,
+  # so we need to replace the singleton itself.
+  def with_dup
+    original = ActiveSupport::Inflector::Inflections.instance_variable_get(:@__instance__)[:en]
+    ActiveSupport::Inflector::Inflections.instance_variable_set(:@__instance__, en: original.dup)
+    yield
+  ensure
+    ActiveSupport::Inflector::Inflections.instance_variable_set(:@__instance__, en: original)
+  end
+  
   it 'handles acronyms' do 
     ActiveSupport::Inflector.inflections do |inflect|
       inflect.acronym("API")
