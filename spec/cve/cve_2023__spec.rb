@@ -213,9 +213,9 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
 
   it "test_fetch" do
     x = Object.new
-    assert_not request.cookie_jar.key?('zzzzzz')
+    assert !request.cookie_jar.key?('zzzzzz')
     assert_equal x, request.cookie_jar.fetch('zzzzzz', x)
-    assert_not request.cookie_jar.key?('zzzzzz')
+    assert !request.cookie_jar.key?('zzzzzz')
   end
 
   it "test_fetch_exists" do
@@ -226,7 +226,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
 
   it "test_fetch_block" do
     x = Object.new
-    assert_not request.cookie_jar.key?('zzzzzz')
+    assert !request.cookie_jar.key?('zzzzzz')
     assert_equal x, request.cookie_jar.fetch('zzzzzz') { x }
   end
 
