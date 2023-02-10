@@ -1,6 +1,5 @@
 require 'rails_helper'
 
-
 begin
   require 'openssl'
   OpenSSL::PKCS5
@@ -11,7 +10,178 @@ else
 require 'active_support/key_generator'
 require 'active_support/message_verifier'
 
-describe 'cookie test for cve CVE-2023-22792', type: :controller do 
+class TestController < ActionController::Base
+  def authenticate
+    cookies["user_name"] = "david"
+    head :ok
+  end
+
+  def set_with_with_escapable_characters
+    cookies["that & guy"] = "foo & bar => baz"
+    head :ok
+  end
+
+  def authenticate_for_fourteen_days
+    cookies["user_name"] = { "value" => "david", "expires" => Time.utc(2005, 10, 10,5) }
+    head :ok
+  end
+
+  def authenticate_for_fourteen_days_with_symbols
+    cookies[:user_name] = { :value => "david", :expires => Time.utc(2005, 10, 10,5) }
+    head :ok
+  end
+
+  def set_multiple_cookies
+    cookies["user_name"] = { "value" => "david", "expires" => Time.utc(2005, 10, 10,5) }
+    cookies["login"]     = "XJ-122"
+    head :ok
+  end
+
+  def access_frozen_cookies
+    cookies["will"] = "work"
+    head :ok
+  end
+
+  def logout
+    cookies.delete("user_name")
+    head :ok
+  end
+
+  alias delete_cookie logout
+
+  def delete_cookie_with_path
+    cookies.delete("user_name", :path => '/beaten')
+    head :ok
+  end
+
+  def authenticate_with_http_only
+    cookies["user_name"] = { :value => "david", :httponly => true }
+    head :ok
+  end
+
+  def authenticate_with_secure
+    cookies["user_name"] = { :value => "david", :secure => true }
+    head :ok
+  end
+
+  def set_permanent_cookie
+    cookies.permanent[:user_name] = "Jamie"
+    head :ok
+  end
+
+  def set_signed_cookie
+    cookies.signed[:user_id] = 45
+    head :ok
+  end
+
+  def set_wrapped_signed_cookie
+    cookies.signed[:user_id] = JSONWrapper.new(45)
+    head :ok
+  end
+
+  def get_signed_cookie
+    cookies.signed[:user_id]
+    head :ok
+  end
+
+  def set_encrypted_cookie
+    cookies.encrypted[:foo] = 'bar'
+    head :ok
+  end
+
+  def set_wrapped_encrypted_cookie
+    cookies.encrypted[:foo] = JSONWrapper.new('bar')
+    head :ok
+  end
+
+  def get_encrypted_cookie
+    cookies.encrypted[:foo]
+    head :ok
+  end
+
+  def set_invalid_encrypted_cookie
+    cookies[:invalid_cookie] = 'invalid--9170e00a57cfc27083363b5c75b835e477bd90cf'
+    head :ok
+  end
+
+  def raise_data_overflow
+    cookies.signed[:foo] = 'bye!' * 1024
+    head :ok
+  end
+
+  def tampered_cookies
+    cookies[:tampered] = "BAh7BjoIZm9vIghiYXI%3D--123456780"
+    cookies.signed[:tampered]
+    head :ok
+  end
+
+  def set_permanent_signed_cookie
+    cookies.permanent.signed[:remember_me] = 100
+    head :ok
+  end
+
+  def delete_and_set_cookie
+    cookies.delete :user_name
+    cookies[:user_name] = { :value => "david", :expires => Time.utc(2005, 10, 10,5) }
+    head :ok
+  end
+
+  def set_cookie_with_domain
+    cookies[:user_name] = {:value => "rizwanreza", :domain => :all}
+    head :ok
+  end
+
+  def delete_cookie_with_domain
+    cookies.delete(:user_name, :domain => :all)
+    head :ok
+  end
+
+  def set_cookie_with_domain_and_tld
+    cookies[:user_name] = {:value => "rizwanreza", :domain => :all, :tld_length => 2}
+    head :ok
+  end
+
+  def delete_cookie_with_domain_and_tld
+    cookies.delete(:user_name, :domain => :all, :tld_length => 2)
+    head :ok
+  end
+
+  def set_cookie_with_domains
+    cookies[:user_name] = {:value => "rizwanreza", :domain => %w(example1.com example2.com .example3.com)}
+    head :ok
+  end
+
+  def delete_cookie_with_domains
+    cookies.delete(:user_name, :domain => %w(example1.com example2.com .example3.com))
+    head :ok
+  end
+
+  def symbol_key
+    cookies[:user_name] = "david"
+    head :ok
+  end
+
+  def string_key
+    cookies['user_name'] = "dhh"
+    head :ok
+  end
+
+  def symbol_key_mock
+    cookies[:user_name] = "david" if cookies[:user_name] == "andrew"
+    head :ok
+  end
+
+  def string_key_mock
+    cookies['user_name'] = "david" if cookies['user_name'] == "andrew"
+    head :ok
+  end
+
+  def noop
+    head :ok
+  end
+end
+
+describe TestController, type: :controller do 
   class CustomSerializer
     def self.load(value)
       value.to_s + " and loaded"
@@ -32,178 +202,15 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     end
   end
 
-  controller do
-    def authenticate
-      cookies["user_name"] = "david"
-      head :ok
+
+
+  tests TestController
+
+  before(:each) do
+    routes.draw do
+      get ':controller(/:action)'
     end
-
-    def set_with_with_escapable_characters
-      cookies["that & guy"] = "foo & bar => baz"
-      head :ok
-    end
-
-    def authenticate_for_fourteen_days
-      cookies["user_name"] = { "value" => "david", "expires" => Time.utc(2005, 10, 10,5) }
-      head :ok
-    end
-
-    def authenticate_for_fourteen_days_with_symbols
-      cookies[:user_name] = { :value => "david", :expires => Time.utc(2005, 10, 10,5) }
-      head :ok
-    end
-
-    def set_multiple_cookies
-      cookies["user_name"] = { "value" => "david", "expires" => Time.utc(2005, 10, 10,5) }
-      cookies["login"]     = "XJ-122"
-      head :ok
-    end
-
-    def access_frozen_cookies
-      cookies["will"] = "work"
-      head :ok
-    end
-
-    def logout
-      cookies.delete("user_name")
-      head :ok
-    end
-
-    alias delete_cookie logout
-
-    def delete_cookie_with_path
-      cookies.delete("user_name", :path => '/beaten')
-      head :ok
-    end
-
-    def authenticate_with_http_only
-      cookies["user_name"] = { :value => "david", :httponly => true }
-      head :ok
-    end
-
-    def authenticate_with_secure
-      cookies["user_name"] = { :value => "david", :secure => true }
-      head :ok
-    end
-
-    def set_permanent_cookie
-      cookies.permanent[:user_name] = "Jamie"
-      head :ok
-    end
-
-    def set_signed_cookie
-      cookies.signed[:user_id] = 45
-      head :ok
-    end
-
-    def set_wrapped_signed_cookie
-      cookies.signed[:user_id] = JSONWrapper.new(45)
-      head :ok
-    end
-
-    def get_signed_cookie
-      cookies.signed[:user_id]
-      head :ok
-    end
-
-    def set_encrypted_cookie
-      cookies.encrypted[:foo] = 'bar'
-      head :ok
-    end
-
-    def set_wrapped_encrypted_cookie
-      cookies.encrypted[:foo] = JSONWrapper.new('bar')
-      head :ok
-    end
-
-    def get_encrypted_cookie
-      cookies.encrypted[:foo]
-      head :ok
-    end
-
-    def set_invalid_encrypted_cookie
-      cookies[:invalid_cookie] = 'invalid--9170e00a57cfc27083363b5c75b835e477bd90cf'
-      head :ok
-    end
-
-    def raise_data_overflow
-      cookies.signed[:foo] = 'bye!' * 1024
-      head :ok
-    end
-
-    def tampered_cookies
-      cookies[:tampered] = "BAh7BjoIZm9vIghiYXI%3D--123456780"
-      cookies.signed[:tampered]
-      head :ok
-    end
-
-    def set_permanent_signed_cookie
-      cookies.permanent.signed[:remember_me] = 100
-      head :ok
-    end
-
-    def delete_and_set_cookie
-      cookies.delete :user_name
-      cookies[:user_name] = { :value => "david", :expires => Time.utc(2005, 10, 10,5) }
-      head :ok
-    end
-
-    def set_cookie_with_domain
-      cookies[:user_name] = {:value => "rizwanreza", :domain => :all}
-      head :ok
-    end
-
-    def delete_cookie_with_domain
-      cookies.delete(:user_name, :domain => :all)
-      head :ok
-    end
-
-    def set_cookie_with_domain_and_tld
-      cookies[:user_name] = {:value => "rizwanreza", :domain => :all, :tld_length => 2}
-      head :ok
-    end
-
-    def delete_cookie_with_domain_and_tld
-      cookies.delete(:user_name, :domain => :all, :tld_length => 2)
-      head :ok
-    end
-
-    def set_cookie_with_domains
-      cookies[:user_name] = {:value => "rizwanreza", :domain => %w(example1.com example2.com .example3.com)}
-      head :ok
-    end
-
-    def delete_cookie_with_domains
-      cookies.delete(:user_name, :domain => %w(example1.com example2.com .example3.com))
-      head :ok
-    end
-
-    def symbol_key
-      cookies[:user_name] = "david"
-      head :ok
-    end
-
-    def string_key
-      cookies['user_name'] = "dhh"
-      head :ok
-    end
-
-    def symbol_key_mock
-      cookies[:user_name] = "david" if cookies[:user_name] == "andrew"
-      head :ok
-    end
-
-    def string_key_mock
-      cookies['user_name'] = "david" if cookies['user_name'] == "andrew"
-      head :ok
-    end
-
-    def noop
-      head :ok
-    end
-  end
-
-  before(:each) do 
+    @controller = TestController.new
     @request.env["action_dispatch.key_generator"] = ActiveSupport::KeyGenerator.new("b3c631c314c0bbca50c1b2843150fe33", iterations: 2)
     @request.env["action_dispatch.signed_cookie_salt"] = "b3c631c314c0bbca50c1b2843150fe33"
     @request.env["action_dispatch.encrypted_cookie_salt"] = "b3c631c314c0bbca50c1b2843150fe33"
@@ -316,7 +323,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
   end
 
   it "test_setting_cookie_with_secure_when_always_write_cookie_is_true" do
-    ActionDispatch::Cookies::CookieJar.any_instance.stubs(:always_write_cookie).returns(true)
+    allow_any_instance_of(ActionDispatch::Cookies::CookieJar).to receive(:always_write_cookie).and_return(true)
     get :authenticate_with_secure
     assert_cookie_header "user_name=david; path=/; secure"
     assert_equal({"user_name" => "david"}, @response.cookies)
@@ -325,7 +332,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
   it "test_not_setting_cookie_with_secure" do
     get :authenticate_with_secure
     assert_not_cookie_header "user_name=david; path=/; secure"
-    assert_not_equal({"user_name" => "david"}, @response.cookies)
+    expect({"user_name" => "david"}).to_not eq @response.cookies
   end
 
   it "test_multiple_cookies" do
@@ -336,7 +343,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
   end
 
   it "test_setting_test_cookie" do
-    assert_nothing_raised { get :access_frozen_cookies }
+    expect { get :access_frozen_cookies }.to_not raise_error
   end
 
   it "test_expiring_cookie" do
@@ -390,7 +397,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
   it "test_signed_cookie_using_default_digest" do
     get :set_signed_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 45, cookies[:user_id]
+    expect(45).to_not eq cookies[:user_id]
     assert_equal 45, cookies.signed[:user_id]
 
     key_generator = @request.env["action_dispatch.key_generator"]
@@ -405,7 +412,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     @request.env["action_dispatch.cookies_digest"] = 'SHA256'
     get :set_signed_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 45, cookies[:user_id]
+    expect(45).to_not eq cookies[:user_id]
     assert_equal 45, cookies.signed[:user_id]
 
     key_generator = @request.env["action_dispatch.key_generator"]
@@ -419,7 +426,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
   it "test_signed_cookie_using_default_serializer" do
     get :set_signed_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 45, cookies[:user_id]
+    expect(45).to_not eq cookies[:user_id]
     assert_equal 45, cookies.signed[:user_id]
   end
 
@@ -427,7 +434,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     @request.env["action_dispatch.cookies_serializer"] = :marshal
     get :set_signed_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 45, cookies[:user_id]
+    expect(45).to_not eq cookies[:user_id]
     assert_equal 45, cookies.signed[:user_id]
   end
 
@@ -435,7 +442,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     @request.env["action_dispatch.cookies_serializer"] = :json
     get :set_signed_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 45, cookies[:user_id]
+    expect(45).to_not eq cookies[:user_id]
     assert_equal 45, cookies.signed[:user_id]
   end
 
@@ -443,14 +450,14 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     @request.env["action_dispatch.cookies_serializer"] = :json
     get :set_wrapped_signed_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 'wrapped: 45', cookies[:user_id]
+    expect('wrapped: 45').to_not eq cookies[:user_id]
     assert_equal 'wrapped: 45', cookies.signed[:user_id]
   end
 
   it "test_signed_cookie_using_custom_serializer" do
     @request.env["action_dispatch.cookies_serializer"] = CustomSerializer
     get :set_signed_cookie
-    assert_not_equal 45, cookies[:user_id]
+    expect(45).to_not eq cookies[:user_id]
     assert_equal '45 was dumped and loaded', cookies.signed[:user_id]
   end
 
@@ -467,7 +474,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     get :get_signed_cookie
 
     cookies = @controller.send :cookies
-    assert_not_equal 45, cookies[:user_id]
+    expect(45).to_not eq cookies[:user_id]
     assert_equal 45, cookies.signed[:user_id]
 
     verifier = ActiveSupport::MessageVerifier.new(secret, serializer: JSON)
@@ -486,7 +493,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     get :get_signed_cookie
 
     cookies = @controller.send :cookies
-    assert_not_equal 45, cookies[:user_id]
+    expect(45).to_not eq cookies[:user_id]
     assert_equal 45, cookies.signed[:user_id]
 
     assert_nil @response.cookies["user_id"]
@@ -500,10 +507,10 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
   it "test_encrypted_cookie_using_default_serializer" do
     get :set_encrypted_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 'bar', cookies[:foo]
-    assert_raise TypeError do
-      cookies.signed[:foo]
-    end
+    expect('bar').to_not eq cookies[:foo]
+
+    expect {cookies.signed[:foo]}.to raise_error(TypeError)
+
     assert_equal 'bar', cookies.encrypted[:foo]
   end
 
@@ -511,10 +518,10 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     @request.env["action_dispatch.cookies_serializer"] = :marshal
     get :set_encrypted_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 'bar', cookies[:foo]
-    assert_raises TypeError do
-      cookies.signed[:foo]
-    end
+    expect('bar').to_not eq cookies[:foo]
+
+    expect { cookies.signed[:foo] }.to raise_error(TypeError)
+
     assert_equal 'bar', cookies.encrypted[:foo]
   end
 
@@ -522,10 +529,8 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     @request.env["action_dispatch.cookies_serializer"] = :json
     get :set_encrypted_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 'bar', cookies[:foo]
-    assert_raises ::JSON::ParserError do
-      cookies.signed[:foo]
-    end
+    expect('bar').to_not eq cookies[:foo]
+    expect { cookies.signed[:foo] }.to raise_error(::JSON::ParserError)
     assert_equal 'bar', cookies.encrypted[:foo]
   end
 
@@ -533,17 +538,15 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     @request.env["action_dispatch.cookies_serializer"] = :json
     get :set_wrapped_encrypted_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 'wrapped: bar', cookies[:foo]
-    assert_raises ::JSON::ParserError do
-      cookies.signed[:foo]
-    end
+    expect('wrapped: bar').to_not eq cookies[:foo]
+    expect { cookies.signed[:foo] }.to raise_error(::JSON::ParserError)
     assert_equal 'wrapped: bar', cookies.encrypted[:foo]
   end
 
   it "test_encrypted_cookie_using_custom_serializer" do
     @request.env["action_dispatch.cookies_serializer"] = CustomSerializer
     get :set_encrypted_cookie
-    assert_not_equal 'bar', cookies.encrypted[:foo]
+    expect('bar').to_not eq cookies.encrypted[:foo]
     assert_equal 'bar was dumped and loaded', cookies.encrypted[:foo]
   end
 
@@ -551,7 +554,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     @request.env["action_dispatch.cookies_digest"] = 'SHA256'
     get :set_encrypted_cookie
     cookies = @controller.send :cookies
-    assert_not_equal 'bar', cookies[:foo]
+    expect('bar').to_not eq cookies[:foo]
     assert_equal 'bar', cookies.encrypted[:foo]
 
     sign_secret = @request.env["action_dispatch.key_generator"].generate_key(@request.env["action_dispatch.encrypted_signed_cookie_salt"])
@@ -559,13 +562,13 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     sha1_verifier   = ActiveSupport::MessageVerifier.new(sign_secret, serializer: ActiveSupport::MessageEncryptor::NullSerializer, digest: 'SHA1')
     sha256_verifier = ActiveSupport::MessageVerifier.new(sign_secret, serializer: ActiveSupport::MessageEncryptor::NullSerializer, digest: 'SHA256')
 
-    assert_raises(ActiveSupport::MessageVerifier::InvalidSignature) do
-      sha1_verifier.verify(cookies[:foo])
-    end
 
-    assert_nothing_raised do
+    expect { sha1_verifier.verify(cookies[:foo]) }.to raise_error(ActiveSupport::MessageVerifier::InvalidSignature)
+
+
+    expect {
       sha256_verifier.verify(cookies[:foo])
-    end
+    }.to_not raise_error
   end
 
   it "test_encrypted_cookie_using_hybrid_serializer_can_migrate_marshal_dumped_value_to_json" do
@@ -583,7 +586,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     get :get_encrypted_cookie
 
     cookies = @controller.send :cookies
-    assert_not_equal "bar", cookies[:foo]
+    expect("bar").to_not eq cookies[:foo]
     assert_equal "bar", cookies.encrypted[:foo]
 
     encryptor = ActiveSupport::MessageEncryptor.new(secret[0, ActiveSupport::MessageEncryptor.key_len], sign_secret, serializer: JSON)
@@ -604,7 +607,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     get :get_encrypted_cookie
 
     cookies = @controller.send :cookies
-    assert_not_equal "bar", cookies[:foo]
+    expect("bar").to_not eq cookies[:foo]
     assert_equal "bar", cookies.encrypted[:foo]
 
     assert_nil @response.cookies["foo"]
@@ -618,7 +621,7 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     get :get_encrypted_cookie
 
     cookies = @controller.send :cookies
-    assert_not_equal "bar", cookies[:foo]
+    expect("bar").to_not eq cookies[:foo]
     assert_equal "bar", cookies.encrypted[:foo]
     assert_nil @response.cookies["foo"]
   end
@@ -647,45 +650,44 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
   end
 
   it "test_raise_data_overflow" do
-    assert_raise(ActionDispatch::Cookies::CookieOverflow) do
+    expect {
       get :raise_data_overflow
-    end
+    }.to raise_error(ActionDispatch::Cookies::CookieOverflow)
   end
 
   it "test_tampered_cookies" do
-    assert_nothing_raised do
+    expect {
       get :tampered_cookies
       assert_response :success
-    end
+    }.to_not raise_error
   end
 
   it "test_raises_argument_error_if_missing_secret" do
-    assert_raise(ArgumentError, nil.inspect) {
+    expect {
       @request.env["action_dispatch.key_generator"] = ActiveSupport::LegacyKeyGenerator.new(nil)
       get :set_signed_cookie
-    }
+    }.to raise_error(ArgumentError)
 
-    assert_raise(ArgumentError, ''.inspect) {
-      @request.env["action_dispatch.key_generator"] = ActiveSupport::LegacyKeyGenerator.new("")
+    expect {@request.env["action_dispatch.key_generator"] = ActiveSupport::LegacyKeyGenerator.new("")
       get :set_signed_cookie
-    }
+    }.to raise_error(ArgumentError)
   end
 
   it "test_raises_argument_error_if_secret_is_probably_insecure" do
-    assert_raise(ArgumentError, "password".inspect) {
+    expect {  
       @request.env["action_dispatch.key_generator"] = ActiveSupport::LegacyKeyGenerator.new("password")
       get :set_signed_cookie
-    }
+    }.to raise_error(ArgumentError)
 
-    assert_raise(ArgumentError, "secret".inspect) {
+    expect {
       @request.env["action_dispatch.key_generator"] = ActiveSupport::LegacyKeyGenerator.new("secret")
       get :set_signed_cookie
-    }
+    }.to raise_error(ArgumentError)
 
-    assert_raise(ArgumentError, "12345678901234567890123456789".inspect) {
+    expect {  
       @request.env["action_dispatch.key_generator"] = ActiveSupport::LegacyKeyGenerator.new("12345678901234567890123456789")
       get :set_signed_cookie
-    }
+    }.to raise_error(ArgumentError)
   end
 
   it "test_signed_uses_signed_cookie_jar_if_only_secret_token_is_set" do
@@ -1160,9 +1162,9 @@ describe 'cookie test for cve CVE-2023-22792', type: :controller do
     def assert_not_cookie_header(expected)
       header = @response.headers["Set-Cookie"]
       if header.respond_to?(:to_str)
-        assert_not_equal expected.split("\n").sort, header.split("\n").sort
+        expect(expected.split("\n").sort).to_not eq header.split("\n").sort
       else
-        assert_not_equal expected.split("\n"), header
+        expect(expected.split("\n")).to_not eq header
       end
     end
 end
