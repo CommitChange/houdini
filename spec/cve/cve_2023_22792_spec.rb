@@ -1,3 +1,5 @@
+# from https://github.com/rails/rails/blob/0ecaaf76d1b79cf2717cdac754e55b4114ad6599/actionpack/test/dispatch/cookies_test.rb
+# and from https://github.com/rails/rails/blob/daa00c8357dc12ce24f89d92e4ceeabebb3af3d1/actionpack/test/dispatch/cookies_test.rb
 require 'rails_helper'
 
 begin
@@ -139,6 +141,11 @@ class TestController < ActionController::Base
   def set_cookie_with_domain_and_tld
     cookies[:user_name] = {:value => "rizwanreza", :domain => :all, :tld_length => 2}
     head :ok
+  end
+
+  def set_cookie_with_domain_and_longer_tld
+    cookies[:user_name] = { value: "rizwanreza", domain: :all, tld_length: 4 }
+    head :ok 
   end
 
   def delete_cookie_with_domain_and_tld
@@ -1148,6 +1155,28 @@ describe TestController, type: :controller do
     assert_equal 'david', cookies['user_name']
     assert_equal 'david', cookies[:user_name]
   end
+
+  it "test_cookie_with_all_domain_option_using_australian_style_tld_and_two_subdomains" do
+    @request.host = "x.nextangle.com.au"
+    get :set_cookie_with_domain
+    assert_response :success
+    assert_cookie_header "user_name=rizwanreza; domain=.nextangle.com.au; path=/"
+  end
+
+  it "test_cookie_with_all_domain_option_using_uk_style_tld_and_two_subdomains" do
+    @request.host = "x.nextangle.co.uk"
+    get :set_cookie_with_domain
+    assert_response :success
+    assert_cookie_header "user_name=rizwanreza; domain=.nextangle.co.uk; path=/"
+  end
+
+  it "test_cookie_with_all_domain_option_using_longer_tld_length" do
+    @request.host = "x.y.z.t.com"
+    get :set_cookie_with_domain_and_longer_tld
+    assert_response :success
+    assert_cookie_header "user_name=rizwanreza; domain=.y.z.t.com; path=/"
+  end
+
 
   private
     def assert_cookie_header(expected)
