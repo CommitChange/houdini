@@ -189,6 +189,14 @@ class TestController < ActionController::Base
 end
 
 describe TestController, type: :controller do 
+
+  routes do  
+    ActionDispatch::Routing::RouteSet.new.tap  do |set|
+      set.draw do 
+        get ':controller(/:action)'
+      end
+    end
+  end
   class CustomSerializer
     def self.load(value)
       value.to_s + " and loaded"
@@ -214,9 +222,6 @@ describe TestController, type: :controller do
   tests TestController
 
   before(:each) do
-    routes.draw do
-      get ':controller(/:action)'
-    end
     @controller = TestController.new
     @request.env["action_dispatch.key_generator"] = ActiveSupport::KeyGenerator.new("b3c631c314c0bbca50c1b2843150fe33", iterations: 2)
     @request.env["action_dispatch.signed_cookie_salt"] = "b3c631c314c0bbca50c1b2843150fe33"
