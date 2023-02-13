@@ -6,6 +6,8 @@
 
 class Payout < ApplicationRecord
 
+	setup_houid :pyout, :houid
+
 	attr_accessible \
 		:scheduled, # bool (whether this was made automatically at the beginning of the month)
 		:count, # int (number of donations for this payout)
