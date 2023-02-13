@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20221209224053) do
+ActiveRecord::Schema.define(version: 20230213163722) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -878,7 +878,10 @@ ActiveRecord::Schema.define(version: 20221209224053) do
     t.string   "stripe_transfer_id", limit: 255
     t.string   "user_ip",            limit: 255
     t.integer  "ach_fee"
+    t.string   "houid"
   end
+
+  add_index "payouts", ["houid"], name: "index_payouts_on_houid", unique: true, using: :btree
 
   create_table "periodic_reports", force: :cascade do |t|
     t.boolean "active",              default: false, null: false
