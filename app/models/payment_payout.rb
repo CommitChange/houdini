@@ -20,8 +20,8 @@ class PaymentPayout < ActiveRecord::Base
 		:total_fees # int (cents)
 
 	belongs_to :charge # deprecated
-	belongs_to :payment
-	belongs_to :payout
+	belongs_to :payment, inverse_of: :payment_payouts
+	belongs_to :payout, inverse_of: :payment_payouts
 
 	validates :payment, presence: true
 	validates :payout, presence: true

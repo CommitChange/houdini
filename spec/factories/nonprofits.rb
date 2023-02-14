@@ -41,6 +41,16 @@ FactoryBot.define do
     factory :nonprofit_with_deactivated_deactivation_record do
       nonprofit_deactivation { build(:nonprofit_deactivation, deactivated: true)}
     end
+
+    trait :stripe_payments_enabled do
+
+      association :stripe_account, :with_verified_and_bank_provided_but_future_requirements
+
+      after(:create) do |np|
+        np.stripe_account.reload
+        np.save!
+      end
+    end
   end
 
   factory :fv_poverty, class: Nonprofit do
@@ -139,7 +149,5 @@ FactoryBot.define do
         billing_plan: create(:billing_plan_base, :with_associated_stripe_plan, amount: 133333, percentage_fee: 0.33, tier: 1, name: "fake plan")
       }
     end
-
-    
   end
 end

@@ -4,6 +4,18 @@ FactoryBot.define do
     sequence(:email) {|i| "user#{i}@example.string.com"}
     password {"whocares"}
     
+    factory :user_as_nonprofit_admin  do
+      transient do
+        nonprofit { association :nonprofit_base }
+      end
+
+      roles {[
+        association(:role, name: 'nonprofit_admin', host: nonprofit)
+      ]}
+
+    end
+    
+    
   end
 
   factory :automated_user, class: User do 
@@ -34,5 +46,9 @@ FactoryBot.define do
       build(:role, name: 'nonprofit_associate', host: create(:nonprofit_base)),
       build(:role, name: 'super_admin')
     ]}
+  end
+
+  trait :and_sign_in_ip do
+    last_sign_in_ip { "1.1.1.1"}
   end
 end

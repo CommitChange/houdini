@@ -104,13 +104,12 @@ describe InsertBankAccount do
                     created_at: Time.now(),
                     updated_at: Time.now(),
                     status: nil, #doesn't seem to be used
-                    id: 1,
                     deleted: false,
                     account_number: nil, #doesn't seem to be used
                     nonprofit_id: nonprofit.id,
                     bank_name: nil
         }.with_indifferent_access
-        expect(result.attributes.with_indifferent_access.except(:confirmation_token, :stripe_bank_account_id, :name)).to eq expected
+        expect(result.attributes.with_indifferent_access.except(:confirmation_token, :stripe_bank_account_id, :name, :id)).to eq expected
         expect(result[:confirmation_token]).to_not be_blank
         expect(result[:stripe_bank_account_id]).to_not be_blank
         expect(result[:name]).to_not be_blank

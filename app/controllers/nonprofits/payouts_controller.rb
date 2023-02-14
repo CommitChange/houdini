@@ -7,19 +7,19 @@ class PayoutsController < ApplicationController
 	before_action :authenticate_nonprofit_user!, only: [:index, :show]
 
 	def create
-		payout = InsertPayout.with_stripe(current_nonprofit.id, {
+		@payout = InsertPayout.with_stripe(current_nonprofit.id, {
       stripe_account_id: current_nonprofit.stripe_account_id,
       email: current_user.email,
       user_ip: current_user.current_sign_in_ip,
       bank_name: current_nonprofit.bank_account.name
     }, {before_date: params[:before_date]})
 
-		if payout['failure_message'].present?
-			flash[:notice] = "The payout failed: #{payout['failure_message']}"
-			render json: payout, status: :unprocessable_entity
+		if @payout['failure_message'].present?
+			flash[:notice] = "The payout failed: #{@payout['failure_message']}"
+			render status: :unprocessable_entity
 		else
 			flash[:notice] = 'We successfully submitted your payout! View status and receipts below.'
-			render json: payout, status: :ok
+			render status: :ok
 		end
 	end
 
