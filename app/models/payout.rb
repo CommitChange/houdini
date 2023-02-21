@@ -4,6 +4,8 @@
 #
 # These are tied to Stripe transfers
 
+# Unless you're sure, DO NOT CREATE THESE USING STANDARD ACTIVERECORD METHODS. Use `InsertPayout.with_stripe` instead.
+
 class Payout < ActiveRecord::Base
 
 	attr_accessible \
