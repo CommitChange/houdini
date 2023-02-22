@@ -5,8 +5,7 @@
 # These are tied to Stripe transfers
 
 # Unless you're sure, DO NOT CREATE THESE USING STANDARD ACTIVERECORD METHODS. Use `InsertPayout.with_stripe` instead.
-
-class Payout < ActiveRecord::Base
+class Payout < ApplicationRecord
 
 	attr_accessible \
 		:scheduled, # bool (whether this was made automatically at the beginning of the month)
