@@ -7,8 +7,6 @@ shared_examples 'payout can create object event with publish_created' do
   let(:instance) { subject }
 
   it {
-    initial_count = ObjectEvent.all.count
-    instance.publish_created
-    expect(ObjectEvent.all.count).to eq(initial_count + 1)
+expect {  instance.publish_created }.to change { ObjectEvent.count }.by(1)
     }
 end
