@@ -62,7 +62,7 @@ class Payout < ApplicationRecord
 		self.errors.add(:nonprofit, "must be vetted") unless self.nonprofit && self.nonprofit.vetted 
 	end
 
-	def publish_created
+	def self.publish_created
 		ObjectEvent.create( event_type: 'payout.created')
 	end
 end
