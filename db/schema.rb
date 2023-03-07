@@ -1370,6 +1370,9 @@ ActiveRecord::Schema.define(version: 20230307171832) do
     t.datetime "confirmation_sent_at"
     t.string   "unconfirmed_email",      limit: 255
     t.string   "phone"
+    t.integer  "failed_attempts",                    default: 0,  null: false
+    t.string   "unlock_token"
+    t.datetime "locked_at"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
