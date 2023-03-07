@@ -2,6 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe Payout, :type => :model do
+  let(:instance) { subject }
 
   it {is_expected.to have_db_column(:net_amount)}
   it {is_expected.to have_db_column(:failure_message)}
@@ -27,6 +28,8 @@ RSpec.describe Payout, :type => :model do
   it {is_expected.to validate_presence_of(:bank_account)}
   it {is_expected.to validate_presence_of(:email)}
   it {is_expected.to validate_presence_of(:net_amount)}
-  
-  it_behaves_like 'payout can create object event with publish_created'
+
+  it {
+    expect { instance.publish_created }.to change { ObjectEvent.count }.by(1)
+  }
 end
