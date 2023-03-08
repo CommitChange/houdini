@@ -33,4 +33,10 @@ RSpec.describe Payout, :type => :model do
   it {
     expect { instance.publish_created }.to change { ObjectEvent.count }.by(1)
   }
+
+  it {is_expected.to delegate_method(:currency).to(:nonprofit)}
+  
+  it_behaves_like 'an houidable entity', :pyout, :houid
+
+  it_behaves_like 'an object with as_money attributes', :net_amount
 end
