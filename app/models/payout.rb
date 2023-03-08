@@ -46,10 +46,6 @@ class Payout < ApplicationRecord
 	scope :pending, -> {where(status: 'pending')}
 	scope :paid,    -> {where(status: ['paid', 'succeeded'])}
 
-	def create
-		self.publish_created
-	end
-
 	# Older transfers use the Stripe::Transfer object, newer use Stripe::Payout object
 	def transfer_type
 		if (stripe_transfer_id.start_with?('tr_') || stripe_transfer_id.start_with?('test_tr_'))
@@ -74,6 +70,6 @@ class Payout < ApplicationRecord
 	end
 
 	def publish_created
-		ObjectEvent.create( event_type: 'payout.created')
+		object_events.create(event_type: 'payout.created')
 	end
 end

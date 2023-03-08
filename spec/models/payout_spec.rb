@@ -2,7 +2,18 @@
 require 'rails_helper'
 
 RSpec.describe Payout, :type => :model do
-  let(:instance) { subject }
+  let(:ba) do
+    ba = InsertBankAccount.with_stripe(nonprofit, user, {stripe_bank_account_token: StripeMockHelper.generate_bank_token(), name: Faker::Bank.name})
+    ba.pending_verification = false
+    ba.save
+    ba
+  end
+  let(:stripe_account) do 
+    force_create(:stripe_account, stripe_account_id: nonprofit.stripe_account_id, payouts_enabled: true)
+  end
+  let(:nonprofit) {force_create(:nonprofit, :stripe_account_id => Stripe::Account.create()['id'], vetted: true)}
+  let(:instance) { create(:payout, nonprofit: nonprofit) }
+  let(:user) {force_create(:user)}
 
   it {is_expected.to have_db_column(:net_amount)}
   it {is_expected.to have_db_column(:failure_message)}
@@ -31,7 +42,12 @@ RSpec.describe Payout, :type => :model do
   it {is_expected.to validate_presence_of(:net_amount)}
 
   it {
-    expect { instance.publish_created }.to change { ObjectEvent.count }.by(1)
+    StripeMockHelper.mock do
+      ba
+      stripe_account
+      
+      expect { instance.publish_created }.to change { ObjectEvent.count }.by(1)
+    end
   }
 
   it {is_expected.to delegate_method(:currency).to(:nonprofit)}
