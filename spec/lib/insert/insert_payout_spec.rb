@@ -317,6 +317,16 @@ describe InsertPayout do
 
           expect(resulted_payout.payments.count).to eq 0
         end
+
+        it 'creates an associated payout.created object event' do
+          result = InsertPayout.with_stripe(nonprofit.id, {stripe_account_id: nonprofit.stripe_account_id,
+                                                    email: user_email,
+                                                    user_ip: user_ip,
+                                                    bank_name: bank_name
+          }, {date: Time.now - 1.day})
+
+          expect(Payout.find(result['id']).object_events.last.event_type).to eq 'payout.created'
+        end
       end
     end
   end
