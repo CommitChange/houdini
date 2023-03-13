@@ -38,6 +38,7 @@ class Payment < ActiveRecord::Base
 	has_one :journal_entries_to_item, as: :item
 	has_one :payment_dupe_status
 	has_one  :manual_balance_adjustment
+	has_many :object_events, as: :event_entity
 
 	has_one :subtransaction_payment, foreign_key: 'legacy_payment_id', inverse_of: :legacy_payment
 
