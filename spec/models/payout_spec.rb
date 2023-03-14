@@ -2,7 +2,8 @@
 require 'rails_helper'
 
 RSpec.describe Payout, :type => :model do
-  let(:ba) do
+  # We need a bank and stripe account connected to the Payout for validation to pass
+  let(:bank_account) do
     ba = InsertBankAccount.with_stripe(nonprofit, user, {stripe_bank_account_token: StripeMockHelper.generate_bank_token(), name: Faker::Bank.name})
     ba.pending_verification = false
     ba.save
@@ -12,7 +13,7 @@ RSpec.describe Payout, :type => :model do
     force_create(:stripe_account, stripe_account_id: nonprofit.stripe_account_id, payouts_enabled: true)
   end
   let(:nonprofit) {force_create(:nonprofit, :stripe_account_id => Stripe::Account.create()['id'], vetted: true)}
-  let(:instance) { create(:payout, nonprofit: nonprofit) }
+  let(:payout) { create(:payout, nonprofit: nonprofit) }
   let(:user) {force_create(:user)}
 
   it {is_expected.to have_db_column(:net_amount)}
@@ -43,10 +44,11 @@ RSpec.describe Payout, :type => :model do
 
   it {
     StripeMockHelper.mock do
-      ba
+      # Load the bank and stripe account into memory, otherwise Payout validation will fail
+      bank_account
       stripe_account
-      
-      expect { instance.publish_created }.to change { ObjectEvent.count }.by(1)
+
+      expect { payout.publish_created }.to change { ObjectEvent.count }.by(1)
     end
   }
 

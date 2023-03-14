@@ -20,6 +20,7 @@ RSpec.describe '/api_new/payouts/show.json.jbuilder', type: :view do
           cents: payout.net_amount_as_money.cents,
           currency: 'usd',
         },
+        status: payout.status,
         object: 'payout'
     )  
   end
