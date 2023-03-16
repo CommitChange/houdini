@@ -7,6 +7,8 @@
 # Unless you're sure, DO NOT CREATE THESE USING STANDARD ACTIVERECORD METHODS. Use `InsertPayout.with_stripe` instead.
 class Payout < ApplicationRecord
 
+	setup_houid :pyout, :houid
+
 	attr_accessible \
 		:scheduled, # bool (whether this was made automatically at the beginning of the month)
 		:count, # int (number of donations for this payout)
@@ -37,6 +39,10 @@ class Payout < ApplicationRecord
 	validate  :nonprofit_must_have_identity_verified, on: :create
 	validate  :bank_account_must_be_confirmed, on: :create
 
+	delegate :currency, to: :nonprofit
+
+	as_money :net_amount
+
 	scope :pending, -> {where(status: 'pending')}
 	scope :paid,    -> {where(status: ['paid', 'succeeded'])}
 
@@ -63,5 +69,7 @@ class Payout < ApplicationRecord
 		self.errors.add(:nonprofit, "must be vetted") unless self.nonprofit && self.nonprofit.vetted 
 	end
 
+	def publish_created
+		object_events.create(event_type: 'payout.created')
+	end
 end
-
