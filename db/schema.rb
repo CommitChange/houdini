@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20230307171832) do
+ActiveRecord::Schema.define(version: 20230316235917) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -778,12 +778,14 @@ ActiveRecord::Schema.define(version: 20230307171832) do
   add_index "object_events", ["nonprofit_id"], name: "index_object_events_on_nonprofit_id", using: :btree
 
   create_table "offline_transaction_charges", force: :cascade do |t|
-    t.string   "houid",      null: false
+    t.string   "houid",              null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "offsite_payment_id"
   end
 
   add_index "offline_transaction_charges", ["houid"], name: "index_offline_transaction_charges_on_houid", unique: true, using: :btree
+  add_index "offline_transaction_charges", ["offsite_payment_id"], name: "index_offline_transaction_charges_on_offsite_payment_id", using: :btree
 
   create_table "offline_transactions", force: :cascade do |t|
     t.integer  "amount",     null: false
@@ -1397,6 +1399,7 @@ ActiveRecord::Schema.define(version: 20230307171832) do
   add_foreign_key "export_formats", "nonprofits"
   add_foreign_key "fee_coverage_detail_bases", "fee_eras"
   add_foreign_key "fee_structures", "fee_eras"
+  add_foreign_key "offline_transaction_charges", "offsite_payments"
   add_foreign_key "payments", "supporters", name: "payments_supporter_fk"
   add_foreign_key "periodic_reports", "nonprofits"
   add_foreign_key "periodic_reports", "users"
@@ -1453,10 +1456,10 @@ ActiveRecord::Schema.define(version: 20230307171832) do
   create_trigger :update_donations_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_donations_fts BEFORE INSERT OR UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION update_fts_on_donations()
   SQL
-  create_trigger :update_supporters_fts, sql_definition: <<-SQL
-      CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
-  SQL
   create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
       CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
+  SQL
+  create_trigger :update_supporters_fts, sql_definition: <<-SQL
+      CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
   SQL
 end
