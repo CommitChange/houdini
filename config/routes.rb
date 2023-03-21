@@ -2,6 +2,10 @@
 Commitchange::Application.routes.draw do
  
 
+  namespace :nonprofits do
+  
+  end
+
   mount Houdini::API => '/api'
 
   if Rails.env == 'development'
@@ -205,6 +209,7 @@ Commitchange::Application.routes.draw do
 		get(:payment_history, {on: :member})
 
 		post(:donate, {on: :member, as: 'create_donation'})
+		get 'widgets' => "nonprofits/widgets#show"
 	end
 
 	resources(:recurring_donations, {only: [:edit, :destroy, :update]}) do
