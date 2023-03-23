@@ -6,6 +6,6 @@ class OffsitePayment < ActiveRecord::Base
 	belongs_to :donation
 	belongs_to :nonprofit
 	belongs_to :supporter
-	belongs_to :offline_transaction_charge
+	has_one :offline_transaction_charge, through: :payment
 
 end
