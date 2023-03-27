@@ -11,5 +11,4 @@ RSpec.describe OffsitePayment, type: :model do
   it { is_expected.to belong_to(:donation) }
   it { is_expected.to belong_to(:nonprofit) }
   it { is_expected.to belong_to(:supporter) }
-
 end
