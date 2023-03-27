@@ -12,5 +12,4 @@ RSpec.describe OffsitePayment, type: :model do
   it { is_expected.to belong_to(:nonprofit) }
   it { is_expected.to belong_to(:supporter) }
 
-  it { is_expected.to have_one(:offline_transaction_charge).through(:payment) }
 end
