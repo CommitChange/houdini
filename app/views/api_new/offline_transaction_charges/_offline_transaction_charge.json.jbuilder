@@ -12,13 +12,13 @@ json.payment_type paymentable.subtransaction_payment.legacy_payment.offsite_paym
 json.check_number paymentable.subtransaction_payment.legacy_payment.offsite_payment&.check_number
 
 json.net_amount do
-	json.partial! '/api_new/common/amount', amount: paymentable&.net_amount_as_money
+	json.partial! '/api_new/common/amount', amount: paymentable.net_amount_as_money
 end
 
 json.gross_amount do
-	json.partial! '/api_new/common/amount', amount: paymentable&.gross_amount_as_money
+	json.partial! '/api_new/common/amount', amount: paymentable.gross_amount_as_money
 end
 
 json.fee_total do
-	json.partial! '/api_new/common/amount', amount: paymentable&.fee_total_as_money
+	json.partial! '/api_new/common/amount', amount: paymentable.fee_total_as_money
 end
