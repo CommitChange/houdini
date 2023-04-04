@@ -318,6 +318,51 @@ describe InsertDonation do
 		  donation_builder.merge(common_builder_with_trx, common_builder_expanded)
 		end
 
+		let(:insert_donation_offsite) {
+		  InsertDonation.offsite(
+			amount: charge_amount,
+			nonprofit_id: nonprofit.id,
+			supporter_id: supporter.id,
+			check_number: 1234)
+		}
+
+		it 'returns 200' do
+          expect(insert_donation_offsite[:status]).to eq(200)
+        end
+
+		it 'creates an offline_transaction_charge.created object event' do
+		  expect { insert_donation_offsite }.to change {
+			ObjectEvent.where(event_type: 'offline_transaction_charge.created').count
+		  }.by 1
+		end
+
+		it 'creates an object event containing the needed information' do
+		  offline_transaction_charge = Payment.find(insert_donation_offsite[:json]['payment']['id']).subtransaction_payment.paymentable
+		  object_event = offline_transaction_charge.object_events.first
+
+		  expect(object_event.object_json).to include_json(
+			id: object_event.houid,
+			data: {
+				object: {
+					id: offline_transaction_charge.houid,
+					type: 'payment', # TODO make this dynamic
+					object: 'offline_transaction_charge',
+					created: offline_transaction_charge.created.to_i,
+					fee_total: {
+						cents: offline_transaction_charge.fee_total_as_money.cents,
+						currency: 'usd'
+					},
+					nonprofit: nonprofit.houid,
+					supporter: supporter.houid,
+					net_amount: {
+						cents: offline_transaction_charge.net_amount_as_money.cents,
+						currency: 'usd'
+					}
+				}
+			}
+		  )
+
+		end
 	  end
 	end
   end

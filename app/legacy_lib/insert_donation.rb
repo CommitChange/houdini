@@ -84,9 +84,10 @@ module InsertDonation
         })
       ]).returning('*')
     ).first
+    paymentable = OfflineTransactionCharge.new
     offline_transaction_charge_payment = SubtransactionPayment.new(
           legacy_payment: Payment.find(result['payment']['id']),
-          paymentable: OfflineTransactionCharge.new
+          paymentable: paymentable
           )
     off_t = trx.build_subtransaction(
       subtransactable: OfflineTransaction.new(amount: data['amount']), 
