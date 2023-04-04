@@ -3,5 +3,10 @@
 # License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 
-json.partial! 'api_new/offline_transaction_charges/offline_transaction_charge',
-  offline_transaction_charge: event_entity
+json.partial! 'api_new/subtransaction_payments/subtransaction_payment',
+  subtransaction_payment: event_entity.subtransaction_payment,
+  __expand: build_json_expansion_path_tree(
+    'subtransaction',
+    'subtransaction.transaction',
+    'subtransaction.transaction.transaction_assignments'
+  )
