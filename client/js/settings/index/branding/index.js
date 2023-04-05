@@ -13,8 +13,8 @@ const colorPicker = require('../../../components/color-picker.es6')
 const view = require('./view')
 
 function init() {
-  var np = R.merge(app.nonprofit, {tier: app.current_plan_tier})
-  var state = {
+  const np = R.merge(app.nonprofit, {tier: app.current_plan_tier})
+  const state = {
     nonprofit: np
   , font$: flyd.stream({
       key: np.brand_font || 'bitter'
@@ -34,7 +34,7 @@ function init() {
     }).load)
   , state.submit$)
 
-  var notify$ = flyd.map(()=> 'We successfully saved your branding settings!', resp$)
+  const notify$ = flyd.map(()=> 'We successfully saved your branding settings!', resp$)
 
   state.loading$ = flyd.mergeAll([
     flyd.map(()=> true, state.submit$)

@@ -8,7 +8,7 @@ require('../common/vendor/colpick') // XXX jquery
 // Will also set colorPicker.state.color for every selected color value
 
 function init(defaultColor) {
-  var logoBlue = '#42B3DF'
+  const logoBlue = '#42B3DF'
   return {color$: flyd.stream(defaultColor || logoBlue)}
 }
 
