@@ -113,6 +113,11 @@ describe InsertDonation do
       it 'processes general donation' do
         process_general_donation{ InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token, profile_id: profile.id, date: (Time.now + 1.day).to_s, dedication: 'dedication', designation: 'designation')}
       end
+	  it 'creates an ObjectEvent' do
+		expect(ObjectEvent.where(event_type: 'offline_transaction_charge.created').count).to eq 0
+        InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token, profile_id: profile.id, date: (Time.now + 1.day).to_s, dedication: 'dedication', designation: 'designation')
+        expect(ObjectEvent.where(event_type: 'offline_transaction_charge.created').count).to eq 1
+      end
     end
   end
 

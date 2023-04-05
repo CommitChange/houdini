@@ -104,6 +104,7 @@ module InsertDonation
     don.publish_created
     # off_t.publish_created
     offline_transaction_charge_payment.publish_created
+    paymentable.publish_created
 
     result['activity'] = InsertActivities.for_offsite_donations([result['payment']['id']])
   
