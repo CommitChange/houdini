@@ -336,7 +336,43 @@ describe InsertDonation do
 		  }.by 1
 		end
 
-		
+		it 'object event has the correct information' do
+		  offline_transaction_charge = Payment.find(insert_donation_offsite[:json]['payment']['id']).subtransaction_payment.paymentable
+		  object_event = offline_transaction_charge.object_events.first
+
+		  expect(object_event.object_json).to include_json(
+			id: object_event.houid,
+			type: 'offline_transaction_charge.created',
+			object: 'object_event',
+			created: object_event.created.to_i,
+			data: {
+			  object: {
+				id: offline_transaction_charge.houid,
+				type: 'payment',
+				object: 'offline_transaction_charge',
+				created: offline_transaction_charge.created.to_i,
+				nonprofit: nonprofit.houid,
+				supporter: supporter.houid,
+				fee_total: {
+				  cents: offline_transaction_charge.fee_total_as_money.cents,
+				  currency: 'usd'
+				},
+				net_amount: {
+				  cents: offline_transaction_charge.net_amount_as_money.cents,
+				  currency: 'usd'
+				},
+				gross_amount: {
+				  cents: offline_transaction_charge.gross_amount_as_money.cents,
+				  currency: 'usd'
+				},
+				transaction: offline_transaction_charge.subtransaction_payment.trx.houid,
+				check_number: nil, # TODO fix
+				payment_type: nil # TODO fix
+			  }
+			}
+		  )
+
+		end
 	  end
 	end
   end
