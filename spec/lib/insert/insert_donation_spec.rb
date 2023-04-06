@@ -320,10 +320,12 @@ describe InsertDonation do
 
 		let(:insert_donation_offsite) {
 		  InsertDonation.offsite(
-			amount: charge_amount,
-			nonprofit_id: nonprofit.id,
-			supporter_id: supporter.id,
-			check_number: 1234)
+			'amount' => charge_amount,
+			:nonprofit_id => nonprofit.id,
+			:supporter_id => supporter.id,
+			'offsite_payment' => {
+				'check_number' => 1234
+			})
 		}
 
 		it 'returns 200' do
