@@ -318,6 +318,25 @@ describe InsertDonation do
 		  donation_builder.merge(common_builder_with_trx, common_builder_expanded)
 		end
 
+		let(:insert_donation_offsite) {
+		  InsertDonation.offsite(
+			amount: charge_amount,
+			nonprofit_id: nonprofit.id,
+			supporter_id: supporter.id,
+			check_number: 1234)
+		}
+
+		it 'returns 200' do
+          expect(insert_donation_offsite[:status]).to eq(200)
+        end
+
+		it 'creates an offline_transaction_charge.created object event' do
+		  expect { insert_donation_offsite }.to change {
+			ObjectEvent.where(event_type: 'offline_transaction_charge.created').count
+		  }.by 1
+		end
+
+		
 	  end
 	end
   end
