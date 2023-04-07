@@ -135,16 +135,19 @@ describe InsertDonation do
 	describe 'success' do
 
 	  describe 'general offsite create' do
-		subject do
+		subject(:trx) do
 		  result = described_class.offsite(
 			{
 			  amount: charge_amount,
 			  nonprofit_id: nonprofit.id,
 			  supporter_id: supporter.id,
-			  date: created_time.to_s
+			  date: created_time.to_s,
+				offsite_payment: {
+					check_number: 1234
+				}.with_indifferent_access
 			}.with_indifferent_access
 		  )
-          Payment.find(result['payment']['id']).trx
+          Payment.find(result[:json]['payment']['id']).trx
 		end
 
 		let(:created_time) { 1.day.from_now }
@@ -318,28 +321,15 @@ describe InsertDonation do
 		  donation_builder.merge(common_builder_with_trx, common_builder_expanded)
 		end
 
-		let(:insert_donation_offsite) {
-		  InsertDonation.offsite(
-			'amount' => charge_amount,
-			:nonprofit_id => nonprofit.id,
-			:supporter_id => supporter.id,
-			'offsite_payment' => {
-				'check_number' => 1234
-			})
-		}
-
-		it 'returns 200' do
-          expect(insert_donation_offsite[:status]).to eq(200)
-        end
 
 		it 'creates an offline_transaction_charge.created object event' do
-		  expect { insert_donation_offsite }.to change {
+		  expect { trx }.to change {
 			ObjectEvent.where(event_type: 'offline_transaction_charge.created').count
 		  }.by 1
 		end
 
 		it 'object event has the correct information' do
-		  offline_transaction_charge = Payment.find(insert_donation_offsite[:json]['payment']['id']).subtransaction_payment.paymentable
+		  offline_transaction_charge = trx.payments.first.paymentable
 		  object_event = offline_transaction_charge.object_events.first
 
 		  expect(object_event.object_json).to include_json(
@@ -368,7 +358,7 @@ describe InsertDonation do
 				  currency: 'usd'
 				},
 				transaction: offline_transaction_charge.subtransaction_payment.trx.houid,
-				check_number: nil, # TODO fix
+				check_number: "1234", # TODO fix
 				payment_type: nil # TODO fix
 			  }
 			}
