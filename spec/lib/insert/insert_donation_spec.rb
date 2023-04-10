@@ -143,7 +143,8 @@ describe InsertDonation do
 			  supporter_id: supporter.id,
 			  date: created_time.to_s,
 				offsite_payment: {
-					check_number: 1234
+					check_number: 1234,
+					kind: "check"
 				}.with_indifferent_access
 			}.with_indifferent_access
 		  )
@@ -358,8 +359,8 @@ describe InsertDonation do
 				  currency: 'usd'
 				},
 				transaction: offline_transaction_charge.subtransaction_payment.trx.houid,
-				check_number: "1234", # TODO fix
-				payment_type: nil # TODO fix
+				check_number: "1234",
+				kind: "check"
 			  }
 			}
 		  )
