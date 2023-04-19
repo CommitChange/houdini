@@ -155,7 +155,10 @@ RSpec.describe Nonprofits::DonationsController, type: :request do
     end
 
     let(:supporter) {create(:supporter, nonprofit: nonprofit)}
-    let(:nonprofit) { create(:nonprofit)}
+    let(:nonprofit) do
+      stripe_account = create(:stripe_account, charges_enabled:true)
+      create(:nonprofit,  stripe_account_id: stripe_account.stripe_account_id)
+    end
     let(:user) { create(:user_base, roles: [build(:role_base, :as_nonprofit_associate, host: nonprofit)]) }
     
     let(:token) { create(:source_token_base, tokenizable: create(:card_base,  :with_created_stripe_customer_and_card, holder: supporter))}
