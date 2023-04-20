@@ -26,7 +26,7 @@ class CardsController < ApplicationController
   private
   def verify_via_recaptcha!
     begin
-      verify_recaptcha!(action: 'create_card', minimum_score: ENV['MINIMUM_RECAPTCHA_SCORE'].to_f)
+      #verify_recaptcha!(action: 'create_card', minimum_score: ENV['MINIMUM_RECAPTCHA_SCORE'].to_f)
     rescue ::Recaptcha::RecaptchaError => e
       supporter_id = params.try(:card).try(:holder_id)
       failure_details = {
