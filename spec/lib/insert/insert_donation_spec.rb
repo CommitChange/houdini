@@ -23,6 +23,18 @@ describe InsertDonation do
         validation_invalid_token { InsertDonation.with_stripe(amount: 1, nonprofit_id: 1, supporter_id: 1, token: fake_uuid) }
       end
 
+			it 'errors out if amount is too low' do
+				legacy_minimum_amount = Limits.minimum_charge_amount
+				Limits.minimum_charge_amount = 400
+				expect {
+					InsertDonation.with_stripe(amount: 399, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token)
+				}.to raise_error do |e|
+					expect(e).to be_a(ParamValidation::ValidationError)
+				end
+
+				Limits.minimum_charge_amount = legacy_minimum_amount
+			end
+
       it 'errors out if token is unauthorized' do
         validation_unauthorized { InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: 1, supporter_id: 1, token: fake_uuid) }
       end
