@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20230406154424) do
+ActiveRecord::Schema.define(version: 20230422001939) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1250,14 +1250,6 @@ ActiveRecord::Schema.define(version: 20230406154424) do
   add_index "tag_joins", ["tag_master_id", "supporter_id"], name: "tag_join_supporter_unique_idx", unique: true, using: :btree
   add_index "tag_joins", ["tag_master_id"], name: "index_tag_joins_on_tag_master_id", using: :btree
   add_index "tag_joins", ["tag_master_id"], name: "tag_joins_tag_master_id", using: :btree
-
-  create_table "tag_joins_backup", force: :cascade do |t|
-    t.integer  "tag_master_id"
-    t.integer  "supporter_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "metadata"
-  end
 
   create_table "tag_masters", force: :cascade do |t|
     t.string   "name",         limit: 255
