@@ -12,7 +12,6 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(version: 20230421234415) do
-
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pg_stat_statements"
@@ -924,7 +923,7 @@ ActiveRecord::Schema.define(version: 20230421234415) do
   add_index "reassignments", ["e_tap_import_id"], name: "index_reassignments_on_e_tap_import_id", using: :btree
 
   create_table "recaptcha_rejections", force: :cascade do |t|
-    t.text     "details"
+    t.jsonb    "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
