@@ -11,8 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20230406154424) do
-
+ActiveRecord::Schema.define(version: 20230421234415) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pg_stat_statements"
@@ -198,15 +197,6 @@ ActiveRecord::Schema.define(version: 20230406154424) do
 
   add_index "charges", ["donation_id"], name: "index_charges_on_donation_id", using: :btree
   add_index "charges", ["payment_id"], name: "index_charges_on_payment_id", using: :btree
-
-  create_table "comments", force: :cascade do |t|
-    t.integer  "profile_id"
-    t.text     "body"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.integer  "host_id"
-    t.string   "host_type",  limit: 255
-  end
 
   create_table "custom_field_joins", force: :cascade do |t|
     t.integer  "custom_field_master_id"
@@ -933,7 +923,7 @@ ActiveRecord::Schema.define(version: 20230406154424) do
   add_index "reassignments", ["e_tap_import_id"], name: "index_reassignments_on_e_tap_import_id", using: :btree
 
   create_table "recaptcha_rejections", force: :cascade do |t|
-    t.text     "details"
+    t.jsonb    "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -1000,16 +990,6 @@ ActiveRecord::Schema.define(version: 20230406154424) do
   end
 
   add_index "roles", ["name", "user_id", "host_id"], name: "index_roles_on_name_and_user_id_and_host_id", using: :btree
-
-  create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", limit: 255, null: false
-    t.text     "data"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
-  add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", using: :btree
-  add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "simple_objects", force: :cascade do |t|
     t.string   "houid"
@@ -1251,14 +1231,6 @@ ActiveRecord::Schema.define(version: 20230406154424) do
   add_index "tag_joins", ["tag_master_id"], name: "index_tag_joins_on_tag_master_id", using: :btree
   add_index "tag_joins", ["tag_master_id"], name: "tag_joins_tag_master_id", using: :btree
 
-  create_table "tag_joins_backup", force: :cascade do |t|
-    t.integer  "tag_master_id"
-    t.integer  "supporter_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "metadata"
-  end
-
   create_table "tag_masters", force: :cascade do |t|
     t.string   "name",         limit: 255
     t.integer  "nonprofit_id"
@@ -1282,6 +1254,13 @@ ActiveRecord::Schema.define(version: 20230406154424) do
     t.integer  "event_discount_id"
     t.boolean  "admin_only"
     t.integer  "order"
+  end
+
+  create_table "ticket_purchases", force: :cascade do |t|
+    t.string   "houid",      null: false
+    t.integer  "ticket_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tickets", force: :cascade do |t|
