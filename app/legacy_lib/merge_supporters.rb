@@ -104,10 +104,10 @@
 
         result = MergeSupporters.selected(data, ids, np_id, profile_id, skip_conflicting_custom_fields)
         supporter_ids_with_conflicting_custom_fields << ids if result[:status] == :failure
+
+        Supporter.find_by(name: data['name']).publish_created
       end
     end
     supporter_ids_with_conflicting_custom_fields
   end
-
-
 end
