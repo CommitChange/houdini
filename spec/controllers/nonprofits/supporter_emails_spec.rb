@@ -8,9 +8,5 @@ describe Nonprofits::SupporterEmailsController, :type => :controller do
     describe 'create' do
       include_context :open_to_np_associate, :post, :create, nonprofit_id: :__our_np
     end
-
-    describe 'gmail' do
-      include_context :open_to_np_associate, :post, :gmail, nonprofit_id: :__our_np
-    end
   end
 end

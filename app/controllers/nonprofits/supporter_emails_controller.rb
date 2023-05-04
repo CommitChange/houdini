@@ -21,12 +21,6 @@ module Nonprofits
       DelayedJobHelper.enqueue_job(EmailSupporters, :deliver, [ids, params[:supporter_email]])
       render json: {count: ids.count}, status: :ok 
     end
-
-    def gmail
-      gmail = SupporterEmail.create params[:gmail]
-      InsertActivities.for_supporter_emails([gmail.id])
-      render json: gmail
-    end
   end
 end
 

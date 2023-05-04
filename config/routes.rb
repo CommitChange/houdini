@@ -89,9 +89,7 @@ Commitchange::Application.routes.draw do
 			post(:resend_confirmation)
 		end
 
-		resources(:supporter_emails, {only: [:create, :show]}) do
-      post(:gmail, {on: :collection})
-    end
+		resources(:supporter_emails, {only: [:create, :show]})
 
 		resources(:custom_field_masters, {only: [:index, :create, :destroy]})
 		resources(:custom_field_joins, {only: []}) do
