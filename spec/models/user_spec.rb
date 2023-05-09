@@ -16,20 +16,38 @@ RSpec.describe User, :type => :model do
   end
 
   describe '.send_reset_password_instructions' do
-    let(:user) { create(:user) }
 
-    it 'returns a token when user hasn\'t requested a reset password token before' do
-      expect(user.send_reset_password_instructions).to be_truthy
+    context 'when the user hasn\'t requested a reset password token before' do
+      it 'returns a User' do
+        create(:user, email: 'evil_hacker@netflix.io')
+        expect(User.send_reset_password_instructions(attributes={email: 'evil_hacker@netflix.io'})).to be_a User
+      end
+
+      it 'returns the correct user' do
+        user = create(:user, email: 'sneaky_scammer@fb.net')
+        expect(User.send_reset_password_instructions(attributes={email: 'sneaky_scammer@fb.net'})).to eq(user)
+      end
+
+      it 'returns an object with no errors' do
+        create(:user, email: 'gone_phishing@twtr.gov')
+        expect(User.send_reset_password_instructions(attributes={email: 'gone_phishing@twtr.gov'}).errors.messages).to eq({})
+      end
     end
 
-    it 'returns false when user has requested a reset password too recently' do
-      user.send_reset_password_instructions
-      expect(user.send_reset_password_instructions).to be false
-    end
+    context 'when a user has requested a reset password token recently (< 5 min ago)' do
+      it 'returns the correct user' do
+        user = create(:user, email: 'fraud_fool@insta.org')
+        User.send_reset_password_instructions(attributes={email: 'fraud_fool@insta.org'})
+        expect(User.send_reset_password_instructions(attributes={email: 'fraud_fool@insta.org'})).to eq(user)
+      end
 
-    it 'adds errors to user when a user has requested a reset password too recently' do
-      2.times { user.send_reset_password_instructions }
-      expect(user.errors.messages[:user]).to eq(['can\'t reset password because a request was just sent'])
+      it 'adds errors to returned user' do
+        create(:user, email: 'perilous_programmer@snap.com')
+        User.send_reset_password_instructions(attributes={email: 'perilous_programmer@snap.com'})
+        expect(
+          User.send_reset_password_instructions(attributes={email: 'perilous_programmer@snap.com'}).errors.messages[:user]
+        ).to eq(["can't reset password because a request was just sent"])
+      end
     end
   end
 end
