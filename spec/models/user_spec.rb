@@ -47,7 +47,7 @@ RSpec.describe User, :type => :model do
           create(:user, email: 'perilous_programmer@snap.com')
           User.send_reset_password_instructions(attributes={email: 'perilous_programmer@snap.com'})
           expect(
-            User.send_reset_password_instructions(attributes={email: 'perilous_programmer@snap.com'}).errors.messages[:user]
+            User.send_reset_password_instructions(attributes={email: 'perilous_programmer@snap.com'}).errors.messages[:base]
           ).to eq(["can't reset password because a request was just sent"])
         end
       end

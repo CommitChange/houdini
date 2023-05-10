@@ -124,7 +124,7 @@ class User < ActiveRecord::Base
         recoverable.send_reset_password_instructions
 				return recoverable
 			else
-				recoverable.errors.add(:user, "can't reset password because a request was just sent")
+				recoverable.errors.add(:base, "can't reset password because a request was just sent")
 			end
 		end
     recoverable
