@@ -5,7 +5,7 @@
 json.type 'payment'
 
 json.id subtransaction_payment.paymentable.houid
-json.created subtransaction_payment.paymentable.created.to_i
+json.created subtransaction_payment.created.to_i
 
 handle_expansion(:supporter, subtransaction_payment.supporter, {json: json, __expand: __expand})
 handle_expansion(:nonprofit, subtransaction_payment.nonprofit,  {json: json, __expand: __expand})
