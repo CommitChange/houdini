@@ -3,13 +3,5 @@ class Activity < ActiveRecord::Base
   belongs_to :attachment, :polymorphic => true
   belongs_to :supporter
   belongs_to :nonprofit
-
-  attr_accessible \
-    :supporter,
-    :nonprofit,
-    :date,
-    :kind,
-    :json_data,
-    :attachment_type
 end
 
