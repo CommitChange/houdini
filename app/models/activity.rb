@@ -11,13 +11,5 @@ class Activity < ActiveRecord::Base
     :kind,
     :json_data,
     :attachment_type
-  
-  # def json_data=(data)
-  #   write_attribute :json_data, data
-  # end
-
-  # def json_data
-  #   JSON::parse(read_attribute :json_data)
-  # end
 end
 
