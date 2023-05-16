@@ -362,7 +362,7 @@ describe InsertTickets do
             legacy_payment = result['payment']
             subtransaction_payment = legacy_payment.subtransaction_payment
 
-            expect(subtransaction_payment.created).to eq(legacy_payment.created_at)
+            expect(subtransaction_payment.created).to eq(legacy_payment.date)
           end
         end
       end
