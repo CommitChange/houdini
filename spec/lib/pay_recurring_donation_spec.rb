@@ -87,6 +87,10 @@ describe PayRecurringDonation  do
       }
 
       it {
+        expect { covered_result }.to change { ModernDonation.count }.by(1)
+      }
+
+      it {
         expect{ covered_result }.to change { ModernDonation.last&.legacy_donation }.to(donation)
       }
 
@@ -115,6 +119,10 @@ describe PayRecurringDonation  do
 
       it {
         expect{ uncovered_result }.to change { StripeTransactionCharge.count }.by(1)
+      }
+
+      it {
+        expect { uncovered_result }.to change { ModernDonation.count }.by(1)
       }
 
       it {
@@ -150,6 +158,10 @@ describe PayRecurringDonation  do
       }
 
       it {
+        expect { result_with_recent_charge }.to not_change { ModernDonation.count }
+      }
+
+      it {
         expect { result_with_recent_charge }.to not_change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }
       }
 
@@ -170,6 +182,10 @@ describe PayRecurringDonation  do
 
       it {
         expect{ result_with_recent_charge_but_forced }.to change { StripeTransactionCharge.count }.by(1)
+      }
+      
+      it {
+        expect { result_with_recent_charge_but_forced }.to change { ModernDonation.count }.by(1)
       }
 
       it {
