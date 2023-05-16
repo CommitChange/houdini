@@ -71,7 +71,7 @@ describe PayRecurringDonation  do
 
     context 'result when fees covered' do
       it {
-        expect{ covered_result }.to_not eq false
+        expect(covered_result).to_not eq false 
       }
 
       it {
@@ -96,13 +96,13 @@ describe PayRecurringDonation  do
       }
 
       it {
-        expect { covered_result }.to change {nonprofit.object_events.event_types('stripe_transaction_charge.created').count }.by(1)
+        expect { covered_result }.to change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }.by(1)
       }
     end
 
     context 'result when fees not covered' do
       it {
-        expect{ uncovered_result }.to_not eq false
+        expect(uncovered_result).to_not eq false 
       }
 
       it {
@@ -127,14 +127,14 @@ describe PayRecurringDonation  do
       }
 
       it {
-        expect { uncovered_result }.to change {nonprofit.object_events.event_types('stripe_transaction_charge.created').count }.by(1)
+        expect { uncovered_result }.to change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }.by(1)
       }
     end
 
     context 'result when not due' do
 
       it {
-        expect{ result_with_recent_charge }.to eq false
+        expect(result_with_recent_charge).to eq false
       }
 
       it {
@@ -149,36 +149,36 @@ describe PayRecurringDonation  do
         expect{ result_with_recent_charge }.to not_change { StripeTransactionCharge.count }
       }
 
-      it 'only sees the old charge made' do
-        expect { result_with_recent_charge }.to change {nonprofit.object_events.event_types('stripe_transaction_charge.created').count }.by(1)
-      end
+      it {
+        expect { result_with_recent_charge }.to not_change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }
+      }
 
     end
 
     context 'result when not due but forced' do
       it {
-        expect{ result_with_recent_charge }.to_not eq false
+        expect( result_with_recent_charge_but_forced ).to_not eq false
       }
 
       it {
-        expect{ result_with_recent_charge }.to change { Transaction.count }.by(1)
+        expect{ result_with_recent_charge_but_forced }.to change { Transaction.count }.by(1)
       }
 
       it {
-        expect{ result_with_recent_charge }.to change { SubtransactionPayment.count }.by(1)
+        expect{ result_with_recent_charge_but_forced }.to change { SubtransactionPayment.count }.by(1)
       }
 
       it {
-        expect{ result_with_recent_charge }.to change { StripeTransactionCharge.count }.by(1)
+        expect{ result_with_recent_charge_but_forced }.to change { StripeTransactionCharge.count }.by(1)
       }
 
       it {
-        expect{ result_with_recent_charge }.to change { ModernDonation.last&.legacy_donation }.to(donation)
+        expect{ result_with_recent_charge_but_forced }.to change { ModernDonation.last&.legacy_donation }.to(donation)
       }
 
-      it 'sees the old and new charge' do 
-        expect { result_with_recent_charge }.to change {nonprofit.object_events.event_types('stripe_transaction_charge.created').count }.by(2)
-      end
+      it {
+        expect { result_with_recent_charge_but_forced }.to change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }.by(1)
+      }
     end
 	end
 
