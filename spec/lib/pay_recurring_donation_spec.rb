@@ -75,6 +75,16 @@ describe PayRecurringDonation  do
       }
 
       it {
+        expect {uncovered_result}.to have_enqueued_job(InlineJob::ModernObjectDonationStripeChargeJob)
+          .with(donation:donation, legacy_payment: an_instance_of(Payment))
+      }
+
+      it {
+        active
+        expect {covered_result}.to have_performed_job(InlineJob::ModernObjectDonationStripeChargeJob).with(donation: recurring_donation.donation)
+      }
+
+      it {
         expect{ covered_result }.to change { Transaction.count }.by(1)
       }
 
@@ -107,6 +117,11 @@ describe PayRecurringDonation  do
     context 'result when fees not covered' do
       it {
         expect(uncovered_result).to_not eq false 
+      }
+
+      it {
+        expect {uncovered_result}.to have_enqueued_job(InlineJob::ModernObjectDonationStripeChargeJob)
+          .with(donation:donation, legacy_payment: an_instance_of(Payment))
       }
 
       it {
@@ -146,6 +161,10 @@ describe PayRecurringDonation  do
       }
 
       it {
+        expect {uncovered_result}.to_not have_enqueued_job(InlineJob::ModernObjectDonationStripeChargeJob)
+      }
+
+      it {
         expect{ result_with_recent_charge }.to not_change { Transaction.count }
       }
 
@@ -170,6 +189,11 @@ describe PayRecurringDonation  do
     context 'result when not due but forced' do
       it {
         expect( result_with_recent_charge_but_forced ).to_not eq false
+      }
+
+      it {
+        expect {uncovered_result}.to have_enqueued_job(InlineJob::ModernObjectDonationStripeChargeJob)
+          .with(donation:donation, legacy_payment: an_instance_of(Payment))
       }
 
       it {
