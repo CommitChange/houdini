@@ -81,37 +81,19 @@ describe PayRecurringDonation  do
 
       it {
         expect {covered_result}.to have_enqueued_job(InlineJob::ModernObjectDonationStripeChargeJob)
-          .with(donation:donation, legacy_payment: an_instance_of(Payment))
+          .with(donation:donation, legacy_payment: an_instance_of(Payment).and(
+            have_attributes(
+              gross_amount: 300,
+              supporter: supporter,
+              donation: donation
+          )))
       }
-
-      # it {
-      #   expect{ covered_result }.to change { Transaction.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ covered_result }.to change { SubtransactionPayment.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ covered_result }.to change { StripeTransactionCharge.count }.by(1)
-      # }
-
-      # it {
-      #   expect { covered_result }.to change { ModernDonation.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ covered_result }.to change { ModernDonation.last&.legacy_donation }.to(donation)
-      # }
 
       it {
         covered_result
         expect(donation.payments.first.misc_payment_info.fee_covered).to eq true
       }
 
-      # it {
-      #   expect { covered_result }.to change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }.by(1)
-      # }
     end
 
     context 'result when fees not covered' do
@@ -121,37 +103,18 @@ describe PayRecurringDonation  do
 
       it {
         expect {uncovered_result}.to have_enqueued_job(InlineJob::ModernObjectDonationStripeChargeJob)
-          .with(donation:donation, legacy_payment: an_instance_of(Payment))
+          .with(donation:donation, legacy_payment: an_instance_of(Payment).and(
+            have_attributes(
+              gross_amount: 300,
+              supporter: supporter,
+              donation: donation
+          )))
       }
-
-      # it {
-      #   expect{ uncovered_result }.to change { Transaction.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ uncovered_result }.to change { SubtransactionPayment.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ uncovered_result }.to change { StripeTransactionCharge.count }.by(1)
-      # }
-
-      # it {
-      #   expect { uncovered_result }.to change { ModernDonation.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ uncovered_result }.to change { ModernDonation.last&.legacy_donation }.to(donation)
-      # }
 
       it {
         uncovered_result
         expect(donation.payments.first.misc_payment_info&.fee_covered).to be_falsey
       }
-
-      # it {
-      #   expect { uncovered_result }.to change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }.by(1)
-      # }
     end
 
     context 'result when not due' do
@@ -164,26 +127,6 @@ describe PayRecurringDonation  do
         expect {result_with_recent_charge}.to_not have_enqueued_job(InlineJob::ModernObjectDonationStripeChargeJob)
       }
 
-      # it {
-      #   expect{ result_with_recent_charge }.to not_change { Transaction.count }
-      # }
-
-      # it {
-      #   expect{ result_with_recent_charge }.to not_change { SubtransactionPayment.count }
-      # }
-
-      # it {
-      #   expect{ result_with_recent_charge }.to not_change { StripeTransactionCharge.count }
-      # }
-
-      # it {
-      #   expect { result_with_recent_charge }.to not_change { ModernDonation.count }
-      # }
-
-      # it {
-      #   expect { result_with_recent_charge }.to not_change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }
-      # }
-
     end
 
     context 'result when not due but forced' do
@@ -193,32 +136,13 @@ describe PayRecurringDonation  do
 
       it {
         expect {result_with_recent_charge_but_forced}.to have_enqueued_job(InlineJob::ModernObjectDonationStripeChargeJob)
-          .with(donation:donation, legacy_payment: an_instance_of(Payment))
+          .with(donation:donation, legacy_payment: an_instance_of(Payment).and(
+            have_attributes(
+              gross_amount: 300,
+              supporter: supporter,
+              donation: donation
+          )))
       }
-
-      # it {
-      #   expect{ result_with_recent_charge_but_forced }.to change { Transaction.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ result_with_recent_charge_but_forced }.to change { SubtransactionPayment.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ result_with_recent_charge_but_forced }.to change { StripeTransactionCharge.count }.by(1)
-      # }
-      
-      # it {
-      #   expect { result_with_recent_charge_but_forced }.to change { ModernDonation.count }.by(1)
-      # }
-
-      # it {
-      #   expect{ result_with_recent_charge_but_forced }.to change { ModernDonation.last&.legacy_donation }.to(donation)
-      # }
-
-      # it {
-      #   expect { result_with_recent_charge_but_forced }.to change {nonprofit.associated_object_events.event_types('stripe_transaction_charge.created').count }.by(1)
-      # }
     end
 	end
 
