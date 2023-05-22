@@ -8,6 +8,11 @@ describe PayRecurringDonation  do
    # @result = @data['recurring_donation']
   end
 
+  before(:each) do
+    ActiveJob::Base.queue_adapter = :test
+  end
+
+
   describe '.with_donation' do
     include_context :shared_donation_charge_context
     
