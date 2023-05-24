@@ -3,103 +3,102 @@ require 'rails_helper'
 
 describe ApiNew::UsersController, type: :request do
 
-	context 'GET /api_new/users/current' do
-		context 'for unlogged in user' do
-			it 'returns unauthorized when not logged in' do
-				get "/api_new/users/current"
-				expect(response).to have_http_status(:unauthorized)
-			end
-		end
-
-		context 'for a nonprofit admin' do 
-
-			let(:user) {create(:user_base, roles:[build(:role_base, :as_nonprofit_admin) ])}
-
-			subject(:body) { response.body}
-			before do
-				sign_in user
-				get "/api_new/users/current"
-			end
-
-			it {
-				expect(response).to have_http_status(:success)
-			}
-
-			it {
-				is_expected.to include_json(
-					object: 'user', 
-					is_super_admin: false,
-					roles: [
-						{
-							host: Nonprofit.first.to_houid
-						}
-				])
-			}
-
-		end
-
-		context 'for a nonprofit associate' do 
-			let(:user) {create(:user_as_nonprofit_associate)}
-
-			subject(:body) { response.body}
-			before do
-				sign_in user
-				get "/api_new/users/current"
-			end
-
-			it {
-				expect(response).to have_http_status(:success)
-			}
-
-			it {
-				is_expected.to include_json(
-					object: 'user', 
-					is_super_admin: false,
-					roles: []
-				)
-			}
-				
-		end
-
-		context "for super admin" do
-			let(:user) {create(:user_as_super_admin )}
-
-			subject(:body) { response.body}
-			before do
-				sign_in user
-				get "/api_new/users/current"
-			end
-
-			it {
-				expect(response).to have_http_status(:success)
-			}
-
-			it {
-				is_expected.to include_json(
-					object: 'user', 
-					is_super_admin: true,
-					roles: []
-				)
-			}
+	context 'for unlogged in user' do
+		it 'returns unauthorized when not logged in' do
+			get "/api_new/users/current"
+			expect(response).to have_http_status(:unauthorized)
 		end
 	end
 
-	context 'GET /api_new/users/:user_id/current_nonprofit_object_events' do
+	context 'for a nonprofit admin' do 
 
-		context 'for a nonprofit associate' do
-			let(:user) {create(:user_as_nonprofit_associate)}
+		let(:user) {create(:user_base, roles:[build(:role_base, :as_nonprofit_admin) ])}
 
-			before do
-				sign_in user
-				get "/api_new/users/#{user.id}/current_nonprofit_object_events"
-			end
+		subject(:body) { response.body}
+		before do
+			sign_in user
+			get "/api_new/users/current"
+		end
 
-			it "works" do
-				np_houid = user.roles.where(host_type: 'Nonprofit').first&.host&.houid
+		it {
+			expect(response).to have_http_status(:success)
+		}
 
-				expect(response).to redirect_to "/api_new/nonprofits/#{np_houid}/object_events"
-				assert_redirected_to controller: 'api_new/object_events', action: 'index', nonprofit_id: np_houid
-			end
+		it {
+			is_expected.to include_json(
+				object: 'user', 
+				is_super_admin: false,
+				roles: [
+					{
+						host: Nonprofit.first.to_houid
+					}
+			])
+		}
+
+	end
+
+	context 'for a nonprofit associate' do 
+		let(:user) {create(:user_as_nonprofit_associate)}
+
+		subject(:body) { response.body}
+		before do
+			sign_in user
+			get "/api_new/users/current"
+		end
+
+		it {
+			expect(response).to have_http_status(:success)
+		}
+
+		it {
+			is_expected.to include_json(
+				object: 'user', 
+				is_super_admin: false,
+				roles: []
+			)
+		}
+
+	end
+
+	context "for super admin" do
+		let(:user) {create(:user_as_super_admin )}
+
+		subject(:body) { response.body}
+		before do
+			sign_in user
+			get "/api_new/users/current"
+		end
+
+		it {
+			expect(response).to have_http_status(:success)
+		}
+
+		it {
+			is_expected.to include_json(
+				object: 'user', 
+				is_super_admin: true,
+				roles: []
+			)
+		}
+	end
+
+	context 'GET /api_new/users/current_nonprofit_object_events' do
+		let(:nonprofit_user) { create(:user_as_nonprofit_associate) }
+		let(:no_nonprofit_user) { create(:user) }
+
+		it "redirects to api_new/object_events#index for the user's nonprofit when the user has one" do
+			sign_in nonprofit_user
+			get current_nonprofit_object_events_api_new_users_path
+
+			np_houid = user.roles.where(host_type: 'Nonprofit').first&.host&.houid
+			assert_redirected_to controller: 'api_new/object_events', action: 'index', nonprofit_id: np_houid
+		end
+
+		it "errors when user doesn't have a nonprofit" do
+			sign_in no_nonprofit_user
+			get current_nonprofit_object_events_api_new_users_path
+
+			expect(response).to have_http_status(500)
 		end
 	end
 end
