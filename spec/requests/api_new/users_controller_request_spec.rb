@@ -95,7 +95,10 @@ describe ApiNew::UsersController, type: :request do
 			end
 
 			it "works" do
-				expect(response).to redirect_to("/api_new/nonprofits/#{user.roles.where(host_type: 'Nonprofit').first&.host&.houid}/object_events")
+				np_houid = user.roles.where(host_type: 'Nonprofit').first&.host&.houid
+
+				expect(response).to redirect_to "/api_new/nonprofits/#{np_houid}/object_events"
+				assert_redirected_to controller: 'api_new/object_events', action: 'index', nonprofit_id: np_houid
 			end
 		end
 	end
