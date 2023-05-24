@@ -103,11 +103,10 @@ group :development, :ci, :test do
 	gem 'pry'
 	gem 'pry-byebug'
 	gem 'binding_of_caller'
-  gem 'rspec', "~> 3.9"
-	gem 'rspec-rails', "~> 3.9"
+  gem 'rspec', "~> 3"
+	gem 'rspec-rails', "~> 4"
 	gem 'database_cleaner'
   gem 'dotenv-rails'
-  gem 'ruby-prof', '0.15.9'
 	gem 'stripe-ruby-mock', '~> 2.5.1', :require => 'stripe_mock'
   gem 'factory_bot'
 	gem 'factory_bot_rails'
