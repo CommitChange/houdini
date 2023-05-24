@@ -15,6 +15,6 @@ class ApiNew::UsersController < ApiNew::ApiController
 
 	# get /api_new/users/current_nonprofit/object_events
 	def current_nonprofit_object_events
-		@object_events = current_user.roles.where(host_type: 'Nonprofit').first&.host&.associated_object_events || []
+		redirect_to "/api_new/nonprofits/#{current_user.roles.where(host_type: 'Nonprofit').first&.host&.houid}/object_events"
 	end
 end

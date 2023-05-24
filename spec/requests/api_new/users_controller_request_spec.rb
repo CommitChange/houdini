@@ -95,7 +95,7 @@ describe ApiNew::UsersController, type: :request do
 			end
 
 			it "works" do
-				expect(response).to have_http_status(:success)
+				expect(response).to redirect_to("/api_new/nonprofits/#{user.roles.where(host_type: 'Nonprofit').first&.host&.houid}/object_events")
 			end
 		end
 	end
