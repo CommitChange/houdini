@@ -2,7 +2,6 @@ class InlineJob::ModernObjectDonationStripeChargeJob < InlineJob
   queue_as :default
 
   def perform(donation:, legacy_payment:)
-    legacy_payment = result['payment']
     supporter = Supporter.find(donation.supporter_id)
     trx = supporter.transactions.build(amount: legacy_payment.gross_amount, created: legacy_payment['date'])
 
