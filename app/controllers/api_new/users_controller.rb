@@ -18,6 +18,8 @@ class ApiNew::UsersController < ApiNew::ApiController
 		np_houid = current_user.roles.where(host_type: 'Nonprofit').first&.host&.houid
 		if np_houid
 			redirect_to api_new_nonprofit_object_events_path(np_houid)
+		else
+			render :text => 'Not Found', :status => :not_found
 		end
 	end
 end

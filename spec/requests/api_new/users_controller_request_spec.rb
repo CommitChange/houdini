@@ -90,15 +90,15 @@ describe ApiNew::UsersController, type: :request do
 			sign_in nonprofit_user
 			get current_nonprofit_object_events_api_new_users_path
 
-			np_houid = user.roles.where(host_type: 'Nonprofit').first&.host&.houid
-			assert_redirected_to controller: 'api_new/object_events', action: 'index', nonprofit_id: np_houid
+			np_houid = nonprofit_user.roles.where(host_type: 'Nonprofit').first&.host&.houid
+			expect(response).to redirect_to controller: 'api_new/object_events', action: 'index', nonprofit_id: np_houid
 		end
 
-		it "errors when user doesn't have a nonprofit" do
+		it "returns a 404 not found when user doesn't have a nonprofit" do
 			sign_in no_nonprofit_user
 			get current_nonprofit_object_events_api_new_users_path
 
-			expect(response).to have_http_status(500)
+			expect(response).to have_http_status(:not_found)
 		end
 	end
 end
