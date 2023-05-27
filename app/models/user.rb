@@ -94,6 +94,10 @@ class User < ActiveRecord::Base
 		roles.where(host_type: "Nonprofit").nonprofit_admins
 	end
 
+	def super_admin?
+		QueryRoles.user_has_role?(id, [:super_admin])
+	end
+
 	def as_json(options={})
 		h = super(options)
 		h[:unconfirmed_email] = self.unconfirmed_email
