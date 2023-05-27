@@ -17,7 +17,7 @@ Commitchange::Application.routes.draw do
 			resources :users, only: [] do
 				get :current, {on: :collection}
 			end
-      resources :nonprofits, only: [] do
+      resources :nonprofits, only: [:index] do
 				resources :object_events, only: [:index]
 				resources :supporters, only: [:show]
 				resources :transactions, only: [:index, :show]
