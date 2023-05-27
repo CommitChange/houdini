@@ -110,6 +110,8 @@ class Nonprofit < ActiveRecord::Base
   scope :vetted, -> {where(vetted: true)}
   scope :published, -> {where(published: true)}
 
+  scope :has_at_least_associate_access, -> (user) {user.super_admin? ? all : includes(:users).where("users.id = ?", user.id)}
+
   mount_uploader :main_image, NonprofitUploader
   mount_uploader :background_image, NonprofitBackgroundUploader
   mount_uploader :logo, NonprofitLogoUploader
