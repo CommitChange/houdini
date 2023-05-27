@@ -6,7 +6,7 @@
 module ApiNew
 	# A controller for getting all nonprofits
 	class NonprofitsController < ApiNew::ApiController
-		before_action :authenticate_nonprofit_user!
+		before_action :authenticate_user!
     
     has_scope :has_at_least_associate_access, type: :boolean do |controller, scope|
       scope.has_at_least_associate_access(controller.current_user)
