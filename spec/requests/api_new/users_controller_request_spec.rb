@@ -3,6 +3,7 @@ require 'rails_helper'
 
 describe ApiNew::UsersController, type: :request do
 
+
 	context 'for unlogged in user' do
 		it 'returns unauthorized when not logged in' do
 			get "/api_new/users/current"
@@ -13,6 +14,7 @@ describe ApiNew::UsersController, type: :request do
 	context 'for a nonprofit admin' do 
 
 		let(:user) {create(:user_base, roles:[build(:role_base, :as_nonprofit_admin) ])}
+
 
 		subject(:body) { response.body}
 		before do
@@ -34,7 +36,6 @@ describe ApiNew::UsersController, type: :request do
 					}
 			])
 		}
-
 	end
 
 	context 'for a nonprofit associate' do 
@@ -81,6 +82,7 @@ describe ApiNew::UsersController, type: :request do
 			)
 		}
 	end
+
 
 	context 'GET /api_new/users/current_nonprofit_object_events' do
 		let(:nonprofit_user) { create(:user_as_nonprofit_associate) }
