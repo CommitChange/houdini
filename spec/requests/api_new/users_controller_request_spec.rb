@@ -84,6 +84,34 @@ describe ApiNew::UsersController, type: :request do
 		}
 	end
 
+	context 'test using basic auth (testing that Devise.http_authenticatable works)' do
+		let(:user) {create(:user_as_nonprofit_associate, password: 'valid_password')}
+
+
+		
+		subject(:body) { response.body}
+
+		describe "with correct password" do
+			before do
+				get "/api_new/users/current", nil, {authorization: "Basic #{Base64.encode64("#{user.email}:valid_password")}"}
+			end
+
+			it {
+				expect(response).to have_http_status(:success)
+			}
+		end
+
+		describe "with incorrect password" do
+			before do
+				get "/api_new/users/current", nil, {authorization: "Basic #{Base64.encode64("#{user.email}:BAD_PASSWORD")}"}
+			end
+
+			it {
+				expect(response).to have_http_status(:unauthorized)
+			}
+		end
+  end
+
 	context 'GET /api_new/users/current_nonprofit_object_events' do
 		let(:nonprofit_user) { create(:user_as_nonprofit_associate) }
 		let(:no_nonprofit_user) { create(:user) }
