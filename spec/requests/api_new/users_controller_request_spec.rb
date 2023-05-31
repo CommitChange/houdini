@@ -36,6 +36,7 @@ describe ApiNew::UsersController, type: :request do
 					}
 			])
 		}
+			
 	end
 
 	context 'for a nonprofit associate' do 
@@ -58,7 +59,7 @@ describe ApiNew::UsersController, type: :request do
 				roles: []
 			)
 		}
-
+			
 	end
 
 	context "for super admin" do
@@ -82,7 +83,6 @@ describe ApiNew::UsersController, type: :request do
 			)
 		}
 	end
-
 
 	context 'GET /api_new/users/current_nonprofit_object_events' do
 		let(:nonprofit_user) { create(:user_as_nonprofit_associate) }
