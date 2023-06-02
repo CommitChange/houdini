@@ -13,7 +13,7 @@ class ApiNew::UsersController < ApiNew::ApiController
 		@user = current_user
 	end
 
-	# get /api_new/users/current_nonprofit/object_events
+	# get /api_new/users/current_nonprofit_object_events
 	def current_nonprofit_object_events
 		np_houid = current_user.roles.where(host_type: 'Nonprofit').first&.host&.houid
 		if np_houid
