@@ -124,6 +124,14 @@ describe ApiNew::UsersController, type: :request do
 			expect(response).to redirect_to controller: 'api_new/object_events', action: 'index', nonprofit_id: np_houid
 		end
 
+		it "passes query params" do
+			sign_in nonprofit_user
+			get current_nonprofit_object_events_api_new_users_path({foo: 'bar', baz: 'qux'})
+
+			np_houid = nonprofit_user.roles.where(host_type: 'Nonprofit').first&.host&.houid
+			expect(response).to redirect_to controller: 'api_new/object_events', action: 'index', nonprofit_id: np_houid, foo: 'bar', baz: 'qux'
+		end
+
 		it "returns a 404 not found when user doesn't have a nonprofit" do
 			sign_in no_nonprofit_user
 			get current_nonprofit_object_events_api_new_users_path
