@@ -29,6 +29,7 @@ class User < ActiveRecord::Base
 
 	devise :database_authenticatable, :registerable, :confirmable, :recoverable, :rememberable, :trackable, :validatable,
 		:lockable
+  include DeviseTokenAuth::Concerns::User
 
 	attr_accessor :offsite_donation_id, :current_password
 

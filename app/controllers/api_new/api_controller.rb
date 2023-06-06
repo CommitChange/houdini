@@ -6,6 +6,9 @@ module ApiNew
 	class ApiController < ActionController::Base # rubocop:disable Rails/ApplicationController
 		# We disable Rails/ApplicationController because we don't want all the stuff in ApplicationController included since
 		# the Api is simpler
+		skip_before_action :verify_authenticity_token
+		include DeviseTokenAuth::Concerns::SetUserByToken
+
 		include Controllers::Locale
 		include Controllers::Nonprofit::Authorization
 		include Controllers::ApiNew::JbuilderExpansions

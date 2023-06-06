@@ -14,8 +14,10 @@ Commitchange::Application.routes.draw do
 
 	defaults format: :json do # they're APIs, you have to use JSON
     namespace :api_new do
+			mount_devise_token_auth_for 'User', at: 'auth', skip: [:omniauth_callbacks, :confirmations, :unlocks, :registrations, :passwords]
 			resources :users, only: [] do
 				get :current, {on: :collection}
+				
 				get :current_nonprofit_object_events, {on: :collection}
 			end
       resources :nonprofits, only: [] do
