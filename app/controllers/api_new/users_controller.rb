@@ -16,6 +16,7 @@ class ApiNew::UsersController < ApiNew::ApiController
 	# get /api_new/users/current_nonprofit_object_events
 	def current_nonprofit_object_events
 		np_houid = current_user.roles.where(host_type: 'Nonprofit').first&.host&.houid
+		logger.fatal("These are the query_parameters: #{request.query_parameters}")
 		if np_houid
 			redirect_to api_new_nonprofit_object_events_path(np_houid, request.query_parameters)
 		else
