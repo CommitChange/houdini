@@ -16,9 +16,13 @@ class ApiNew::UsersController < ApiNew::ApiController
 	# get /api_new/users/current_nonprofit_object_events
 	def current_nonprofit_object_events
 		np_houid = current_user.roles.where(host_type: 'Nonprofit').first&.host&.houid
-		logger.fatal("These are the query_parameters: #{request.query_parameters}")
 		if np_houid
-			redirect_to api_new_nonprofit_object_events_path({nonprofit_id: np_houid}.merge(request.query_parameters))
+			end_path = api_new_nonprofit_object_events_path(np_houid, request.query_parameters)
+			if end_path =~ /^\/api\// # for reasons that make no sense, this incorrectly starts with a leading /api/ on staging
+				end_path = end_path.sub(/^\/api\//, '/')
+			end
+
+			redirect_to end_path
 		else
 			render :text => 'Not Found', :status => :not_found
 		end
