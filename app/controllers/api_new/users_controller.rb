@@ -18,9 +18,6 @@ class ApiNew::UsersController < ApiNew::ApiController
 		np_houid = current_user.roles.where(host_type: 'Nonprofit').first&.host&.houid
 		if np_houid
 			end_path = api_new_nonprofit_object_events_path(np_houid, request.query_parameters)
-			if end_path =~ /^\/api\// # for reasons that make no sense, this incorrectly starts with a leading /api/ on staging
-				end_path = end_path.sub(/^\/api\//, '/')
-			end
 
 			redirect_to end_path
 		else

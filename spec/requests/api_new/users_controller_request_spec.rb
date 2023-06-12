@@ -121,7 +121,7 @@ describe ApiNew::UsersController, type: :request do
 			get current_nonprofit_object_events_api_new_users_path
 
 			np_houid = nonprofit_user.roles.where(host_type: 'Nonprofit').first&.host&.houid
-			expect(response).to redirect_to controller: 'api_new/object_events', action: 'index', nonprofit_id: np_houid
+			expect(response).to redirect_to "/api_new/nonprofits/#{np_houid}/object_events"
 		end
 
 		it "passes query params" do
