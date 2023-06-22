@@ -90,17 +90,6 @@ format.sanitizeHtml = function(html) {
   return html.replace(tagOrComment, '').replace(/</g, '&lt;')
 }
 
-format.sql = {}
-
-format.sql.format_sql_array = function(str) {
-  if(!str) return ''
-	return format.toSentence(
-		str.replace(/[""{}]/g,'')
-			.split(',')
-			.filter(function(str) {return str !== 'NULL'})
-	)
-}
-
 format.date = {}
 
 format.date.readableWithTime = function(str) {
