@@ -15,6 +15,12 @@ export function centsToDollars(cents:string|number|undefined, options:{noCents?:
   return numberWithCommas((centsAsNumber / 100.0).toFixed(options.noCents ? 0 : 2).toString()).replace(/\.00$/,'')
 }
 
+/**
+ * Convert a string describing a dollar into a number representing the cents. 
+ * @param dollars a string representing an amount in dollars
+ * @returns a number describing the passed amount in cents or null if the passed amount is invalid.
+ * @throws if the `dollars` string can't be converted into a number
+ */
 export function dollarsToCents(dollars:string) : number {
   //strips
   dollars = dollars.toString().replace(/[$,]/g, '')
@@ -26,6 +32,11 @@ export function dollarsToCents(dollars:string) : number {
   return Math.round(Number(dollars) * 100)
 }
 
+/**
+ * A version of `dollarsToCents` that doesn't throw on an invalid dollars amount
+ * @param dollars a string representing an amount in dollars
+ * @returns a number describing the passed amount in cents or null if the passed amount is invalid.
+ */
 export function dollarsToCentsSafe(dollars:string) : number | null {
   try {
     return dollarsToCents(dollars);
