@@ -15,7 +15,7 @@ export function centsToDollars(cents:string|number|undefined, options:{noCents?:
   return numberWithCommas((centsAsNumber / 100.0).toFixed(options.noCents ? 0 : 2).toString()).replace(/\.00$/,'')
 }
 
-export function dollarsToCents(dollars:string) {
+export function dollarsToCents(dollars:string) : number {
   //strips
   dollars = dollars.toString().replace(/[$,]/g, '')
   if(dollars.match(/^-?\d+\.\d$/)) {
@@ -26,7 +26,7 @@ export function dollarsToCents(dollars:string) {
   return Math.round(Number(dollars) * 100)
 }
 
-export function dollarsToCentsSafe(dollars:string) {
+export function dollarsToCentsSafe(dollars:string) : number | null {
   try {
     return dollarsToCents(dollars);
   }
