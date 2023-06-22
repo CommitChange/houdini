@@ -59,13 +59,6 @@ format.capitalize = function (string) {
     .join(' ')
 }
 
-format.toSentence = function(arr) {
-	if(arr.length < 2) return arr
-	if(arr.length === 2) return arr[0] + ' and ' + arr[1]
-	var last = arr.length - 1
-	return arr.slice(0, last).join(', ') + ', and ' + arr[last]
-}
-
 format.zeroPad = function(num, size) {
 	var str = num + ""
 	while(str.length < size) str = "0" + str
