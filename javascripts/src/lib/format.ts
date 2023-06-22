@@ -26,6 +26,15 @@ export function dollarsToCents(dollars:string) {
   return Math.round(Number(dollars) * 100)
 }
 
+export function dollarsToCentsSafe(dollars:string) {
+  try {
+    return dollarsToCents(dollars);
+  }
+  catch (e) {
+    return null;
+  }
+}
+
 export function numberWithCommas(n:string|number):string {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
