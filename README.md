@@ -97,8 +97,8 @@ rbenv install  # the app currently uses version 2.6.10
 rbenv local # rbenv local --unset reverses the action
 
 # To switch between rbenv versions installed locally, use the following command:
-rbenv shell [version number]
-example: rbenv shell 2.6.10
+rbenv shell 2.6.10
+
 ```
 
 Set your Node version with `NVM`.
@@ -109,12 +109,12 @@ brew info nvm # commands that shows the remaining steps to complete to install n
 mkdir ~/.nvm
 nvm install 14
 nvm use 14
-Add the following lines to your ~/.bashprofile or ~/.zshrc:
+# Add the following lines to your ~/.bashprofile or ~/.zshrc:
 echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
 echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.zshrc
 echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion' >> ~/.zshrc
 
-Reference Stack Overflow post: https://stackoverflow.com/questions/53118850/brew-install-nvm-nvm-command-not-found
+# Reference Stack Overflow post: https://stackoverflow.com/questions/53118850/brew-install-nvm-nvm-command-not-found
 ```
 
 Set your Postgres version with homebrew.
@@ -124,10 +124,10 @@ brew install postgresql@12
 brew switch postgres@12
 
 # To start postgres locally run:
-brew services start postgresql@ [insert version number]
+brew services start postgresql@12
 
 # To stop postgres locally run:
-brew services stop postgresql@ [insert version number]
+brew services stop postgresql@12
 ```
 
 Create necessary postgres users in the `psql` console.
