@@ -98,6 +98,7 @@ rbenv local # rbenv local --unset reverses the action
 
 # To switch between rbenv versions installed locally, use the following command:
 rbenv shell 2.6.10
+
 ```
 
 Set your Node version with `NVM`.
