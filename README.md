@@ -148,7 +148,7 @@ bin/setup
 If you don't already have access to the CommitChange 1Password vault, ask to be added. Then
 download the .env file in 1Password and place it in the root directory.
 
-NOTE: Double check that your .env file has the '.' in front of the file name.
+> *Note:* Double check that your .env file has the '.' in front of the file name.
 
 #### Startup
 ##### run foreman for development
