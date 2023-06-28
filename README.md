@@ -126,8 +126,6 @@ brew switch postgres@12
 # To start postgres locally run:
 brew services start postgresql@12
 
-# To stop postgres locally run:
-brew services stop postgresql@12
 ```
 
 Create necessary postgres users in the `psql` console.
