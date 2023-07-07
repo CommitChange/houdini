@@ -41,11 +41,11 @@ class EmailList < ActiveRecord::Base
   end
 
   def build_supporter_post_operation(supporter)
-    MailchimpBatchOperation.new(method: 'POST', list: self, supporter:supporter)
+    SupporterListMailchimpBatchOperation.new(method: 'POST', list: self, supporter:supporter)
   end
 
   # we don't currently use this but we could in the future
   def build_supporter_delete_operation(supporter)
-    MailchimpBatchOperation.new(method: 'DELETE', list: self, supporter:supporter)
+    SupporterListMailchimpBatchOperation.new(method: 'DELETE', list: self, supporter:supporter)
   end
 end
