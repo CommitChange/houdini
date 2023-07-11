@@ -1,7 +1,7 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 require 'rails_helper'
 
-RSpec.describe Dripemaillist, type: :model do
+RSpec.describe DripEmailList, type: => :model do
 
   describe '#list_path' do
     it 'is correctly generated' do
