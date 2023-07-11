@@ -1,4 +1,4 @@
-class Dripemaillist < ActiveRecord::Base
+class DripEmailList < ActiveRecord::Base
   has_one :mailchimp_list_id 
 
   validates :mailchimp_list_id, :presence => true 
