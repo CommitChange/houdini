@@ -1,3 +1,4 @@
+
 class CreateDripEmailLists < ActiveRecord::Migration
   def change
     create_table :drip_email_lists do |t|

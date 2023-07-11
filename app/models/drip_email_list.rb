@@ -1,5 +1,6 @@
+# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+
 class DripEmailList < ActiveRecord::Base
-  has_one :mailchimp_list_id 
 
   validates :mailchimp_list_id, :presence => true 
 
