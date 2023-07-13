@@ -4,7 +4,7 @@
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 require 'rails_helper'
 
-Rspec.describe '/mailchimp/nonprofit_user_subscribe.json.jbuilder', type: :view do
+RSpec.describe '/mailchimp/nonprofit_user_subscribe.json.jbuilder', type: :view do
   
   describe 'adding new subscriber to nonprofit list' do 
 
@@ -12,15 +12,17 @@ Rspec.describe '/mailchimp/nonprofit_user_subscribe.json.jbuilder', type: :view 
       # do I need this line specifically? If so, what is it doing?
       # where would i find these methods defined? In jbuilder docs? 
       # view.lookup_context.prefixes = view.lookup_context.prefixes.drop(1)
-      assign(:user), create(:user, nonprofit_id: '123456')
+      assign(:user, create(:user, NONPROFIT_ID: '123456'))
+      render
+      rendered
     end 
 
     it {
       is_expected.to include_json(
-        email_address: User.email.,
+        email_address: User.email,
         status: 'subscribed',
         merge_fields: {
-          nonprofit_id: '123456'
+          NONPROFIT_ID: '123456'
         }
       )
     }

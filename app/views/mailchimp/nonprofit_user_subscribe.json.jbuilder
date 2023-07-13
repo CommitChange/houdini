@@ -4,5 +4,6 @@ json.email_address @user.email
 json.status 'subscribed'
 
 json.merge_fields do
-  json.nonprofit_id  @user.nonprofit
+  json.NONPROFIT_ID  @nonprofit.id
+  
 end 
