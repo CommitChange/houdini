@@ -9,26 +9,26 @@ RSpec.describe '/mailchimp/nonprofit_user_subscribe.json.jbuilder', type: :view 
   describe 'adding new subscriber to nonprofit list' do 
 
     subject(:json) do 
-      # do I need this line specifically? If so, what is it doing?
-      # where would i find these methods defined? In jbuilder docs? 
-      # view.lookup_context.prefixes = view.lookup_context.prefixes.drop(1)
-      assign(:user, create(:user, NONPROFIT_ID: '123456'))
+      view.lookup_context.prefixes = view.lookup_context.prefixes.drop(1)
+      user = create(:user_as_nonprofit_associate) 
+      assign(:user, user)
+      assign(:nonprofit, user.roles.first.host)
       render
       rendered
     end 
 
     it {
       is_expected.to include_json(
-        email_address: User.email,
+        email_address: User.first.email,
         status: 'subscribed',
         merge_fields: {
-          NONPROFIT_ID: '123456'
+          NONPROFIT_ID: User.first.roles.first.host.id
         }
       )
     }
   end 
 
-  # Does this need to be skipped like in list.json.jbuilder.spec?
+  # TODO: Fix this spec 
   describe 'not adding new subscriber to nonprofit list', skip: 'TODO' do 
   end 
 
