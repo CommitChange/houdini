@@ -75,7 +75,11 @@ describe Mailchimp do
 																method: 'POST',
 																path: 'lists/list_id/members',
 																body: an_instance_of(String)
-														}
+														},
+														{
+															method: 'DELETE',
+															path: 'lists/list_id/members/on_mailchimp'
+														}								
 													])
 		end
   end
