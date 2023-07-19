@@ -28,9 +28,5 @@ RSpec.describe '/mailchimp/nonprofit_user_subscribe.json.jbuilder', type: :view 
     }
   end 
 
-  # TODO: Fix this spec 
-  describe 'not adding new subscriber to nonprofit list', skip: 'TODO' do 
-  end 
-
 end 
 
