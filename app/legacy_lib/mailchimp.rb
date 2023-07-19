@@ -49,16 +49,10 @@ module Mailchimp
 		put("/lists/#{mailchimp_list_id}/members", @options.merge(:body => body_hash.to_json))
   end
 
-  def signup_nonprofit_user (drip_email_list, nonprofit, user)
+  def self.signup_nonprofit_user(drip_email_list, nonprofit, user)
     body_hash = @body.merge(create_nonprofit_user_subscribe_body(nonprofit, user))
     put(drip_email_list.list_members_path, @options.merge(:body => body_hash.to_json))
   end 
-
-  # second option
-  # def self.signup_nonprofit_user(drip_email_list, nonprofit, user)
-  #   body_hash = @body.merge(create_nonprofit_user_subscribe_body(nonprofit, user))
-  #   put(drip_email_list.list_members_path, @options.merge(:body => body_hash.to_json))
-  # end 
 
   def self.get_mailchimp_token(npo_id)
     mailchimp_token = QueryNonprofitKeys.get_key(npo_id, 'mailchimp_token')
