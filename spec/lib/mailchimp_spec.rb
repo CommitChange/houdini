@@ -4,14 +4,12 @@ require 'rails_helper'
 describe Mailchimp do
 	let(:np) { force_create(:nonprofit)}
 		let(:user) {force_create(:user)}
-		let(:user2) {force_create(:user, nonprofit: np)}
 		let(:tag_master) {force_create(:tag_master, nonprofit: np)}
 		let(:email_list) {force_create(:email_list, mailchimp_list_id: 'list_id', tag_master: tag_master, nonprofit:np, list_name: "temp")}
 		let(:drip_email_list) {force_create(:drip_email_list, nonprofit: np, user: user)}
 		let(:supporter_on_both) { force_create(:supporter, nonprofit:np, email: 'on_BOTH@email.com', name: nil)}
 		let(:supporter_on_local) { force_create(:supporter, nonprofit:np, email: 'on_local@email.com', name: 'Penelope Rebecca Schultz')}
 		let(:tag_join) {force_create(:tag_join, tag_master: tag_master, supporter: supporter_on_both)}
-
 		let(:tag_join2) {force_create(:tag_join, tag_master: tag_master, supporter: supporter_on_local)}
 	
 		let(:active_recurring_donation_1) {force_create(:recurring_donation_base, supporter_id: supporter_on_local.id, start_date: Time.new(2019, 10,12))}
@@ -49,7 +47,7 @@ describe Mailchimp do
 			active_recurring_donation_2
 			cancelled_recurring_donation_1
 
-			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(email_list).and_return(ret_val)
+			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(email_list).and_raise
 
 			result = Mailchimp.generate_batch_ops_for_hard_sync(email_list)
 
@@ -61,6 +59,24 @@ describe Mailchimp do
 					body: an_instance_of(String)
 				}])
     end
+
+		describe 'signup nonprofit user' do 
+			email_list
+			drip_email_list
+			
+			it 'signs up nonprofit user' do 
+			
+				expect(Mailchimp).to receive(:drip_email_list).with(email_list).and_return()
+				result = Mailchimp.signup_nonprofit_user(email_list)
+
+				expect(result).to match( 
+					[{
+						method: 'PUT', 
+						path: 'lists/#{mailchimp_list_id}', 
+						body: an_instance_of(String)
+					}])
+			end 
+		end 
 
 		it 'passes with delete' do
 			tag_join
