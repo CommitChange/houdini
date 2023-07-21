@@ -84,51 +84,66 @@ describe Mailchimp do
 		end
   end
 
-	# 1st option -- drip_email_list, nonprofit, user 
-	# describe 'sign up nonprofit user' do 
-
-	# 	it 'signs up nonprofit user' do 
-
-	# 		expect(Mailchimp).to receive(:drip_email_list).with(email_list).and_return(ret_val)
-
-	# 		result = Mailchimp.create_nonprofit_user(email_list, true)
-	# 		expect(result).to match([
-	# 													{
-	# 															method: 'PUT',
-	# 															path: '',
-	# 															body: an_instance_of(String)
-	# 													}
-	# 												])
-	# 	end 
-
-	# 	it 'does not sign up nonprofit user' do 
-
-	# 		expect(Mailchimp).to receive(:drip_email_list).with(email_list).and_return(ret_val)
-
-	# 		result = Mailchimp.create_nonprofit_user(email_list, true)
-	# 		expect(result).to match([
-	# 													{
-	# 															method: 'PUT',
-	# 															path: '',
-	# 															body: an_instance_of(String)
-	# 													}
-	# 												])
-	# 	end 
-	# end 
-
-	# 2nd option
-	describe '.signs up nonprofit user' do 
+	# 1st option 
+	describe 'sign up nonprofit user' do 
 
 		it 'signs up nonprofit user' do 
-			user = create(:user, :drip_email_list_base, nonprofit: np)
-			expect(Mailchimp.get_drip_email_list(nonprofit.id, user.id)).to eq ['test_user@email.com']
-		end
+
+			expect(Mailchimp).to receive(:drip_email_list).with(email_list).and_return(ret_val)
+
+			result = Mailchimp.create_nonprofit_user(email_list, true)
+			expect(result).to match([
+														{
+																method: 'PUT',
+																path: 'list_members_path',
+																body: an_instance_of(String)
+														}
+													])
+		end 
 
 		it 'does not sign up nonprofit user' do 
-			user = create(:user, :drip_email_list_base, nonprofit: np)
-			expect(Mailchimp.get_drip_email_list(nonprofit.id, user.id)).to be_empty
-		end
+
+			expect(Mailchimp).to receive(:drip_email_list).with(email_list).and_return(ret_val)
+
+			result = Mailchimp.create_nonprofit_user(email_list, true)
+			expect(result).to match([
+														{
+																method: 'PUT',
+																path: '',
+																body: an_instance_of(String)
+														}
+													])
+		end 
 	end 
+
+	# 2nd option
+	# describe '.signs up nonprofit user' do 
+
+	# 	it 'signs up nonprofit user' do 
+	# 		user = create(:user, :drip_email_list, nonprofit: np)
+	# 		expect(Mailchimp.get_drip_email_list(nonprofit.id, user.id)).to eq ['test_user@email.com']
+	# 	end
+
+	# 	it 'does not sign up nonprofit user' do 
+	# 		user = create(:user, :drip_email_list, nonprofit: np)
+	# 		expect(Mailchimp.get_drip_email_list(nonprofit.id, user.id)).to be_empty
+	# 	end
+	# end 
+
+	describe '.create_nonprofit_user_subscribe_body' do 
+
+		it 'creates nonprofit user subscriber' do 
+			expect(Mailchimp.create_nonprofit_user_subscribe_body(nonprofit)).to match({
+				'email_address' => user.email,
+				'status' => 'subscribed',
+				'merge_fields' => {
+					
+				}
+			})
+		end 
+
+	end 
+
 
 	describe '.create_subscribe_body' do
 
