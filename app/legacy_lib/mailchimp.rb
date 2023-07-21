@@ -265,7 +265,6 @@ module Mailchimp
     JSON::parse(ApplicationController.render 'mailchimp/nonprofit_user_subscribe', assigns: {nonprofit: nonprofit, user: user })
   end 
 
-
   def self.create_subscribe_body(supporter)
     JSON::parse(ApplicationController.render 'mailchimp/list', assigns: {supporter: supporter})
   end
