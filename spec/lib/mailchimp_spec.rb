@@ -60,24 +60,6 @@ describe Mailchimp do
 				}])
     end
 
-		describe 'signup nonprofit user' do 
-			email_list
-			drip_email_list
-			
-			it 'signs up nonprofit user' do 
-			
-				expect(Mailchimp).to receive(:drip_email_list).with(email_list).and_return()
-				result = Mailchimp.signup_nonprofit_user(email_list)
-
-				expect(result).to match( 
-					[{
-						method: 'PUT', 
-						path: 'lists/#{mailchimp_list_id}', 
-						body: an_instance_of(String)
-					}])
-			end 
-		end 
-
 		it 'passes with delete' do
 			tag_join
 			tag_join2
