@@ -97,7 +97,6 @@ describe Mailchimp do
 
 	end 
 
-
 	describe '.create_subscribe_body' do
 
 		describe 'names' do
