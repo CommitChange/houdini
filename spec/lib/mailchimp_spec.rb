@@ -47,7 +47,7 @@ describe Mailchimp do
 			active_recurring_donation_2
 			cancelled_recurring_donation_1
 
-			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(email_list).and_raise
+			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(email_list).and_return(ret_val)
 
 			result = Mailchimp.generate_batch_ops_for_hard_sync(email_list)
 
