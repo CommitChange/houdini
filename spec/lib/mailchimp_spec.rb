@@ -60,6 +60,22 @@ describe Mailchimp do
 				}])
     end
 
+		it 'syncs nonprofit users + adds them to Mailchimp NP list' do 
+			drip_email_list 
+			
+			expect(Mailchimp).to receive(:signup_nonprofit_user).with(drip_email_list).and_return(ret_val)
+
+			result = MailchimpNonprofitUserAddJob.sync_nonprofit_users(drip_email_list)
+
+
+				expect(result).to match( 
+					[{
+						method: 'POST', 
+						path: '?', 
+						body: an_instance_of(String)
+					}])
+		end 
+
 		it 'passes with delete' do
 			tag_join
 			tag_join2
