@@ -185,6 +185,7 @@ module Mailchimp
   def self.sync_nonprofit_users
     MailchimpNonprofitUserAddJob.perform_now(drip_email_list, user, nonprofit)
   end 
+  
   # @param [Nonprofit] nonprofit
   # @param [Boolean] delete_from_mailchimp do you want to delete extra items on mailchimp, defaults to false
   def self.hard_sync_lists(nonprofit, delete_from_mailchimp=false)

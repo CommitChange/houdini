@@ -61,11 +61,12 @@ describe Mailchimp do
     end
 
 		it 'syncs nonprofit users + adds them to Mailchimp NP list' do 
+			nonprofit
 			drip_email_list 
-			
+
 			expect(Mailchimp).to receive(:signup_nonprofit_user).with(drip_email_list).and_return(ret_val)
 
-			result = MailchimpNonprofitUserAddJob.sync_nonprofit_users(drip_email_list)
+			result = MailchimpNonprofitUserAddJob.sync_nonprofit_users(drip_email_list, true)
 
 
 				expect(result).to match( 
