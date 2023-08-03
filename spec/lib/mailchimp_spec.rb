@@ -6,7 +6,7 @@ describe Mailchimp do
 		let(:user) {force_create(:user)}
 		let(:tag_master) {force_create(:tag_master, nonprofit: np)}
 		let(:email_list) {force_create(:email_list, mailchimp_list_id: 'list_id', tag_master: tag_master, nonprofit:np, list_name: "temp")}
-		let(:drip_email_list) {force_create(:drip_email_list, nonprofit: np, user: user)}
+		let(:drip_email_list) {force_create(:drip_email_list)}
 		let(:supporter_on_both) { force_create(:supporter, nonprofit:np, email: 'on_BOTH@email.com', name: nil)}
 		let(:supporter_on_local) { force_create(:supporter, nonprofit:np, email: 'on_local@email.com', name: 'Penelope Rebecca Schultz')}
 		let(:tag_join) {force_create(:tag_join, tag_master: tag_master, supporter: supporter_on_both)}
@@ -60,23 +60,6 @@ describe Mailchimp do
 				}])
     end
 
-		it 'syncs nonprofit users + adds them to Mailchimp NP list' do 
-			np
-			email_list 
-
-			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(email_list).and_return(ret_val)
-
-			result = Mailchimp.sync_nonprofit_users(email_list, true)
-
-
-				expect(result).to match( 
-					[{
-						method: 'POST', 
-						path: '?', 
-						body: an_instance_of(String)
-					}])
-		end 
-
 		it 'passes with delete' do
 			tag_join
 			tag_join2
@@ -113,6 +96,35 @@ describe Mailchimp do
 		end 
 
 	end 
+
+	describe 'syncs nonprofit users' do 
+		let(:nonprofit) {create(:nonprofit)}
+
+		it 'syncs nonprofit users + adds them to Mailchimp NP list' do 
+			np
+			email_list
+			drip_email_list 
+
+			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(email_list).and_return(ret_val)
+
+			result = Mailchimp.sync_nonprofit_users(email_list, true)
+
+
+				expect(result).to match( 
+					[{
+						method: 'POST', 
+						path: '?', 
+						body: an_instance_of(String)
+					}])
+		end 
+
+		it 'excepts when excepting' do
+			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(drip_email_list).and_raise
+
+			expect{ Mailchimp.sync_nonprofit_users(drip_email_list)}.to raise_error
+		end
+
+	end 	
 
 	describe '.create_subscribe_body' do
 
