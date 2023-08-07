@@ -82,6 +82,14 @@ describe Mailchimp do
 		end
   end
 
+	describe 'sync nonprofit users' do 
+		let(:drip_email_list) {create(:drip_email_list)}
+
+		it 'runs job' do 
+			expect Mailchimp.sync_nonprofit_users(DripEmailList.first)
+		end 
+	end 
+
 	describe '.create_nonprofit_user_subscribe_body' do 
 		let(:nonprofit) { create(:nonprofit)}
 
@@ -97,34 +105,7 @@ describe Mailchimp do
 
 	end 
 
-	describe 'syncs nonprofit users' do 
-		let(:nonprofit) {create(:nonprofit)}
-
-		it 'syncs nonprofit users + adds them to Mailchimp NP list' do 
-			np
-			email_list
-			drip_email_list 
-
-			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(email_list).and_return(ret_val)
-
-			result = Mailchimp.sync_nonprofit_users(email_list, true)
-
-
-				expect(result).to match( 
-					[{
-						method: 'POST', 
-						path: '?', 
-						body: an_instance_of(String)
-					}])
-		end 
-
-		it 'excepts when excepting' do
-			expect(Mailchimp).to receive(:get_list_mailchimp_subscribers).with(drip_email_list).and_raise
-
-			expect{ Mailchimp.sync_nonprofit_users(drip_email_list)}.to raise_error
-		end
-
-	end 	
+	
 
 	describe '.create_subscribe_body' do
 

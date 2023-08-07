@@ -194,21 +194,18 @@ module Mailchimp
     end
   end
 
-  # remove 2 arguments
+  # ISSUE - Finding proper query method to acccess data in db 
+  # drip_email_list is nil currently...maybe add a return statement in case the drip_email_list is blank?
   # rewrite this method so that it will query the db and pull the all the data associated w/ drip email list
   # queue job for each found member 
-  def self.sync_nonprofit_users(drip_email_list, user, nonprofit)
-    mailchimp_subscribers = get_list_mailchimp_subscribers(drip_email_list)
-    on_nonprofit_side = mailchimp_subscribers.partition do |n|
-      mailchimp_subscribers.any?{|mc_sub| s.email.downcase == mc_sub[:email_address].downcase}
-    end 
+  def self.sync_nonprofit_users(drip_email_list)
+    # return unless drip_email_list.blank? 
+    # drip_email_list = DripEmailList.first 
+    DripEmailList.where(:drip_email_list => parameter).first
+    MailchimpNonprofitUserAddJob.sync_nonprofit_users(drip_email_list)
 
-    output = in_our_side_only.map{|i|
-      {method: 'POST', path: "lists/#{drip_email_list.mailchimp_list_id}/members", body: create_subscribe_body(i).to_json}
-    }
-
-    return output
-
+    # MailchimpNonprofitUserAddJob.where.users.(nonprofit.id).pluck(:drip_email_list).select(&:present?)
+    
   end 
 
   # @param [EmailList] email_list
