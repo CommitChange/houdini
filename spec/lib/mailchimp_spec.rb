@@ -85,7 +85,7 @@ describe Mailchimp do
 	describe 'sync nonprofit users' do 
 		let(:drip_email_list) {create(:drip_email_list)}
 
-		it 'runs job' do 
+		it 'runs nonprofit add user job' do 
 			expect Mailchimp.sync_nonprofit_users(DripEmailList.first)
 		end 
 	end 

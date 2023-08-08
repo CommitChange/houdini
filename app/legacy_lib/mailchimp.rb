@@ -194,18 +194,10 @@ module Mailchimp
     end
   end
 
-  # ISSUE - Finding proper query method to acccess data in db 
-  # drip_email_list is nil currently...maybe add a return statement in case the drip_email_list is blank?
-  # rewrite this method so that it will query the db and pull the all the data associated w/ drip email list
-  # queue job for each found member 
   def self.sync_nonprofit_users(drip_email_list)
-    # return unless drip_email_list.blank? 
-    # drip_email_list = DripEmailList.first 
-    DripEmailList.where(:drip_email_list => parameter).first
-    MailchimpNonprofitUserAddJob.sync_nonprofit_users(drip_email_list)
-
-    # MailchimpNonprofitUserAddJob.where.users.(nonprofit.id).pluck(:drip_email_list).select(&:present?)
-    
+    DripEmailList.find_each do |np_user| 
+      MailchimpNonprofitUserAddJob(np_user).perform_now
+    end 
   end 
 
   # @param [EmailList] email_list
