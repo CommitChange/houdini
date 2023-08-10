@@ -93,12 +93,6 @@ describe Mailchimp do
 			expect(MailchimpNonprofitUserAddJob).to have_been_enqueued.with(drip_email_list, nonprofit_user, nonprofit_user.roles.first.host)
  		end 
 
-		# it 'will NOT include users that doesnt belong to a nonprofit' do 
-		# 	ActiveJob::Base.queue_adapter = :test
-		# 	Mailchimp.sync_nonprofit_users(drip_email_list)
-		# 	expect(MailchimpNonprofitUserAddJob).to_not have_been_enqueued.with(user)
-		# end 
-
 	end 
 
 	describe '.create_nonprofit_user_subscribe_body' do 
