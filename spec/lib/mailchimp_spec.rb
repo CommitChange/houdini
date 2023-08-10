@@ -82,12 +82,23 @@ describe Mailchimp do
 		end
   end
 
-	describe 'sync nonprofit users' do 
-		let(:drip_email_list) {create(:drip_email_list)}
+	describe '.sync_nonprofit_users' do 
+		let!(:drip_email_list) {create(:drip_email_list_base)}
+		let!(:user) {create(:user)}
+		let!(:nonprofit_user) {create(:user_as_nonprofit_associate)}
+	
+		it 'bulk syncs users that are from a nonprofit' do
+			ActiveJob::Base.queue_adapter = :test
+			Mailchimp.sync_nonprofit_users(drip_email_list)
+			expect(MailchimpNonprofitUserAddJob).to have_been_enqueued.with(drip_email_list, nonprofit_user, nonprofit_user.roles.first.host)
+ 		end 
 
-		it 'runs nonprofit add user job' do 
-			expect Mailchimp.sync_nonprofit_users(DripEmailList.first)
-		end 
+		# it 'will NOT include users that doesnt belong to a nonprofit' do 
+		# 	ActiveJob::Base.queue_adapter = :test
+		# 	Mailchimp.sync_nonprofit_users(drip_email_list)
+		# 	expect(MailchimpNonprofitUserAddJob).to_not have_been_enqueued.with(user)
+		# end 
+
 	end 
 
 	describe '.create_nonprofit_user_subscribe_body' do 

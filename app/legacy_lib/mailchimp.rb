@@ -195,8 +195,8 @@ module Mailchimp
   end
 
   def self.sync_nonprofit_users(drip_email_list)
-    DripEmailList.find_each do |np_user| 
-      MailchimpNonprofitUserAddJob(np_user).perform_now
+    User.nonprofit_personnel.find_each do |np_user| 
+      MailchimpNonprofitUserAddJob.perform_later(drip_email_list, np_user, np_user.roles.nonprofit_personnel.first.host )
     end 
   end 
 

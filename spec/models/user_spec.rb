@@ -15,6 +15,26 @@ RSpec.describe User, :type => :model do
     assert user.reload.access_locked?
   end
 
+  describe '.nonprofit_personnel' do 
+    let!(:user) {create(:user)}
+    let!(:user_as_nonprofit_admin) {create(:user_as_nonprofit_admin)}
+    let!(:user_as_nonprofit_associate) {create(:user_as_nonprofit_associate)}
+
+    it 'returns a user that is a nonprofit_admin' do 
+      expect(User.nonprofit_personnel).to include(user_as_nonprofit_admin)
+    end  
+    
+    
+    it 'returns a user that is a nonprofit_associate' do
+      expect(User.nonprofit_personnel).to include(user_as_nonprofit_associate)
+    end 
+
+    it 'DOES NOT return a user that is a nonprofit_admin OR a nonprofit_associate' do 
+      expect(User.nonprofit_personnel).to_not include(user)
+    end 
+
+  end 
+
   describe '.send_reset_password_instructions' do
 
     context 'with a valid email address' do
