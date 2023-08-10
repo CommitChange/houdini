@@ -129,6 +129,7 @@ describe Houdini::V1::Nonprofit, :type => :request do
     end
 
     it "succeeds" do
+
       ActiveJob::Base.queue_adapter = :test
       StripeMockHelper.start      
       create(:nonprofit_base, slug: "n", state_code_slug: "wi", city_slug: "appleton")
