@@ -86,7 +86,7 @@ class Houdini::V1::Nonprofit < Houdini::V1::BaseAPI
         role = u.roles.build(host: np, name: 'nonprofit_admin')
         role.save!
         
-        MailchimpNonprofitUserAddJob.perform_later(DripEmailList.first, u, np)
+        MailchimpNonprofitUserAddJob.perform_later( u, np)
         
         billing_plan = ::BillingPlan.find(Settings.default_bp.id)
         b_sub = np.build_billing_subscription(billing_plan: billing_plan, status: 'active')
