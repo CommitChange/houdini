@@ -8,7 +8,7 @@ RSpec.describe MailchimpNonprofitUserAddJob, type: :job do
 
   it 'runs job' do 
     expect(Mailchimp).to receive(:signup_nonprofit_user).with(drip_email_list, user, nonprofit)
-    MailchimpNonprofitUserAddJob.perform_now(drip_email_list, user, nonprofit)
+    MailchimpNonprofitUserAddJob.perform_now(user, nonprofit)
   end 
   
 end
