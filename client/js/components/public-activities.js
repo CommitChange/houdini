@@ -4,7 +4,7 @@ const h = require('snabbdom/h')
 const R = require('ramda')
 
 const request = require('../common/request')
-const {ago, formatRecurring} = require('./public-activities-base');
+const {ago, formatCampaign} = require('./public-activities-base');
 
 // type can be 'campaign' or 'event'
 const init = (type, path) => {
@@ -12,15 +12,6 @@ const init = (type, path) => {
   const formattedResp$ = flyd.map(formatResp[type], resp$)
   return {formattedResp$}
 }
-
-const formatCampaign = r => 
-  R.map(o => {
-    return {
-      name: o.supporter_name 
-    , action: formatRecurring(o) + ' ' + o.amount
-    , date: ago(o.date)
-    }
-  }, r.body)
 
 const formatEvent = r => 
   R.map(o => {

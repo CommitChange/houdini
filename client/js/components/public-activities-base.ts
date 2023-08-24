@@ -13,7 +13,13 @@ interface CampaignPageActivity {
   date: string
 }
 
-export function ago(date: moment.MomentInput) {
+interface ActivityFormatted {
+  name: string;
+  action: string;
+  date: string;
+}
+
+export function ago(date: moment.MomentInput):string {
   return moment(date).fromNow();
 }
 
@@ -21,6 +27,16 @@ export function formatRecurring(o: { recurring: boolean  }) {
   return o.recurring
     ? `made a recurring contribution of`
     : `contributed`;
+}
+
+export function formatCampaign(r:{body: CampaignPageActivity[]}): ActivityFormatted[] {
+  return r.body.map(o => (
+    {
+      name: o.supporter_name 
+    , action: formatRecurring(o) + ' ' + o.amount
+    , date: ago(o.date)
+    }
+  ))
 }
 
 
