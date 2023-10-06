@@ -1,7 +1,7 @@
+// License: LGPL-3.0-or-later
 import { Callback } from "../../../../../app/javascript/common/Callbacks";
 import DonationSubmitter from './';
 
-// License: LGPL-3.0-or-later
 export interface PlausibleFunction {
   (eventType: string, val: any): void
 }
