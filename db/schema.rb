@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20230427003235) do
+ActiveRecord::Schema.define(version: 20230822155816) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -323,6 +323,12 @@ ActiveRecord::Schema.define(version: 20230427003235) do
   create_table "donations_payment_imports", id: false, force: :cascade do |t|
     t.integer "donation_id"
     t.integer "payment_import_id"
+  end
+
+  create_table "drip_email_lists", force: :cascade do |t|
+    t.string   "mailchimp_list_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
   create_table "e_tap_import_contacts", force: :cascade do |t|
@@ -640,6 +646,7 @@ ActiveRecord::Schema.define(version: 20230427003235) do
     t.text     "change_amount_message"
     t.boolean  "first_charge_email_sent"
     t.boolean  "hide_cover_fees",                     default: false, null: false
+    t.boolean  "temp_block",                          default: false
   end
 
   add_index "miscellaneous_np_infos", ["nonprofit_id"], name: "index_miscellaneous_np_infos_on_nonprofit_id", using: :btree
