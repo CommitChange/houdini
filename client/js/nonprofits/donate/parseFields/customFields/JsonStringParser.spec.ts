@@ -23,9 +23,11 @@ describe('JsonStringParser', () => {
   });
 
   describe.each([
-    ['with non-custom-field-description', "[{name:'name', label: 'another'}]", [{name: 'name', label: 'another'}]],
-    ['with different json quote', '[{name:"name", label: "another"}]', [{name: 'name', label: 'another'}]],
+    ['with non-custom-field-description', "[{name:'name', label: 'another'}]", [{name: 'name', label: 'another', type: 'payment'}]],
+    ['with different json quote', '[{name:"name", label: "another"}]', [{name: 'name', label: 'another', type: 'payment'}]],
     ['when an empty array', '[]', []],
+    ['type = payment','[{name:"name", label: "another", type: "payment"}]', [{name: 'name', label: 'another', type: 'payment'}]],
+    ['type = supporter', '[{name:"name", label: "another", type: "supporter"}]', [{name: 'name', label: 'another', type: 'supporter'}]],
   ])("when valid %s", (_name, input, result) => {
       const parser = new JsonStringParser(input);
 

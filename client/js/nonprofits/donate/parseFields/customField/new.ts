@@ -1,5 +1,5 @@
 // License: LGPL-3.0-or-later
-import { CustomFieldDescription } from ".";
+import { CustomFieldDescription, defaultCustomFieldDescription } from ".";
 
 export function newParseCustomField(input:string) : CustomFieldDescription {
   const [name, ...rest] = input.split(":").map((s) => s.trim())
@@ -8,5 +8,5 @@ export function newParseCustomField(input:string) : CustomFieldDescription {
     label = rest[0]
   }
 
-  return {name, label: label || name } as CustomFieldDescription;
+  return {...defaultCustomFieldDescription, name, label: label || name };
 };
