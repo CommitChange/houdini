@@ -1,6 +1,6 @@
 // License: LGPL-3.0-or-later
 import { parse } from 'json5';
-import { CustomFieldDescription, defaultCustomFieldDescription, isCustomFieldDescAfterDefaulting } from '../customField';
+import { CustomFieldDescription, isCustomFieldDescInput, nudgeToCustomFieldDescription} from '../customField';
 
 
 export default class JsonStringParser {
@@ -20,8 +20,8 @@ export default class JsonStringParser {
       const result = parse(this.fieldsString)
       if (result instanceof Array) {
         result.forEach((i) => {
-          if (isCustomFieldDescAfterDefaulting(i)) {
-            this.results.push({ ...defaultCustomFieldDescription, ...i});
+          if (isCustomFieldDescInput(i)) {
+            this.results.push(nudgeToCustomFieldDescription(i));
           }
           
           else {
