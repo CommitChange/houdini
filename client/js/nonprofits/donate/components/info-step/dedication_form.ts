@@ -1,16 +1,30 @@
 // License: LGPL-3.0-or-later
 const h = require('snabbdom/h')
-const uuid = require('uuid')
+import uuid  from 'uuid';
 
-// A contact info form for a donor to add a dedication in honor/memory of somebody
+export interface DedicationData {
+  dedication_type?: 'honor' | 'memory' | null;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  dedication_note?:string;
+}
 
+interface DedicationFormInput {
+  submitDedication: (target:EventTarget) => void;
+  dedicationData: DedicationData
+  I18n: {t:(...rest:string[]) => string}
+}
 
-function view(state) {
-  var radioId1 = uuid.v1() // need unique ids for the checkbox id and label for attrs
-  var radioId2 = uuid.v1()
-  var data = state.dedicationData$() || {}
+export default function dedication_form(input:DedicationFormInput) : ReturnType<typeof h> {
+  const radioId1 = uuid.v1() // need unique ids for the checkbox id and label for attrs
+  const radioId2 = uuid.v1()
+  const data = input.dedicationData;
+  const I18n  = input.I18n;
   return h('form.dedication-form', {
-    on: {submit: ev => {ev.preventDefault(); state.submitDedication$(ev.currentTarget)}}
+    on: {submit: (ev:Event) => {ev.preventDefault(); input.submitDedication(ev.currentTarget)}}
   }, [
     h('p.u-centered.u-strong.u-marginBottom--10', I18n.t('nonprofits.donate.dedication.info'))
   , h('fieldset.u-marginBottom--0.col-6', [
@@ -89,7 +103,5 @@ function view(state) {
   , h('div.u-centered', [
       h('button.button', I18n.t('nonprofits.donate.dedication.save'))
     ])
-  ])
+  ]);
 }
-
-module.exports = {view}
