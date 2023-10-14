@@ -4,8 +4,11 @@ import { CustomFieldDescription, isCustomFieldDescInput, nudgeToCustomFieldDescr
 
 
 export default class JsonStringParser {
-  public errors:SyntaxError[] = [];
+
+  public readonly errors: SyntaxError[] = [];
+
   public readonly results: CustomFieldDescription[] = [];
+
   constructor(public readonly fieldsString:string) {
     this._parse();
   }
@@ -13,7 +16,6 @@ export default class JsonStringParser {
   get isValid(): boolean {
     return this.errors.length == 0;
   }
-
 
   private _parse = (): void => {
     try {
