@@ -93,6 +93,10 @@ gem 'rails-i18n' # For 4.0.x
 gem 'i18n-js'
 gem 'countries'
 
+group :development do
+  gem 'listen'
+end
+
 
 group :development, :ci do
   gem 'traceroute'
