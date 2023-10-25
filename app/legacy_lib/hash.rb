@@ -9,4 +9,8 @@ class Hash
     keys = keys.map{|k| k.to_s}
     delete_if{|k,v| !keys.include?(k.to_s)}
   end
+
+  def update_unless_nil(hash={})
+    self.update(hash.compact)
+  end
 end
