@@ -7,4 +7,8 @@ class MiscellaneousNpInfo < ApplicationRecord
   :hide_cover_fees
 
   belongs_to :nonprofit
+
+  def widget_config
+    {default_fee_coverage: default_fee_coverage}
+  end
 end
