@@ -14,9 +14,4 @@ interface Gift {
 
 declare function giftOptionButton(state:GiftOptionButtonState,gift:Gift):ReturnType<typeof h>
 
-
 export default giftOptionButton;
-
-
-
-
