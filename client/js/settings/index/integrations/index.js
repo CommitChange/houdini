@@ -3,9 +3,18 @@ const h = require('snabbdom/h')
 const R = require('ramda')
 const flyd = require('flyd')
 const request = require('../../../common/request')
-const flyd_lift = require('flyd/module/lift')
 const colors = require('../../../common/colors')
 
+
+/**
+ * @typedef IntegrationsState
+ * @property {() => any} mailchimpKey$
+ */
+
+/**
+ * 
+ * @returns {IntegrationsState}
+ */
 function init() {
   var state = {
     clickSync$: flyd.stream()
@@ -15,7 +24,11 @@ function init() {
   return state
 }
 
-
+/**
+ * 
+ * @param {IntegrationsState} state 
+ * @returns {ReturnType<typeof h>}
+ */
 function view(state) {
   return h('section.integrations.settings-pane.nonprofit-settings', {
     style: {display: 'none'}
