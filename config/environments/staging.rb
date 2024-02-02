@@ -100,20 +100,8 @@ Commitchange::Application.configure do
 
 	NONPROFIT_VERIFICATION_SEND_EMAIL_DELAY = 5.minutes
 
-	config.action_mailer.preview_path ||= defined?(Rails.root) ? "#{Rails.root}/spec/mailer_previews" : nil
-  config.autoload_paths += [config.action_mailer.preview_path]
+	config.action_mailer.show_previews = true
 
-  routes.prepend do
-    get '/rails/mailers'         => "rails/mailers#index"
-    get '/rails/mailers/*path'   => "rails/mailers#preview"
-  end
-end
-
-
-class ::Rails::MailersController
-
-  def local_request?
-    true
-  end
+	config.consider_all_requests_local = true
 end
 
