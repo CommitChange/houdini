@@ -159,13 +159,14 @@ module Mailchimp
 
   # `removed` and `added` are arrays of tag join ids that have been added or removed to a supporter
   def self.sync_supporters_to_list_from_tag_joins(npo_id, supporter_ids, tag_data)
-    emails = get_emails_for_supporter_ids(npo_id, supporter_ids)
+    
     to_add = get_mailchimp_list_ids(tag_data.selected.to_tag_master_ids)
     to_remove = get_mailchimp_list_ids(tag_data.unselected.to_tag_master_ids)
     return if to_add.empty? && to_remove.empty?
 
-    bulk_post = emails.map{|em| to_add.map{|ml_id| {method: 'POST', path: "lists/#{ml_id}/members", body: {email_address: em, status: 'subscribed'}.to_json}}}.flatten
-    bulk_delete = emails.map{|em| to_remove.map{|ml_id| {method: 'DELETE', path: "lists/#{ml_id}/members/#{Digest::MD5.hexdigest(em.downcase).to_s}"}}}.flatten
+    supporters = Nonprofit.find(npo_id).supporters.where(id: supporters_ids)
+    bulk_post = supporters.map{|em| to_add.map{|ml_id| MailchimpBatchOperation.{method: 'POST', path: "lists/#{ml_id}/members", body: {email_address: em, status: 'subscribed'}.to_json}}}.flatten
+    bulk_delete = supporters.map{|em| to_remove.map{|ml_id| {method: 'DELETE', path: "lists/#{ml_id}/members/#{Digest::MD5.hexdigest(em.downcase).to_s}"}}}.flatten
     perform_batch_operations(npo_id, bulk_post.concat(bulk_delete))
   end
 
