@@ -103,7 +103,7 @@ Commitchange::Application.configure do
 	config.action_mailer.preview_path ||= defined?(Rails.root) ? "#{Rails.root}/spec/mailer_previews" : nil
   config.autoload_paths += [config.action_mailer.preview_path]
 
-  routes.append do
+  routes.prepend do
     get '/rails/mailers'         => "rails/mailers#index"
     get '/rails/mailers/*path'   => "rails/mailers#preview"
   end
