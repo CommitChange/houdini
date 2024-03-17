@@ -69,12 +69,62 @@ class Nonprofit < ApplicationRecord
 
     def during_np_year(year)
       proxy_association.owner.use_zone do
-        where('date >= ? and date < ?', Time.zone.local(year), Time.zone.local(year + 1))
+        where('payments.date >= ? and payments.date < ?', Time.zone.local(year), Time.zone.local(year + 1))
+      end
+    end
+
+    def prior_to_np_year(year)
+      proxy_association.owner.use_zone do
+        where('date < ?', Time.zone.local(year))
       end
     end
   end
   has_many :transactions, through: :supporters
-  has_many :supporters, dependent: :destroy
+  has_many :supporters, dependent: :destroy do
+    def dupes_on_email(strict_mode = true)
+      QuerySupporters.dupes_on_email(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_name(strict_mode = true)
+      QuerySupporters.dupes_on_name(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_name_and_email(strict_mode = true)
+      QuerySupporters.dupes_on_name_and_email(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_name_and_phone(strict_mode = true)
+      QuerySupporters.dupes_on_name_and_phone(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_name_and_phone_and_address(strict_mode = true)
+      QuerySupporters.dupes_on_name_and_phone_and_address(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_phone_and_email_and_address(strict_mode = true)
+      QuerySupporters.dupes_on_phone_and_email_and_address(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_name_and_address(strict_mode = true)
+      QuerySupporters.dupes_on_name_and_address(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_phone_and_email(strict_mode = true)
+      QuerySupporters.dupes_on_phone_and_email(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_address_without_zip_code(strict_mode = true)
+      QuerySupporters.dupes_on_address_without_zip_code(proxy_association.owner.id, strict_mode)
+    end
+
+    def dupes_on_last_name_and_address
+      QuerySupporters.dupes_on_last_name_and_address(proxy_association.owner.id)
+    end
+
+    def for_export_enumerable(query, chunk_limit=15000)
+      QuerySupporters.for_export_enumerable(proxy_association.owner.id, query, chunk_limit)
+    end
+  end
   has_many :supporter_notes, through: :supporters
   has_many :profiles, through: :donations
   has_many :campaigns, dependent: :destroy
@@ -102,6 +152,8 @@ class Nonprofit < ApplicationRecord
   has_one :miscellaneous_np_info
   has_one :nonprofit_deactivation
   has_one :stripe_account, foreign_key: :stripe_account_id, primary_key: :stripe_account_id
+
+  has_many :email_customizations
 
   has_many :associated_object_events, class_name: 'ObjectEvent'
 
@@ -467,6 +519,11 @@ class Nonprofit < ApplicationRecord
       unless tickets
         payments_during_year = payments_during_year.where("kind IS NULL OR kind != ? ", "ticket")
       end
+      payments_during_year.group("supporter_id").select('supporter_id, COUNT(id)').each.map(&:supporter)
+    end
+
+    def supporters_who_have_payments_prior_to_year(year, tickets: false)
+      payments_during_year = self.payments.during_np_year(year)
       payments_during_year.group("supporter_id").select('supporter_id, COUNT(id)').each.map(&:supporter)
     end
   end

@@ -22,19 +22,40 @@ FactoryBot.define do
     net_amount { gross_amount + fee_total}
   end
 
-
-  factory :donation_payment_generator, class: "Payment" do
+  factory :payment_generator_with_id, class: "Payment" do
     transient do
       amount { 100 + Random.rand(5000)}
+      
     end
-    
-    donation { association :donation, amount: amount}
+
+    sequence(:id)
+
     gross_amount { amount}
     supporter
     date { Faker::Time.between(from: Time.current.beginning_of_year, to: Time.current.end_of_year)}
-  end
 
-  
+    before(:create) do |payment|
+      payment.id = nil if payment.id
+    end
+
+    factory :donation_payment_generator do
+      donation { association :donation, amount: amount, supporter: supporter, nonprofit: nonprofit, created_at: date}
+    end
+
+    factory :refund_payment_generator do
+      refund { association :refund_base, amount: amount * -1, created_at: date}
+      gross_amount { amount * -1 }
+    end
+    
+    factory :dispute_payment_generator do
+      dispute_transaction { association :dispute_transaction_base,  created_at: date}
+    end
+
+    factory :dispute_reversal_payment_generator do
+      dispute_transaction { association :dispute_transaction_base,  created_at: date}
+      gross_amount { amount * -1 }
+    end
+  end
 
   factory :fv_poverty_payment, class: "Payment" do
     donation {build(:fv_poverty_donation, nonprofit: nonprofit, supporter: supporter) }
