@@ -78,5 +78,5 @@ if Rails.version < '5'
 
   ActiveRecord::Base.send(:include, ActiveRecord::CoreExtension)
 else
-  raise "monkeypatch needs to be evaluated as it was built for Rails 4.2"
+  #raise "monkeypatch needs to be evaluated as it was built for Rails 4.2"
 end

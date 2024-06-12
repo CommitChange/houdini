@@ -1,97 +1,47 @@
-# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-require 'barnes'
-workers Integer(ENV['WEB_CONCURRENCY'] || 1)
-threads_count = Integer(ENV['MAX_THREADS'] || 5)
-
-
+# Puma can serve each request in a thread from an internal thread pool.
+# The `threads` method setting takes two numbers a minimum and maximum.
+# Any libraries that use thread pools should be configured to match
+# the maximum value specified for Puma. Default is set to 5 threads for minimum
+# and maximum, this matches the default thread size of Active Record.
+#
+threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i
 threads threads_count, threads_count
 
+# Specifies the `port` that Puma will listen on to receive requests, default is 3000.
+#
+port        ENV.fetch("PORT") { 3000 }
 
-preload_app! if ENV['RAILS_ENV'] != 'development'
+# Specifies the `environment` that Puma will run in.
+#
+environment ENV.fetch("RAILS_ENV") { "development" }
 
-rackup      DefaultRackup
-port        ENV['PORT']     || 5000
-environment ENV['RAILS_ENV'] || 'development'
+# Specifies the number of `workers` to boot in clustered mode.
+# Workers are forked webserver processes. If using threads and workers together
+# the concurrency of the application would be max `threads` * `workers`.
+# Workers do not work on JRuby or Windows (both of which do not support
+# processes).
+#
+# workers ENV.fetch("WEB_CONCURRENCY") { 2 }
 
+# Use the `preload_app!` method when specifying a `workers` number.
+# This directive tells Puma to first boot the application and load code
+# before forking the application. This takes advantage of Copy On Write
+# process behavior so workers use less memory. If you use this option
+# you need to make sure to reconnect any threads in the `on_worker_boot`
+# block.
+#
+# preload_app!
 
-
-on_worker_boot do
-  ActiveRecord::Base.establish_connection
-end
-
-before_fork do
-  Barnes.start
-  require 'puma_worker_killer'
-  PumaWorkerKiller.config do |config|
-    config.ram           = 1024 # mb
-  end
-  PumaWorkerKiller.start
-end
-
-# rackup      DefaultRackup
-# port        ENV['PORT']     || 8080
-# environment ENV['RAILS_ENV'] || 'development'
-# tag 'commitchange'
-# # workers 2
-# daemonize
+# The code in the `on_worker_boot` will be called if you are using
+# clustered mode by specifying a number of `workers`. After each worker
+# process is booted this block will be run, if you are using `preload_app!`
+# option you will want to use this block to reconnect to any threads
+# or connections that may have been created at application boot, Ruby
+# cannot share connections between processes.
 #
-# # Read environment
-# require 'dotenv'
-# Dotenv.load ".env"
-# @env = ENV['RAILS_ENV']
-# # || 'development'
-# Dotenv.load ".env.#{@env}"
-# puts ENV['PORT']
-# puts "----------------------- #{@env} -----------------------------------"
-# @dir = ENV['PUMADIR'] || ENV['PWD']
-# @port = ENV['PORT'] || 10525
-#
-# workers Integer(ENV['WEB_CONCURRENCY'] || 1)
-# threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 1)
-# preload_app! if ENV['RAILS_ENV'] != 'development'
-#
-# if heroku?
-#   threads threads_count, threads_count
-# else
-#   threads 1, threads_count
-# end
-#
-# environment @env || 'development'
-# #environment 'production'
-#
-# before_fork do
-#   require 'puma_worker_killer'
-#   PumaWorkerKiller.enable_rolling_restart # Default is every 6 hours
-# end
-#
-# tmp_dir = File.expand_path("./tmp", @dir)
-# log_dir = File.expand_path("./log", @dir)
-#
-# if @port
-#   port @port
-# else
-#   bind "unix://#{tmp_dir}/sockets/puma.sock"
-# end
-#
-# unless heroku?
-#   # Pid files
-#   pidfile "#{tmp_dir}/pids/puma.pid"
-#   state_path "#{tmp_dir}/pids/puma.state"
-#
-#   # Logging
-#
-#   if ENV['LOG_TO_FILES']
-#     puts "log to files #{log_dir}/puma.[stdout|stderr].#{@env}.log"
-#     stdout_redirect "#{log_dir}/puma.stdout.#{@env}.log", "#{log_dir}/puma.stderr.#{@env}.log", true
-#   end
-# end
 # on_worker_boot do
-#   ActiveSupport.on_load(:active_record) do
-#     config = ActiveRecord::Base.configurations[Rails.env] ||
-#         Rails.application.config.database_configuration[Rails.env]
-#     config['pool'] = ENV['RAILS_MAX_THREADS'] || 1
-#     ActiveRecord::Base.establish_connection
-#   end
+#   ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
 # end
 
-
+# Allow puma to be restarted by `rails restart` command.
+plugin :tmp_restart
