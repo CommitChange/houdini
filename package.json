@@ -118,7 +118,7 @@
     "jquery.cookie": "1.4.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
-    "marked": "^0.7.0",
+    "marked": "^4.0.10",
     "mobx": "^4.3.1",
     "mobx-react": "^5.4.3",
     "mobx-react-devtools": "^5.0.1",
