@@ -11,6 +11,8 @@ const format = require('../../common/format')
 const { default: customFields } = require('./components/info-step/customFields')
 const { formatFormData } = require('./components/info-step/utils');
 
+const {default: paymentButton} = require('./components/info-step/payment-button');
+
 const sepaTab = 'sepa'
 const cardTab = 'credit_card'
 
@@ -112,31 +114,39 @@ function view(state) {
 }
 
 function paymentMethodButtons(paymentMethods, state){
+
+  const error$ = state.errors$ || flyd.stream();
+  const loading$ = state.loading$ || flyd.stream();
   return h('section.group'), [
-    paymentButton({error$: state.errors$, buttonText: 'Next'}, cardTab, state)
+    paymentButton({error:  error$(), 
+      buttonText: 'Next', 
+      setSelectedPayment:(label) => state.selectedPayment$(label),
+      loading: loading$(),
+      I18n: I18n,
+    }, cardTab, state)
     ]
 }
 
-function paymentButton(options, label, state){
-  options.error$ = options.error$ || flyd.stream()
-  options.loading$ = options.loading$ || flyd.stream()
+// function paymentButton(options, label, state){
+//   options.error$ = options.error$ || flyd.stream()
+//   options.loading$ = options.loading$ || flyd.stream()
 
-  let btnclass={ 'ff-button--loading': options.loading$() };
-  btnclass[label]=true;
+//   let btnclass={ 'ff-button--loading': options.loading$() };
+//   btnclass[label]=true;
 
-  return h('div.ff-buttonWrapper.u-centered.u-marginTop--10', {
-    class: { 'ff-buttonWrapper--hasError': options.error$() }
-  }, [
-    h('p.ff-button-error', {style: {display: options.error$() ? 'block' : 'none'}} , options.error$())
-  , h('button.ff-button', {
-      props: { type: 'submit', disabled: options.loading$() }
-    , on: { click: e => state.selectedPayment$(label) }
-    , class: btnclass
-    }, [
-      options.loading$() ? (options.loadingText || " Saving...") : (options.buttonText ||  I18n.t('nonprofits.donate.payment.card.submit'))
-    ])
-  ])
-}
+//   return h('div.ff-buttonWrapper.u-centered.u-marginTop--10', {
+//     class: { 'ff-buttonWrapper--hasError': options.error$() }
+//   }, [
+//     h('p.ff-button-error', {style: {display: options.error$() ? 'block' : 'none'}} , options.error$())
+//   , h('button.ff-button', {
+//       props: { type: 'submit', disabled: options.loading$() }
+//     , on: { click: e => state.selectedPayment$(label) }
+//     , class: btnclass
+//     }, [
+//       options.loading$() ? (options.loadingText || " Saving...") : (options.buttonText ||  I18n.t('nonprofits.donate.payment.card.submit'))
+//     ])
+//   ])
+// }
 
 function anonField(state) {
   if (state.hide_anonymous) return '';
