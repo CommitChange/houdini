@@ -202,6 +202,19 @@ class Supporter < ApplicationRecord
     return h
   end
 
+  def forget_supporter
+    name = nil
+    email = nil
+    phone = nil
+    state_code = nil
+    zip_code = nil
+    city = nil
+    address = nil
+    country = nil
+    latitude = nil
+    longitude =nil
+  end
+
   def full_address
     Format::Address.full_address(self.address, self.city, self.state_code)
   end
