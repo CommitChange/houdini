@@ -31,6 +31,12 @@ function init(state) {
 
   const donationAmountCalculator = new DonationAmountCalculator(app.nonprofit.feeStructure);
   const donationSubmitter = new DonationSubmitter()
+  
+  state
+
+  state.donationInfoCollector = state.donationInfoCollector;
+
+  onInit
 
   // Give a donation of value x, this returns x + estimated fees (using fee coverage formula) if fee coverage is selected OR
   // x if fee coverage is not selected

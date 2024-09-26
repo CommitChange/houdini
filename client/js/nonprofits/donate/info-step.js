@@ -27,6 +27,8 @@ function init(donation$, parentState) {
   , hide_anonymous: parentState.hide_anonymous
   }
 
+  state.donationInfoCollector = parentState.donationInfoCollector;
+
   // Save supporter for dedication logic
   state.dedicationData$ = flyd.map(form => serialize(form, {hash: true}), state.submitDedication$)
   const dedicationSuppData$ = flyd.map(
@@ -53,6 +55,11 @@ function init(donation$, parentState) {
   )
   const changedDedication$ = flyd.merge(state.dedicationData$, state.savedDedicatee$)
   state.supporter$ = flyd.merge(flyd.stream({}), state.savedSupp$)
+
+  
+  state.onInsert = () => {
+    state.donationInfoCollector.addEventListener()
+  }
 
   return state
 }
@@ -93,7 +100,11 @@ function view(state) {
   var form = h('form', {
     on: {
       submit: ev => {ev.preventDefault(); state.currentStep$(2); state.submitSupporter$(ev.currentTarget)}
-    }
+    },
+    hook: {
+      insert: () => state.onInsert(),
+      remove: () => state.onRemove(),
+    },
   }, [
   recurringMessage(state)
   , supporterFields.view(state.supporterFields)
