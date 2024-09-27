@@ -2,8 +2,6 @@
 Commitchange::Application.routes.draw do
  
 
-  mount Houdini::API => '/api'
-
   if Rails.env == 'development'
 		get '/button_debug/embedded' => 'button_debug#embedded'
 		get '/button_debug/button' => 'button_debug#button'
@@ -284,5 +282,5 @@ Commitchange::Application.routes.draw do
 	root :to => 'front#index'
 
 
-
+	mount Houdini::API => '/api'
 end
