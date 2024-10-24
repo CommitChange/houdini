@@ -5,6 +5,16 @@ const flyd = require('flyd')
 const request = require('../../../common/request')
 const colors = require('../../../common/colors')
 
+
+/**
+ * @typedef IntegrationsState
+ * @property {() => any} mailchimpKey$
+ */
+
+/**
+ * 
+ * @returns {IntegrationsState}
+ */
 function init() {
   var state = {
     clickSync$: flyd.stream()
@@ -14,7 +24,11 @@ function init() {
   return state
 }
 
-
+/**
+ * 
+ * @param {IntegrationsState} state 
+ * @returns {ReturnType<typeof h>}
+ */
 function view(state) {
   return h('section.integrations.settings-pane.nonprofit-settings', {
     style: {display: 'none'}
