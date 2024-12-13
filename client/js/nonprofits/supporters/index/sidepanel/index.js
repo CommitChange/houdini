@@ -58,8 +58,8 @@ const init = _ => {
   const deleteNoteId$ = flyd.map(d => d.attachment_id, state.deleteNote$)
 
   state.noteAjaxMethod$ = mergeAll([
-    flyd.map(R.always('post'), state.newNote$)
-  , flyd.map(R.always('put'), state.editNote$)
+    flyd.map(() => 'post', state.newNote$)
+  , flyd.map(() => 'put', state.editNote$)
   ])
 
   state.supporterNoteForm = supporterNoteForm.init(state)

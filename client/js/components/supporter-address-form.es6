@@ -1,5 +1,6 @@
 // License: LGPL-3.0-or-later
 const h = require('snabbdom/h')
+const pick = require('lodash/pick');
 const flyd = require('flyd')
 const button = require('ff-core/button')
 const serializeForm = require('form-serialize')
@@ -81,10 +82,7 @@ function view(state) {
       ])
     ])
   , h('input', {props: {type: 'hidden', name: 'id', value: supporter.id}})
-  , button({
-    ...(state.loading$ && { loading$: state.loading$ }),
-    ...(state.error$ && { error$: state.error$ }),
-  })
+  , button(state, pick(['loading$', 'error$'], state))
   ])
 }
 

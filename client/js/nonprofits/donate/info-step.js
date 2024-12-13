@@ -1,6 +1,6 @@
 // License: LGPL-3.0-or-later
 const h = require('snabbdom/h')
-const R = require('ramda')
+const pick = require('lodash/pick');
 const flyd = require('flyd')
 const uuid = require('uuid')
 const supporterFields = require('../../components/supporter-fields')
@@ -31,7 +31,7 @@ function init(donation$, parentState) {
   state.dedicationData$ = flyd.map(form => serialize(form, {hash: true}), state.submitDedication$)
   const dedicationSuppData$ = flyd.map(
     data => ({
-      ...R.pick(['phone', 'email', 'address'], data)
+      ...pick(data, ['phone', 'email', 'address'])
     , name: `${data.first_name||''} ${data.last_name||''}`
     })
   , state.dedicationData$

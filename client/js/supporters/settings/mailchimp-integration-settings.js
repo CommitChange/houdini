@@ -1,5 +1,4 @@
 // License: LGPL-3.0-or-later
-const R = require('ramda')
 const h = require('snabbdom/h')
 const flyd = require('flyd')
 const modal = require('ff-core/modal')
@@ -18,7 +17,7 @@ function init(modalID$) {
   }
 
   const emailLists$ = flyd.map(r => r.body, request({method: 'get', path: pathPrefix + '/email_lists'}).load)
-  state.selectedTagMasterIds$ = flyd.map(R.map(ls => ls.tag_master_id), emailLists$)
+  state.selectedTagMasterIds$ = flyd.map(emailLists$.map(ls => ls.tag_master_id))
 
   const response$ = flyd_flatMap(
     form => request({
@@ -52,7 +51,7 @@ function view(state) {
     h('p', "You're connected on Mailchimp. Choose the tags that you want to keep in sync with your Mailchimp Email Lists.")
   , h('hr')
   , h('div.fields',
-      R.map(
+      (state.tagMasters$() || {data: []}).data.map(
         tm => h('fieldset', [
           h('input', {
             props: {
@@ -65,7 +64,7 @@ function view(state) {
           })
         , h('label', {props: {htmlFor: `mailchimpCheckbox--${tm.id}`}}, tm.name)
         ])
-      , (state.tagMasters$() || {data: []}).data )
+      )
      )
   , h('hr')
   , h('div.u-centered', [
