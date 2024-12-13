@@ -24,7 +24,7 @@ module.exports = function(path, containerId, afterUpdateFunction) {
     return {data: mapIndex((v, i) => ({id: v, order: i}), ids)}
   }
 
-  const updateOrdering = send => flyd.map(R.prop('body'), request({path, method: 'put' , send}).load)
+  const updateOrdering = send => flyd.map(r => r.body, request({path, method: 'put' , send}).load)
 
   const response$ = flatMap(updateOrdering, giftOptions$) 
 

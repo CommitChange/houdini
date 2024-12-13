@@ -23,7 +23,7 @@ const postRequest = ev => {
   }).load
 }
 
-const getReqBody = flyd.map(R.prop('body'))
+const getReqBody = flyd.map(r => r.body)
 
 const response$ = getReqBody(flatMap(postRequest, submit$))
 

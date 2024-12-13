@@ -28,7 +28,7 @@ function init() {
     obj => request({ path, method: 'post' , send: {email_settings: obj} }).load
   , formObj$ )
 
-  state.email_settings$ = flyd.map(R.prop('body'), request({method: 'get', path}).load)
+  state.email_settings$ = flyd.map((r) => r.body, request({ method: 'get', path }).load);
 
   state.loading$ = flyd.mergeAll([
     flyd.map(R.always(true), state.submit$)

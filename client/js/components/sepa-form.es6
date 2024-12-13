@@ -42,7 +42,7 @@ const init = (state) => {
 
   const response$ = flyd.flatMap(saveTransferData, state.sepa$)
   state.reponseOk$ = flyd.filter(response => !response.error, response$)
-  state.error$ = flyd.map(R.prop('error'), flyd.filter(response => response.error, state.reponseOk$))
+  state.error$ = flyd.map(r => r.error, flyd.filter(response => response.error, state.reponseOk$))
   state.saved$ = flyd.filter(response => !response.error, state.reponseOk$)
 
   state.loading$ = scanMerge([
@@ -56,7 +56,7 @@ const init = (state) => {
 
 // Save transfer details to our own servers, and return a response stream
 function saveTransferData(params){
-  return flyd.map(R.prop('body'), request({
+  return flyd.map(r => r.body, request({
       method: 'post'
     , path: '/sepa'
     , send: params

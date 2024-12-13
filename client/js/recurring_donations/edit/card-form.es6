@@ -77,11 +77,11 @@ const init = (state) => {
     return saveCard(state.payload$(), state.path$(), resp.stripe_resp, resp.recaptcha_token)
   }, recaptchaKeyOk$)
 
-  const recaptchaError$ = flyd.map(R.prop('message'), flyd.filter(resp => {
+  const recaptchaError$ = flyd.map(r => r.message, flyd.filter(resp => {
     return resp.message
   }, recaptchaKey$))
 
-  const ccError$ = flyd.map(R.prop('error'), flyd.filter(resp => resp.error, state.resp$))
+  const ccError$ = flyd.map(r => r.error, flyd.filter(resp => resp.error, state.resp$))
   state.saved$ = flyd.filter(resp => !resp.error, state.resp$)
   state.error$ = flyd.merge(stripeError$, flyd.merge(ccError$, recaptchaError$))
 
@@ -109,7 +109,7 @@ const saveCard = (send, path, resp, recaptcha_token) => {
     , stripe_card_token: resp.token.id
     , stripe_card_id: resp.token.card.id
   })
-  return flyd.map(R.prop('body'), request({ path, send, method: 'post' }).load)
+  return flyd.map(r => r.body, request({ path, send, method: 'post' }).load)
 }
 
 const mount = state => {

@@ -31,7 +31,7 @@ function init(state) {
   state.supporter$ = flyd.merge(state.updated$, flyd.stream(state.supporter))
 
   state.response$ = flyd.flatMap(
-    supporter => flyd.map(R.prop('body'), request({
+    supporter => flyd.map(r => r.body, request({
       method: 'put'
     , path: state.path || `/nonprofits/${app.nonprofit_id}/supporters`
     , send: R.merge({supporter}, state.payload || {})

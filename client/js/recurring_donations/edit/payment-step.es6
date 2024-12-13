@@ -1,6 +1,5 @@
 // License: LGPL-3.0-or-later
 const h = require('snabbdom/h')
-const R = require('ramda')
 const flyd = require('flyd')
 flyd.lift = require('flyd/module/lift')
 flyd.flatMap = require('flyd/module/flatmap')
@@ -9,8 +8,6 @@ const cardForm = require('./card-form.es6')
 const format = require('../../common/format')
 const progressBar = require('../../components/progress-bar')
 const {CommitchangeFeeCoverageCalculator} = require('../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator')
-const {Money} = require('../../../../javascripts/src/lib/money')
-const {centsToDollars} = require('../../common/format')
 
 function init(params$, donation$) {
     var state = { params$: params$, donation$: donation$ }
@@ -59,7 +56,7 @@ function init(params$, donation$) {
     hide_cover_fees_option$: hideCoverFeesOption$})
     state.supporter$ = state.params$().supporter
     // // Set the card ID into the donation object when it is saved
-    const cardToken$ = flyd.map(R.prop('token'), state.cardForm.saved$)
+    const cardToken$ = flyd.map(s => s.token, state.cardForm.saved$)
 
     state.updateCardAndAmount$ = flyd.flatMap(
         resp => {
@@ -75,7 +72,7 @@ function init(params$, donation$) {
 
 
     state.error$ = flyd.mergeAll([
-        , flyd.map(R.always(undefined), state.cardForm.form.submit$)
+        , flyd.map(() => undefined, state.cardForm.form.submit$)
         , state.cardForm.error$
         , flyd.map(resp => "An unknown error occurred. Please try again later", flyd.filter(resp =>
         {
@@ -91,17 +88,17 @@ function init(params$, donation$) {
 
     // Control progress bar
     state.progress$ = flyd.scanMerge([
-        [state.cardForm.form.validSubmit$, R.always({status: 'Checking card...', percentage: 20, hidden:false})]
-        , [state.cardForm.saved$, R.always({status: 'Finalizing...', percentage: 100, hidden:false})]
-        , [state.cardForm.error$, R.always({hidden: true, percentage: 0})] // Hide when an error shows up
-        , [flyd.filter(R.identity,state.error$), R.always({hidden: true})] // Hide when an error shows up
+        [state.cardForm.form.validSubmit$, () => ({status: 'Checking card...', percentage: 20, hidden:false})]
+        , [state.cardForm.saved$, () => ({status: 'Finalizing...', percentage: 100, hidden:false})]
+        , [state.cardForm.error$, () => ({hidden: true, percentage: 0})] // Hide when an error shows up
+        , [flyd.filter(i => i, state.error$), () => ({ hidden: true }) ] // Hide when an error shows up
     ], {hidden: true})
 
     state.loading$ = flyd.mergeAll([
-        flyd.map(R.always(true), state.cardForm.form.validSubmit$)
-        , flyd.map(R.always(false), state.cardForm.error$)
-        , flyd.map(R.always(false), state.error$)
-        , flyd.map(R.always(false), state.success$)
+        flyd.map(() => true, state.cardForm.form.validSubmit$)
+        , flyd.map(() => false, state.cardForm.error$)
+        , flyd.map(() => false, state.error$)
+        , flyd.map(() => false, state.success$)
     ])
 
 
@@ -131,7 +128,7 @@ function view(state) {
       ? h('p.u-centered', `In ${dedic.dedication_type || 'honor'} of ${dedic.first_name} ${dedic.last_name}`)
       : ''
   , h('div.u-marginBottom--10', [ 
-      cardForm.view(R.merge(state.cardForm, {error$: state.error$, hideButton: state.loading$()}))
+      cardForm.view({error$: state.error$, hideButton: state.loading$(), ...state.cardForm})
     , progressBar(state.progress$())
     ])
   ])

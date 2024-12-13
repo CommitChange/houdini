@@ -3,10 +3,8 @@
 const flyd = require('flyd')
 const mergeAll = require('flyd/module/mergeall')
 const flatMap = require('flyd/module/flatmap')
-const lift = require('flyd/module/lift')
 const snabbdom = require('snabbdom')
 const h = require('snabbdom/h')
-const R = require('ramda')
 const render = require('ff-core/render')
 const modal = require('ff-core/modal')
 const notification = require('ff-core/notification')
@@ -80,15 +78,15 @@ state.changeAmountWizard = changeAmountWizard.init( {nonprofit:app.pageLoadData.
 
   // Stream of notification messages
   const message$ = flyd.mergeAll([
-    flyd.map(R.always('Paydate successfully updated'), updatePaydate$)
-  , flyd.map(R.always('Address successfully updated'), state.addressForm.response$)
-  , flyd.map(R.always('Card successfully updated'), state.updateCardID$)
+    flyd.map(() => 'Paydate successfully updated', updatePaydate$)
+  , flyd.map(() => 'Address successfully updated', state.addressForm.response$)
+  , flyd.map(() => 'Card successfully updated', state.updateCardID$)
   ])
   state.notification = notification.init({message$})
 
   // A bunch of streams that cause the modal to close:
   state.modalID$ = flyd.map(
-    R.always(null)
+    () => null
   , mergeAll([
       updatePaydate$
     , state.updateCardID$
@@ -99,10 +97,10 @@ state.changeAmountWizard = changeAmountWizard.init( {nonprofit:app.pageLoadData.
 
   // Stream of vals that cause loading animation to show/hide
   state.loading$ = mergeAll([
-    flyd.map(R.always(true), state.submitPaydate$)
-  , flyd.map(R.always(true), state.confirmCancel$)
-  , flyd.map(R.always(false), updatePaydate$)
-  , flyd.map(R.always(false), cancellation$)
+    flyd.map(() => true, state.submitPaydate$)
+  , flyd.map(() => true, state.confirmCancel$)
+  , flyd.map(() => false, updatePaydate$)
+  , flyd.map(() => false, cancellation$)
   ])
 
   // Simply replace old recurring donations with new ones based on ajax responses
@@ -199,9 +197,9 @@ function view(state) {
         h('td.strong', 'Address')
       , h('td', [
           h('small', [
-            [supporter.address, supporter.city].filter(R.identity).join(', ')
+            [supporter.address, supporter.city].join(', ')
           , h('br')
-          , [supporter.state_code, supporter.zip_code, supporter.country].filter(R.identity).join(', ')
+          , [supporter.state_code, supporter.zip_code, supporter.country].join(', ')
         ])
       ])
     ])
@@ -363,7 +361,10 @@ const paydateForm = state =>
       }
     })
   , h('br')
-  , button(R.pick(['loading$', 'error$'], state))
+  , button({
+    ...(state.loading$ && { loading$: state.loading$ }),
+    ...(state.error$ && { error$: state.error$ }),
+  })
   ])
 
 

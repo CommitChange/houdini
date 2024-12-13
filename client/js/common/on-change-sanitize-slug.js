@@ -6,6 +6,10 @@ const sanitize = require('./sanitize-slug')
 
 var inputs = document.querySelectorAll('.js-sanitizeSlug')
 
-R.map(
-  inp => inp.addEventListener('change', ev => ev.currentTarget.value = sanitize(ev.currentTarget.value || ev.currentTarget.getAttribute('data-slug-default')))
-, inputs )
+inputs.map((inp) =>
+  inp.addEventListener(
+    'change',
+    (ev) =>
+      (ev.currentTarget.value = sanitize(ev.currentTarget.value || ev.currentTarget.getAttribute('data-slug-default')))
+  )
+);

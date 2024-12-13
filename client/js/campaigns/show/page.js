@@ -48,7 +48,7 @@ function init() {
   console.error(window.navigator.userAgent)
   state.giftOptions = giftOptions.init(flyd.stream(), state)
 
-  const metricsResp$ = flyd.map(R.prop('body'), request({
+  const metricsResp$ = flyd.map(r => r.body, request({
     method: 'get'
   , path: `/nonprofits/${app.nonprofit_id}/campaigns/${app.campaign.id}/metrics`
   }).load)

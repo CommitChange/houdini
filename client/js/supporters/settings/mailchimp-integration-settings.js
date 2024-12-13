@@ -14,10 +14,10 @@ function init(modalID$) {
   const pathPrefix = `/nonprofits/${app.nonprofit_id}`
   var state = {
     submitForm$: flyd.stream()
-  , tagMasters$: flyd.map(R.prop('body'), request({method: 'get', path: pathPrefix + '/tag_masters'}).load)
+  , tagMasters$: flyd.map(r => r.body, request({method: 'get', path: pathPrefix + '/tag_masters'}).load)
   }
 
-  const emailLists$ = flyd.map(R.prop('body'), request({method: 'get', path: pathPrefix + '/email_lists'}).load)
+  const emailLists$ = flyd.map(r => r.body, request({method: 'get', path: pathPrefix + '/email_lists'}).load)
   state.selectedTagMasterIds$ = flyd.map(R.map(ls => ls.tag_master_id), emailLists$)
 
   const response$ = flyd_flatMap(

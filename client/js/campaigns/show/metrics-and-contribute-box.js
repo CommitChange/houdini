@@ -1,5 +1,4 @@
 // License: LGPL-3.0-or-later
-const R = require('ramda')
 const flyd = require('flyd')
 const h = require('snabbdom/h')
 const format = require('../../common/format')
@@ -103,10 +102,16 @@ const progressBar = state => {
     current_status = (state.metrics$().starting_point || 0) + state.metrics$().total_raised;
   }
 
+  const clamp = (low, high, num) => {
+    if (num < low) return low
+    if (num > high) return high
+    return num
+  }
+
   return h('div.progressBar--medium.u-marginBottom--15', [
     h('div.progressBar--medium-fill', {
       style: {
-        width: R.clamp(1,100, format.percent(
+        width: clamp(1,100, format.percent(
           state.metrics$().goal_amount
         , current_status
         ) + '%')
