@@ -197,7 +197,7 @@ function view(state) {
         h('td.strong', 'Address')
       , h('td', [
           h('small', [
-            [supporter.address, supporter.city].join(', ')
+            [supporter.address, supporter.city].filter(i => i).join(', ')
           , h('br')
           , [supporter.state_code, supporter.zip_code, supporter.country].join(', ')
         ])
