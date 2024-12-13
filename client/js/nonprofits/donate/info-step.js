@@ -30,10 +30,10 @@ function init(donation$, parentState) {
   // Save supporter for dedication logic
   state.dedicationData$ = flyd.map(form => serialize(form, {hash: true}), state.submitDedication$)
   const dedicationSuppData$ = flyd.map(
-    data => R.merge(
-      R.pick(['phone', 'email', 'address'], data)
-    , {name: `${data.first_name||''} ${data.last_name||''}`}
-    )
+    data => ({
+      ...R.pick(['phone', 'email', 'address'], data)
+    , name: `${data.first_name||''} ${data.last_name||''}`
+    })
   , state.dedicationData$
   )
   state.showDedicationForm$ = flyd.map(()=> false, state.submitDedication$)
@@ -64,7 +64,7 @@ const postSupporter = supporter =>
   , request({
       method: 'post'
     , path: `/nonprofits/${app.nonprofit_id}/supporters`
-    , send: {supporter: R.merge(supporter, {locale: I18n.locale})}
+    , send: {supporter: {...supporter, locale: I18n.locale } }
     }).load
   )
 

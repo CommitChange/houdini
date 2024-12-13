@@ -1,9 +1,7 @@
 // License: LGPL-3.0-or-later
 // npm
-const snabbdom = require('snabbdom')
 const flyd = require('flyd')
 const R = require('ramda')
-const render = require('ff-core/render')
 const notification = require('ff-core/notification')
 const serializeForm = require('form-serialize')
 flyd.flatMap  = require('flyd/module/flatmap')
@@ -18,7 +16,7 @@ function init() {
 
   // formSerialize will set checked boxes to "on" and unchecked boxes to "". We want it to be true/false instead
   const formObj$ = R.compose(
-    flyd.map(obj => R.map(val => val === 'on' ? true : false, obj))
+    flyd.map(obj => obj.map(val => val === 'on' ? true : false))
   , flyd.map(ev => serializeForm(ev.currentTarget, {hash: true, empty: true}))
   )(state.submit$)
 
@@ -31,8 +29,8 @@ function init() {
   state.email_settings$ = flyd.map((r) => r.body, request({ method: 'get', path }).load);
 
   state.loading$ = flyd.mergeAll([
-    flyd.map(R.always(true), state.submit$)
-  , flyd.map(R.always(false), updateResp$)
+    flyd.map(() => true, state.submit$)
+  , flyd.map(() => false, updateResp$)
   ])
 
   const notify$ = flyd.map(()=> 'Email notification settings updated.', updateResp$)

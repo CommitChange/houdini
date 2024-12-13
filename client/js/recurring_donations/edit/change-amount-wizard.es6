@@ -3,7 +3,6 @@ const flyd = require('flyd')
 const R = require('ramda')
 const h = require('snabbdom/h')
 const url = require('url')
-const render = require('ff-core/render')
 const wizard = require('ff-core/wizard')
 const scanMerge = require('flyd/module/scanmerge')
 flyd.mergeAll = require('flyd/module/mergeall')
@@ -55,7 +54,7 @@ const init = params => {
 
     const currentStep$ = flyd.mergeAll([
         state.amountStep.currentStep$
-        , flyd.map(R.always(0), state.params$) // if the params ever change, jump back to step one
+        , flyd.map(() => 0, state.params$) // if the params ever change, jump back to step one
         , flyd.stream(0)
     ])
     state.wizard = wizard.init({currentStep$, isCompleted$: state.paymentStep.success$})
@@ -75,9 +74,10 @@ const init = params => {
 
 const setDonationFromParams = (don, params) => {
     if(!params.single_amount || isNaN(format.dollarsToCents(params.single_amount))) delete params.single_amount
-    return R.merge({
-        amount: params.single_amount ? format.dollarsToCents(params.single_amount) : 0
-    }, don)
+    return {
+        amount: params.single_amount ? format.dollarsToCents(params.single_amount) : 0,
+        ...don
+    }
 }
 
 
@@ -118,14 +118,15 @@ const headerDesignation = state => {
 
 const wizardWrapper = state => {
     return h('div.wizard-steps.donation-steps', [
-        wizard.view(R.merge(state.wizard, {
+        wizard.view({
+            ...state.wizard,
             steps: [
                 {name: 'Amount',   body: amountStep.view(state.amountStep)}
                 , {name: 'Confirm Card',     body: paymentStep.view(state.paymentStep)}
 
             ]
             , followup: followupStep.view(state)
-        }))
+        })
     ])
 }
 
