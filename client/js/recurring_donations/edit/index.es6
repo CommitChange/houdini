@@ -199,7 +199,7 @@ function view(state) {
           h('small', [
             [supporter.address, supporter.city].filter(i => i).join(', ')
           , h('br')
-          , [supporter.state_code, supporter.zip_code, supporter.country].join(', ')
+          , [supporter.state_code, supporter.zip_code, supporter.country].filter(i => i).join(', ')
         ])
       ])
     ])
