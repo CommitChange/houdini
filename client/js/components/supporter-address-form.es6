@@ -1,6 +1,5 @@
 // License: LGPL-3.0-or-later
 const h = require('snabbdom/h')
-const R = require('ramda')
 const flyd = require('flyd')
 const button = require('ff-core/button')
 const serializeForm = require('form-serialize')
@@ -15,11 +14,12 @@ const request = require('../common/request')
 // pass in some default data for your update payload
 function init(state) {
   state = state || {}
-  state = R.merge({
+  state = {
     submit$: flyd.stream()
   , supporter$: flyd.stream(state.supporter || {})
   , error$: flyd.stream()
-  }, state)
+  , ...state
+  }
 
   state.updated$ = flyd.map(
     ev => {
@@ -34,13 +34,13 @@ function init(state) {
     supporter => flyd.map(r => r.body, request({
       method: 'put'
     , path: state.path || `/nonprofits/${app.nonprofit_id}/supporters`
-    , send: R.merge({supporter}, state.payload || {})
+    , send: {supporter, ...(state.payload || {})}
     }).load)
   , state.updated$ )
 
   state.loading$ = flyd.mergeAll([
-    flyd.map(R.always(true), state.submit$)
-  , flyd.map(R.always(false), state.response$)
+    flyd.map(() => true, state.submit$)
+  , flyd.map(() => false, state.response$)
   ])
 
   return state
@@ -81,7 +81,10 @@ function view(state) {
       ])
     ])
   , h('input', {props: {type: 'hidden', name: 'id', value: supporter.id}})
-  , button(R.pick(['loading$', 'error$'], state))
+  , button({
+    ...(state.loading$ && { loading$: state.loading$ }),
+    ...(state.error$ && { error$: state.error$ }),
+  })
   ])
 }
 

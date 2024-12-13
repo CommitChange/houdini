@@ -1,14 +1,12 @@
 // License: LGPL-3.0-or-later
 const flyd = require('flyd')
 const h = require('snabbdom/h')
-const R = require('ramda')
 const donateWiz = require('../../nonprofits/donate/wizard')
 const render = require('ff-core/render')
 const snabbdom = require('snabbdom')
 const modal = require('ff-core/modal')
 flyd.mergeAll = require('flyd/module/mergeall')
 flyd.scanMerge = require('flyd/module/scanmerge')
-const format = require('../../common/format')
 const giftOptions = require('./gift-option-list')
 const chooseGiftOptionsModal = require('./choose-gift-options-modal')
 const metricsAndContributeBox = require('./metrics-and-contribute-box')
@@ -34,7 +32,6 @@ if(app.current_campaign_editor) {
 	require('./admin')
 	appl.def('current_campaign_editor', true)
 	require('../../gift_options/admin')
-	var create_info_card = require('../../supporters/info-card.es6')
 }
 
 // Initialize the state for the top-level campaign component
@@ -65,11 +62,10 @@ function init() {
   state.activities = activities.init('campaign', `/nonprofits/${app.nonprofit_id}/campaigns/${app.campaign_id}/activities`)
 
  
-  const contributeModalType$ = R.compose(
-    flyd.map(_ => 
-      state.timeRemaining$() && state.giftOptions.giftOptions$().length 
-      ? 'gifts' : 'regular')
-  )(state.metrics.clickContribute$)
+  const contributeModalType$ = flyd.map(
+    () => (state.timeRemaining$() && state.giftOptions.giftOptions$().length ? 'gifts' : 'regular'),
+    state.metrics.clickContribute$
+  );
 
   const clickContributeGifts$ = flyd.filter(x => x === 'gifts', contributeModalType$)
   
@@ -86,8 +82,9 @@ function init() {
   state.selectedModalGift$ = flyd.stream({})
 
   state.modalID$ = flyd.merge(
-      flyd.map(R.always('chooseGiftOptionsModal'), clickContributeGifts$)
-    , flyd.map(R.always('donationModal'), startWiz$))
+    flyd.map(() => 'chooseGiftOptionsModal', clickContributeGifts$),
+    flyd.map(() => 'donationModal', startWiz$)
+  );
 
   // Stream of which gift option you have selected
   const giftOption$ = flyd.map(setGiftParams, state.giftOptions.clickOption$)
@@ -104,17 +101,19 @@ function init() {
   return state
 }
 
-const resetDonateForm = (params, _) => R.merge(params, {
-  single_amount: undefined
-, gift_option: undefined
-, type: undefined
-})
+const resetDonateForm = (params, _) => ({
+  ...params,
+  single_amount: undefined,
+  gift_option: undefined,
+  type: undefined,
+});
 
-const setGiftOption = (params, gift) => R.merge(params, {
-  single_amount: gift.amount / 100 
-, gift_option: gift
-, type: gift.type
-})
+const setGiftOption = (params, gift) => ({
+  ...params,
+  single_amount: gift.amount / 100,
+  gift_option: gift,
+  type: gift.type,
+});
 
 
 // Set the donate wizard parameters using data from a gift option
