@@ -14,8 +14,10 @@ const setDisplayGift = (state, gifts) => ev => {
 const chooseGift = (state, gifts) =>
   h('div.pastelBox--grey.u-padding--10', [
     h('select.u-margin--0', {on: {change: setDisplayGift(state, gifts)}}
-    , h('option', 'Choose a gift option')
-    , ...gifts.map(giftOption)
+    , [ 
+      h('option', 'Choose a gift option')
+      , ...gifts.map(giftOption)
+    ]
   )
   , h('div.sideGifts', 
       state.selectedModalGift$() && state.selectedModalGift$().id 
