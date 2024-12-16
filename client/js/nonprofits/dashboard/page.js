@@ -36,6 +36,7 @@ todos(function(data, url) {
 
 // the only ff component so far on this page is events listings
 const h = require('snabbdom/h')
+const flyd = require('flyd')
 const render = require('ff-core/render')
 
 const request = require('../../common/request')
