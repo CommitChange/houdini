@@ -8,6 +8,8 @@ const cardForm = require('./card-form.es6')
 const format = require('../../common/format')
 const progressBar = require('../../components/progress-bar')
 const {CommitchangeFeeCoverageCalculator} = require('../../../../javascripts/src/lib/payments/commitchange_fee_coverage_calculator')
+const {Money} = require('../../../../javascripts/src/lib/money')
+const {centsToDollars} = require('../../common/format')
 
 function init(params$, donation$) {
     var state = { params$: params$, donation$: donation$ }
