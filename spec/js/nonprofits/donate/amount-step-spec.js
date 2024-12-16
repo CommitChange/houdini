@@ -42,7 +42,7 @@ suite("donate wiz / amount step")
 test("shows a designation dropdown if the multiple_designations param is set", ()=> {
   let streams = init({}, flyd.stream({multiple_designations: ['a','b']}))
   let options = allText(streams.dom$().querySelectorAll('.donate-designationDropdown option'))
-  assert.deepEqual(options, [...defaultDesigOptions, ...['a', 'b']])
+  assert.deepEqual(options, [...defaultDesigOptions, 'a', 'b'])
 })
 
 test('sets no designation with a dropdown on the default value', () => {
