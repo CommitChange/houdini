@@ -27,7 +27,7 @@ function query() {
  * @returns 
  */
 function cumulative(data) {
-  var moments = dateRange(data[0].date, data.slice(-1).date, 'days')
+  var moments = dateRange(data[0].date, data[data.length - 1].date, 'days')
   var dateStrings = moments.map((m) => m.format('YYYY-MM-DD'))
 
   var proto = {
@@ -48,7 +48,7 @@ function cumulative(data) {
   }, dateDictionary)
   
   return Object.values(dateDictionary).reduce((a, b) => {
-    var last = a.slice(-1)
+    var last = a[a.length - 1];
     b.offsite_cents    += last.offsite_cents
     b.onetime_cents    += last.onetime_cents
     b.recurring_cents  += last.recurring_cents
