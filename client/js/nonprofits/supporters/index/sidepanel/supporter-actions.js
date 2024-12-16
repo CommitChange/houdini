@@ -1,4 +1,5 @@
 // License: LGPL-3.0-or-later
+const flatMap = require('flyd/module/flatmap')
 const flyd = require('flyd')
 const h = require('snabbdom/h')
 flyd.mergeAll = require('flyd/module/mergeall')

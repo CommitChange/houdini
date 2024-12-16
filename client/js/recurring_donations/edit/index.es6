@@ -4,6 +4,7 @@ const flyd = require('flyd')
 const pick = require('lodash/pick');
 const mergeAll = require('flyd/module/mergeall')
 const flatMap = require('flyd/module/flatmap')
+const lift = require('flyd/module/lift')
 const snabbdom = require('snabbdom')
 const h = require('snabbdom/h')
 const render = require('ff-core/render')
@@ -347,23 +348,22 @@ const updateAddressModal = state =>
   , body: supporterAddressForm.view(state.addressForm)
   })
 
-
-const paydateForm = (state) =>
-  h('form', { on: { submit: state.submitPaydate$ } }, [
-    h('p', 'Enter a day of the month (between 1 and 28) when you want to be charged for this donation.'),
-    h('p', 'This will fix your donations to that date each month for all future payments.'),
-    h('input.input--small', {
+const paydateForm = state =>
+  h('form', { on: {submit: state.submitPaydate$} }, [
+    h('p', 'Enter a day of the month (between 1 and 28) when you want to be charged for this donation.')
+  , h('p', 'This will fix your donations to that date each month for all future payments.')
+  , h('input.input--small', {
       props: {
-        type: 'number',
-        max: 28,
-        min: 1,
-        name: 'paydate',
-        value: state.recDon$().paydate || 1,
-      },
-    }),
-    h('br'),
-    button(pick(state, ['loading$', 'error$'])),
-  ]);
+        type: 'number'
+      , max: 28
+      , min: 1
+      , name: 'paydate'
+      , value: state.recDon$().paydate || 1
+      }
+    })
+  , h('br')
+  , button(pick(state, ['loading$', 'error$'])),
+  ])
 
 
 const confirmCancelBtn = state =>

@@ -7,6 +7,7 @@ const snabbdom = require('snabbdom')
 const modal = require('ff-core/modal')
 flyd.mergeAll = require('flyd/module/mergeall')
 flyd.scanMerge = require('flyd/module/scanmerge')
+const format = require('../../common/format')
 const giftOptions = require('./gift-option-list')
 const chooseGiftOptionsModal = require('./choose-gift-options-modal')
 const metricsAndContributeBox = require('./metrics-and-contribute-box')
@@ -32,6 +33,7 @@ if(app.current_campaign_editor) {
 	require('./admin')
 	appl.def('current_campaign_editor', true)
 	require('../../gift_options/admin')
+  var create_info_card = require('../../supporters/info-card.es6');
 }
 
 // Initialize the state for the top-level campaign component

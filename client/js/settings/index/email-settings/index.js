@@ -1,7 +1,9 @@
 // License: LGPL-3.0-or-later
 // npm
+const snabbdom = require('snabbdom')
 const flyd = require('flyd')
 const R = require('ramda')
+const render = require('ff-core/render')
 const notification = require('ff-core/notification')
 const serializeForm = require('form-serialize')
 flyd.flatMap  = require('flyd/module/flatmap')
