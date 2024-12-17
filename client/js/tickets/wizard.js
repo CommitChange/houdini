@@ -1,8 +1,8 @@
 // License: LGPL-3.0-or-later
 require('../cards/create')
-var request = require('../common/super-agent-promise')
-var create_card = require('../cards/create')
-var format_err = require('../common/format_response_error')
+const request = require('../common/super-agent-promise')
+const create_card = require('../cards/create')
+const format_err = require('../common/format_response_error')
 const {nonprofitEventTicketsPath} = require('../../../app/javascript/routes')
 const path = nonprofitEventTicketsPath(app.nonprofit_id, appl.event_id)
 const R = require('ramda')
@@ -127,7 +127,6 @@ appl.def('ticket_wiz', {
   set_tickets: function (form_obj) {
     hide_err()
     var tickets = []
-    var total_amount = 0
     var total_quantity = 0
     for (var key in form_obj.tickets) {
       var ticket = form_obj.tickets[key]
