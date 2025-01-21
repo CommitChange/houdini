@@ -26,6 +26,10 @@ RUN apt-get update -qq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+# configuring Docker to prevent display issues 
+ENV DISPLAY=:99
+CMD ["Xvfb", ":99", "-screen", "0", "1280x720x16", "&", "rails", "server", "-b", "0.0.0.0"]
+
 ARG RAILS_ROOT=/app/
 
 RUN mkdir ${RAILS_ROOT}
@@ -76,6 +80,8 @@ ENV IS_DOCKER=true
 ENV RAILS_LOG_TO_STDOUT true
 ENV RAILS_SERVE_STATIC_FILES true
 ENV PORT 3000
+ENV LAUNCHY_DEBUG=true 
+# When running rspec in docker container, launchy printed error b/c it could not open changes inside the browser.
 ARG RAILS_ROOT=/app/
 
 WORKDIR $RAILS_ROOT

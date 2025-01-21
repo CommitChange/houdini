@@ -344,6 +344,39 @@ describe QueryPayments do
           expect(result[:data].count).to eq 1
         end
       end
+      
+      # context 'when filtering by campaign AND adding a sort' do
+      #   #create a fake world
+      #   let(:input) {{
+      #     amount: 100,
+      #     nonprofit_id: nonprofit.id,
+      #     supporter_id: supporter.id,
+      #     token: source_tokens[4].token,
+      #     date: (Time.now - 1.day).to_s,
+      #     comment: 'This is a test',
+      #     dedication: 'dedication',
+      #     designation: 'designation'
+      #   }}
+
+      #   it 'returns result filtered by campaign AND a sort' do
+      #     InsertDonation.with_stripe(input)
+      #     donation_result_yesterday 
+      #     donation_result_tomorrow
+      #     result = QueryPayments::full_search(nonprofit.id, { search: Campaign.id}) # a campaign only has 1 nonprofit
+      #     expect(result[:data].count).to eq 1
+      #   end 
+
+      #   # it 'does not return results filtered by campaign AND a sort'
+      #     #when would it not return results filtered by campaign? 
+      #     #should return 1? how many?
+
+      #     #InsertDonation.with_stripe(input)
+      #     #donation_result_tomorrow
+      #     #donation_result_today
+      #     #result = QueryPayments::full_search(nonprofit.id , {search: Campaign.id})
+      #     #expect(result[:data].count).to eq 0 
+      #  #end 
+      # end 
 
       context 'when the search includes a number that is not a payment ID' do
         let(:input) {{
