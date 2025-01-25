@@ -126,6 +126,8 @@ gem 'nokogiri', '~> 1.13.11', require: false, git:"https://github.com/commitchan
 
 group :test do
   gem 'webmock'
+  gem 'capybara'
+  gem 'cuprite'
 end
 
 # Gems used for asset compilation
