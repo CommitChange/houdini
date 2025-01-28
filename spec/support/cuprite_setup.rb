@@ -44,7 +44,7 @@ if remote_chrome_url&.match?(/host.docker.internal/)
 # load Cuprite Capybara integration
 require "capybara/cuprite"
 
-# Register our drier to be able to use it later 
+# Register our driver to be able to use it later 
 # NOTE: The name :cuprite is already registered by Rails.
 # See https://github.com/rubycdp/cuprite/issues/180
 
