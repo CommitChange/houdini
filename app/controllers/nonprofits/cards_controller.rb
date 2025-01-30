@@ -17,7 +17,7 @@ module Nonprofits
           requires(:card).nested do
             requires(:name, :stripe_card_token, :stripe_card_id).as_string
             requires(:holder_id).as_int
-            requires(:holder_type).one_of('Supporter', 'Nonprofit')
+            requires(:holder_type).one_of('Supporter')
           end
         end.when_valid do |d|
           InsertCard.with_stripe(d[:card])
