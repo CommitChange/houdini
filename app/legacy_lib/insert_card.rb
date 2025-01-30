@@ -6,7 +6,7 @@ module InsertCard
   # If a stripe_customer_id is present, then update that customer's primary source; otherwise create a new customer
   # @param [ActiveSupport::HashWithIndifferentAccess] card_data card data
   # @option card_data [Integer] holder_id the primary key of the card's holder
-  # @option card_data [String] holder_type the type of the card holder. Must be 'Nonprofit' or 'Supporter'
+  # @option card_data [String] holder_type the type of the card holder. Must be 'Supporter'
 
   # @option card_data [String] stripe_card_token the card token from stripe
   # @option card_data [String] stripe_card_id the card id from stripe
@@ -21,7 +21,7 @@ module InsertCard
 
     begin
       ParamValidation.new(card_data.merge({event_id: event_id}), {
-          holder_type: {required: true, included_in: ['Nonprofit', 'Supporter']},
+          holder_type: {required: true, included_in: [ 'Supporter']},
           holder_id: {required: true},
           stripe_card_id: {not_blank: true, required: true},
           stripe_card_token: {not_blank: true, required: true},
@@ -37,17 +37,15 @@ module InsertCard
     # validate that the user is with the correct nonprofit
 
     card_data = card_data.slice(:holder_type, :holder_id, :stripe_card_id, :stripe_card_token, :name )
-    holder_types = {'Nonprofit' => :nonprofit, 'Supporter' => :supporter}
+    holder_types = { 'Supporter' => :supporter}
     holder_type = holder_types[card_data[:holder_type]]
     holder = nil
     begin
-      if holder_type == :nonprofit
-        holder = Nonprofit.select("id, email").includes(:cards).find(card_data[:holder_id])
-      elsif holder_type == :supporter
+      if holder_type == :supporter
         holder = Supporter.select("id, email, nonprofit_id").includes(:cards, :nonprofit).find(card_data[:holder_id])
       end
     rescue ActiveRecord::RecordNotFound
-      return {json: {error: "Sorry, you need to provide a nonprofit or supporter"}, status: :unprocessable_entity}
+      return {json: {error: "Sorry, you need to provide a supporter"}, status: :unprocessable_entity}
     end
 
     begin
@@ -93,10 +91,7 @@ module InsertCard
     begin
       Card.transaction {
 
-        if (holder_type == :nonprofit)
-          # @type [Nonprofit] holder
-          card = holder.create_active_card(card_data)
-        elsif (holder_type == :supporter)
+        if (holder_type == :supporter)
           # @type [Supporter] holder
           card = holder.cards.create(card_data)
           params = {}
