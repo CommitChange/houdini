@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20240209011057) do
+ActiveRecord::Schema.define(version: 20250130194756) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,29 +60,6 @@ ActiveRecord::Schema.define(version: 20240209011057) do
     t.string   "stripe_bank_account_id",    limit: 255
     t.boolean  "deleted",                               default: false
   end
-
-  create_table "billing_plans", force: :cascade do |t|
-    t.string   "name",           limit: 255
-    t.string   "stripe_plan_id", limit: 255
-    t.integer  "amount"
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
-    t.string   "interval",       limit: 255
-    t.decimal  "percentage_fee",             default: 0.0, null: false
-    t.integer  "flat_fee",                   default: 0,   null: false
-  end
-
-  create_table "billing_subscriptions", force: :cascade do |t|
-    t.integer  "nonprofit_id"
-    t.integer  "billing_plan_id"
-    t.string   "stripe_subscription_id", limit: 255
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
-    t.string   "status",                 limit: 255
-  end
-
-  add_index "billing_subscriptions", ["nonprofit_id", "billing_plan_id"], name: "index_billing_subscriptions_on_nonprofit_id_and_billing_plan_id", using: :btree
-  add_index "billing_subscriptions", ["nonprofit_id"], name: "index_billing_subscriptions_on_nonprofit_id", using: :btree
 
   create_table "campaign_gift_options", force: :cascade do |t|
     t.integer  "amount_one_time"
@@ -1455,10 +1432,10 @@ ActiveRecord::Schema.define(version: 20240209011057) do
   create_trigger :update_donations_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_donations_fts BEFORE INSERT OR UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION update_fts_on_donations()
   SQL
-  create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
-      CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
-  SQL
   create_trigger :update_supporters_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
+  SQL
+  create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
+      CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
   SQL
 end
