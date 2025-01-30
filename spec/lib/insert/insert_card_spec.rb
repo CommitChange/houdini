@@ -278,6 +278,7 @@ describe InsertCard do
 
 
   end
+  
   def compare_card_returned_to_real(card_ret, db_card, token=nil)
     expect(card_ret[:status]).to eq(:ok)
 

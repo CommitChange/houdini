@@ -90,7 +90,6 @@ module InsertCard
     source_token = nil
     begin
       Card.transaction {
-
         if (holder_type == :supporter)
           # @type [Supporter] holder
           card = holder.cards.create(card_data)
