@@ -255,7 +255,7 @@ describe InsertCard do
     it 'should return proper error when no supporter exists' do
       ret = InsertCard::with_stripe({:holder_id =>  5555555, :holder_type => 'Supporter', :stripe_card_id => 'card_fafjeht', :stripe_card_token => stripe_card_token, :name => 'name'})
       expect(ret[:status]).to eq(:unprocessable_entity)
-      expect(ret[:json][:error]).to include("Sorry, you need to provide a nonprofit or supporter")
+      expect(ret[:json][:error]).to include("Sorry, you need to provide a supporter")
     end
 
     it 'should return proper error when you try to add using an event with unauthorized user' do
@@ -278,7 +278,7 @@ describe InsertCard do
 
 
   end
-  
+
   def compare_card_returned_to_real(card_ret, db_card, token=nil)
     expect(card_ret[:status]).to eq(:ok)
 
