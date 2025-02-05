@@ -17,9 +17,9 @@ Capybara.save_path = ENV.fetch("CAPYBARA_ARTIFACTS", "./tmp/capybara")
 
 Capybara.singleton_class.prepend(Module.new do
     attr_accessor :last_used_session
-    
+
     # using session allows you to manipluate a diff browser session
-    # this patch tracks the name of the last session used. 
+    # this patch tracks the name of the last session used.
     def using_session(name, &block)
       self.last_used_session = name
       super

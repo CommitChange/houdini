@@ -147,7 +147,7 @@ class Nonprofit < ApplicationRecord
   has_many :export_formats
 
   has_one :nonprofit_key
-  
+
   has_many :email_lists
 
   has_one :bank_account, -> { where("COALESCE(bank_accounts.deleted, false) = false") }, dependent: :destroy

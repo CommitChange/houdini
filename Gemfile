@@ -1,11 +1,10 @@
 source 'https://rubygems.org'
-
 ruby ENV['CUSTOM_RUBY_VERSION'] || '2.6.10' # heroku needs a specific ruby version in the Gemfile
 
 gem 'rake'
 gem 'rails', '~> 4.0'
 
-gem 'rack', git: "https://github.com/CommitChange/rack.git", branch: "1-6-stable"
+gem 'rack', git: 'https://github.com/CommitChange/rack.git', branch: '1-6-stable'
 
 gem 'date', '~> 2.0.3'
 
@@ -34,7 +33,6 @@ gem 'aws-sdk-rails'
 
 gem 'json', '>= 2.3.0'
 
-
 # for blocking ip addressses
 gem 'rack-attack'
 
@@ -45,7 +43,6 @@ gem 'rack-freeze'
 gem 'pg', "< 1" # Postgresql, must be under 1 because 1.0 and later don't work on Rails 4
 gem 'qx', path: 'gems/ruby-qx'
 gem 'dalli'
-
 
 gem 'param_validation', path: 'gems/ruby-param-validation'
 
@@ -104,8 +101,9 @@ group :development, :ci, :test do
 	gem 'pry'
 	gem 'pry-byebug'
 	gem 'binding_of_caller'
-  gem 'rspec', "~> 3"
-	gem 'rspec-rails', "~> 4"
+  gem 'rspec', '~> 3'
+	gem 'rspec-rails', '~> 4'
+  # gem 'rubocop-rails', require: false
 	gem 'database_cleaner'
   gem 'dotenv-rails'
 	gem 'stripe-ruby-mock', '~> 2.5.1', :require => 'stripe_mock'
@@ -120,15 +118,14 @@ group :development, :ci, :test do
   gem 'faker' # test data generation
 end
 
-
-gem 'nokogiri', '~> 1.13.11', require: false, git:"https://github.com/commitchange/nokogiri.git", tag: "v1.13.11"
-
+gem 'nokogiri', '~> 1.13.11', require: false, git:'https://github.com/commitchange/nokogiri.git', tag: 'v1.13.11'
 
 group :test do
   gem 'webmock'
   gem 'capybara'
   gem 'cuprite'
   gem 'selenium-webdriver'
+  gem 'evil_systems', '~> 1.1'
 end
 
 # Gems used for asset compilation
@@ -143,13 +140,10 @@ gem 'dry-validation' # used only for config validation
 
 gem 'foreman'
 
-
-
 group :production do
   gem 'rails_autoscale_agent', '>= 0.9.1'
   gem 'tunemygc'
 end
-
 
 group :production, :staging do
   gem 'heroku_rails_deflate'
@@ -192,4 +186,3 @@ gem 'globalid', git: "https://github.com/CommitChange/globalid.git", tag: "0.4.2
 
 gem 'js-routes'
 
-gem "evil_systems", "~> 1.1", :group => :test

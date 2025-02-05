@@ -2,8 +2,8 @@
 class Role < ApplicationRecord
 
 	Names = [
-		:super_admin,          # global access 
-		:super_associate,      # global access to everything except bank acct info  
+		:super_admin,          # global access
+		:super_associate,      # global access to everything except bank acct info
 		:nonprofit_admin,      # npo scoped access to everything
 		:nonprofit_associate,  # npo scoped access to everything except bank acct info
 		:campaign_editor,      # fundraising tools, without dashboard access
@@ -39,7 +39,7 @@ class Role < ApplicationRecord
 		return role unless role.valid?
 
 		MailchimpNonprofitUserAddJob.perform_later(user, nonprofit)
-		
+
 		if user.confirmed?
 			NonprofitAdminMailer.delay.existing_invite(role)
 		else

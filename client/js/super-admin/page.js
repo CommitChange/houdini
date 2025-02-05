@@ -11,7 +11,7 @@ const topNav = require('../components/top-nav')
 const searchData = require('../common/search-data')
 
 const init = () => {
-  const activeTab$ = flyd.stream(0) 
+  const activeTab$ = flyd.stream(0)
   const pageLength = 30
   const nposData = searchData('admin/search-nonprofits', pageLength)
   const profilesData = searchData('admin/search-profiles', pageLength)
@@ -25,7 +25,7 @@ const init = () => {
   }
 }
 
-const view = state => 
+const view = state =>
   h('div', [
     topNav('Super Admin')
   , h('div.container.pt-3', [

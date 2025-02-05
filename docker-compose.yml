@@ -12,27 +12,11 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=commitchange_development_legacy
-  web:
-    build: .
-    volumes:
-      - ${HOME}${USERPROFILE}/.netrc:/home/app/.netrc # for heroku credentials
-      - ./vendor/bundle:/usr/local/bundle
-      - ./app:/app/app
-      - ./bin:/app/bin
-      - ./config:/app/config
-      - ./db:/app/db
-      - ./javascripts:/app/javascripts
-      - ./lib:/app/lib
-      - ./script:/app/script
-      - ./types:/app/types
+  memcached:
+    image: memcached:alpine3.21
     ports:
-      - "5000:5000"
-    environment:
-      - DATABASE_HOST=db
-      - BUILD_DATABASE_URL=postgres://admin:password@db/commitchange_development_legacy
-    depends_on:
-      - db
-    env_file: ".env"
+      - "11211:11211"
+    restart: always
   chrome:
     # See https://github.com/browserless/chrome/issues/1393
     image: browserless/chrome:latest
@@ -44,3 +28,30 @@ services:
       # Set connection timeout for debugging
       # https://docs.browserless.io/docs/docker.html#connection-timeout
       CONNECTION_TIMEOUT: 600000
+  web:
+    build: .
+    volumes:
+      - ${HOME}${USERPROFILE}/.netrc:/home/app/.netrc # for heroku credentials
+      - ./app:/app/app
+      - ./bin:/app/bin
+      - ./client:/app/client
+      - ./config:/app/config
+      - ./db:/app/db
+      - ./houdini:/app/houdini
+      - ./javascripts:/app/javascripts
+      - ./lib:/app/lib
+      - ./log:/app/log
+      - ./public:/app/public
+      - ./script:/app/script
+      - ./spec:/app/spec
+      - ./types:/app/types
+      - ./vendor/bundle:/usr/local/bundle
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_HOST=db
+      - BUILD_DATABASE_URL=postgres://admin:password@db/commitchange_development_legacy
+    depends_on:
+      - db
+      - memcached
+    env_file: ".env"

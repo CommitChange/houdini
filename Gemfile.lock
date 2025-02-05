@@ -583,7 +583,7 @@ DEPENDENCIES
   devise (~> 4.1)
   dotenv-rails
   dry-validation
-  evil_systems
+  evil_systems (~> 1.1)
   factory_bot
   factory_bot_rails
   faker

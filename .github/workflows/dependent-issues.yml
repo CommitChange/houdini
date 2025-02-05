@@ -16,7 +16,6 @@ on:
       # this action is required to pass before merging. Can be removed
       # otherwise.
       - synchronize
-  
 
 jobs:
   check:

@@ -55,11 +55,11 @@ if Rails.version < '5'
               super
             end
           end
-  
+
         end
       end
     end
-  
+
     # backport from https://github.com/rails/rails/blob/daa00c8357dc12ce24f89d92e4ceeabebb3af3d1/activerecord/lib/active_record/core.rb
     module CoreExtension
       extend ActiveSupport::Concern
