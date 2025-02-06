@@ -39,7 +39,6 @@ if(app.current_nonprofit_user) {
 const snabbdom = require('snabbdom')
 const h = require('snabbdom/h')
 const flyd = require('flyd')
-const R = require('ramda')
 const donateWiz = require('../../nonprofits/donate/wizard')
 const modal = require('ff-core/modal')
 const render = require('ff-core/render')
@@ -47,7 +46,7 @@ const branding = require('../../components/nonprofit-branding')
 
 function init() {
   var state = {}
-  state.donateWiz = donateWiz.init(flyd.stream({hide_cover_fees_option: app.hide_cover_fees_option}))
+  state.donateWiz = donateWiz.init(flyd.stream({hide_cover_fees_option: app.hide_cover_fees_option, manual_cover_fees: app.manual_cover_fees}))
   state.modalID$ = flyd.stream()
   return state
 }

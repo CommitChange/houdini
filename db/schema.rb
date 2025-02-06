@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20231019183536) do
+ActiveRecord::Schema.define(version: 20240209011057) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -622,6 +622,7 @@ ActiveRecord::Schema.define(version: 20231019183536) do
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
     t.string   "custom_get_tickets_button_label"
+    t.string   "fee_coverage_option_config"
   end
 
   create_table "misc_payment_infos", force: :cascade do |t|
@@ -1454,10 +1455,10 @@ ActiveRecord::Schema.define(version: 20231019183536) do
   create_trigger :update_donations_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_donations_fts BEFORE INSERT OR UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION update_fts_on_donations()
   SQL
-  create_trigger :update_supporters_fts, sql_definition: <<-SQL
-      CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
-  SQL
   create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
       CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
+  SQL
+  create_trigger :update_supporters_fts, sql_definition: <<-SQL
+      CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
   SQL
 end
