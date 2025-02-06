@@ -1,3 +1,4 @@
+# License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 #
 # FeeEra describes a period of time where a given set of fee structures apply.
 #
@@ -11,7 +12,7 @@
 #
 # @attribute! fee_structures
 #   @return One or more FeeStructure objects that apply during the FeeEra
-class FeeEra < ActiveRecord::Base
+class FeeEra < ApplicationRecord
 
   has_one :fee_coverage_detail_base, validate: true
 

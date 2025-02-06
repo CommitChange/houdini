@@ -4,18 +4,18 @@ import * as deprecated_format from './deprecated_format'
 
 export function centsToDollars(cents:string|number|undefined, options:{noCents?:boolean}={}):string {
   if(cents === undefined) return '0'
-  let centsAsNumber:number = undefined
-  if (typeof cents === 'string')
-  {
-    centsAsNumber = Number(cents)
-  }
-  else {
-    centsAsNumber = cents
-  }
+  const centsAsNumber:number = typeof cents === 'string' ? Number(cents) : cents;
+
   return numberWithCommas((centsAsNumber / 100.0).toFixed(options.noCents ? 0 : 2).toString()).replace(/\.00$/,'')
 }
 
-export function dollarsToCents(dollars:string) {
+/**
+ * Convert a string describing a dollar into a number representing the cents. 
+ * @param dollars a string representing an amount in dollars
+ * @returns a number describing the passed amount in cents or null if the passed amount is invalid.
+ * @throws if the `dollars` string can't be converted into a number
+ */
+export function dollarsToCents(dollars:string) : number {
   //strips
   dollars = dollars.toString().replace(/[$,]/g, '')
   if(dollars.match(/^-?\d+\.\d$/)) {
@@ -26,16 +26,30 @@ export function dollarsToCents(dollars:string) {
   return Math.round(Number(dollars) * 100)
 }
 
+/**
+ * A version of `dollarsToCents` that doesn't throw on an invalid dollars amount
+ * @param dollars a string representing an amount in dollars
+ * @returns a number describing the passed amount in cents or null if the passed amount is invalid.
+ */
+export function dollarsToCentsSafe(dollars:string) : number | null {
+  try {
+    return dollarsToCents(dollars);
+  }
+  catch (e) {
+    return null;
+  }
+}
+
 export function numberWithCommas(n:string|number):string {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
-export function camelToWords(str:string, os?:any) {
+export function camelToWords(str:string, os?:any):string {
   if(!str) return str
   return str.replace(/([A-Z])/g, " $1")
 }
 
-export function readableKind(kind:string) {
+export function readableKind(kind:string):string {
   if (kind === "Donation") return "One-Time Donation"
   else if (kind === "OffsitePayment") return "Offsite Donation"
   else if (kind === "Ticket") return "Ticket Purchase"
@@ -44,7 +58,7 @@ export function readableKind(kind:string) {
 
 
 
-export function readableInterval(interval:number, time_unit:string) {
+export function readableInterval(interval:number, time_unit:string):string {
   if(interval === 1) return time_unit + 'ly'
   if(interval === 4 && time_unit === 'year') return 'quarterly'
   if(interval === 2 && time_unit === 'year') return 'biannually'

@@ -1,5 +1,4 @@
 // License: LGPL-3.0-or-later
-const R = require('ramda')
 const h = require('flimflam/h')
 const searchTable = require('../components/search-table')
 
@@ -43,7 +42,7 @@ const row = (data={}, i) => {
   , h('td.pl-0', [
       h('h5.m-0.max-width-1', [npoLink('',
         data.name + ' (' + data.state_code + ')')])
-    , h('p.m-0', '#' + data.id)
+    , h('p.m-0', '#' + data.id + " - Houid: " + data.houid)
     , h('p.m-0', data.email || '')
     , h('p.m-0', data.created_at)
     , h('p.m-0.color-red', [

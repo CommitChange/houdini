@@ -2,12 +2,14 @@
 const h = require('snabbdom/h')
 const R = require('ramda')
 const flyd = require('flyd')
-const format = require('../../common/format')
+const {dollarsToCents, centsToDollars} = require('../../common/format')
 flyd.scanMerge = require('flyd/module/scanmerge')
 
 const getAmt = require('./amt').default;
 const getSustainingAmount = require('./sustaining_amount').default;
 const getPostfixElement = require('./postfix_element').default;
+const {dollarsToCentsSafe} = require('../../../../javascripts/src/lib/format');
+const { default: amount_button_contents } = require('./amount_button_contents')
 
 function init(donationDefaults, params$) {
     var state = {
@@ -18,13 +20,13 @@ function init(donationDefaults, params$) {
     }
 
   // A stream of objects that an be used to modify the existing donation by using R.evolve
-  donationDefaults = R.merge(donationDefaults, {
-    amount: format.dollarsToCents(state.params$().single_amount || 0)
+  donationDefaults = {...donationDefaults,
+    amount: dollarsToCents(state.params$().single_amount || 0)
   , designation: state.params$().designation
   , recurring: state.params$().type === 'recurring'
   , weekly: (typeof state.params$().weekly !== 'undefined')
   , feeCovering: false
-  })
+  }
   // Apply R.evolve using every value on the evolveDonation$ stream, starting with the defaults
   state.donation$ = flyd.scanMerge([
     [state.params$ || flyd.stream(), setDonationFromParams]
@@ -36,7 +38,7 @@ function init(donationDefaults, params$) {
 
 const setDonationFromParams = (donation, params) => {
     if(params.single_amount) {
-        donation.amount = format.dollarsToCents(params.single_amount)
+        donation.amount = dollarsToCents(params.single_amount)
     }
     else
         donation.amount = undefined
@@ -59,7 +61,6 @@ function view(state) {
         , recurringMessage(isRecurring, state)
         , ...amountFields(state)
         , showSingleAmount(isRecurring, state)
-        //, feeCoverageField(isFeeCovered, state)
     ])
 }
 
@@ -75,17 +76,11 @@ function chooseDesignation(state) {
     class: {'u-hide': !state.params$().multiple_designations}
   }, [
     h('select.donate-designationDropdown.select.u-marginBottom--10', {
-      on: { change: ev => state.evolveDonation$({designation: R.always(ev.currentTarget.value)}) }
-    }, R.concat(
-        R.map(
-          d => h('option', {props: {value: ''}}, d)
-        , defaultDesigs
-        )
-      , R.map(
-          d => h('option', {props: {value: d}}, d)
-        , state.params$().multiple_designations
-            )
-        )
+      on: { change: ev => state.evolveDonation$({designation: () => ev.currentTarget.value}) }
+    }, [
+        ...defaultDesigs.map(d => h('option', {props: {value: ''}}, d))
+      , ...state.params$().multiple_designations.map(d => h('option', {props: {value: d}}, d))
+      ]
     )
     ])
 }
@@ -151,27 +146,19 @@ function amountFields(state) {
   if(state.params$().single_amount) return ['']
   const postfix = getPostfixElement();
   return [
-    h('div.fieldsetLayout--three--evenPadding', [
-    h('span',
-      R.map(
+    h('div.fieldset-grid', [
+      ...R.map(
         amt => h('fieldset', [
           h('button.button.u-width--full.white.amount', {
             class: {'is-selected': state.buttonAmountSelected$() && state.donation$().amount === amt.amount*100}
           , on: {click: ev => {
-              state.evolveDonation$({amount: R.always(format.dollarsToCents(amt.amount))})
+              state.evolveDonation$({amount: () => dollarsToCents(amt.amount)})
               state.buttonAmountSelected$(true)
               state.currentStep$(1) // immediately advance steps when selecting an amount button
             } }
-          }, [
-            h('span.dollar', app.currency_symbol)
-          , String(amt.amount),
-          ...(amt.highlight ? [
-               h('i.fa.fa-star',  {style: {lineHeight: '.85em', marginLeft: '3px'}})
-            ] : [])
-          ])
+          }, amount_button_contents(app.currency_symbol, amt))
         ])
     , (state.params$().custom_amounts || []).map((a) => getAmt(a)) )
-    )
   , h('fieldset.' + prependCurrencyClassname(), [
       h('input.amount.other', {
         props: {name: 'amount', step: 'any', type: 'number', min: 1, placeholder: I18n.t('nonprofits.donate.amount.custom')}
@@ -179,9 +166,11 @@ function amountFields(state) {
       , on: {
         focus: ev => {
             state.buttonAmountSelected$(false)
-            state.evolveDonation$({amount: R.always(format.dollarsToCents(ev.currentTarget.value))})
+            state.evolveDonation$({amount: () => dollarsToCents(ev.currentTarget.value)})
         }
-        , change: ev => state.evolveDonation$({amount: R.always(format.dollarsToCents(ev.currentTarget.value))})
+        , input: ev =>  {
+            state.evolveDonation$({amount: () => dollarsToCentsSafe(ev.currentTarget.value)})
+        }
         }
       })
     ])
@@ -204,28 +193,13 @@ function showSingleAmount(isRecurring, state) {
   var desig = state.params$().designation
   return h('section.u-centered', [
     h('p.singleAmount-message', [
-      h('strong', app.currency_symbol + format.centsToDollars(format.dollarsToCents(state.params$().single_amount)))
+      h('strong', app.currency_symbol + centsToDollars(dollarsToCents(state.params$().single_amount)))
     , h('span.u-padding--0', { class: {'u-hide': !isRecurring} }, ' monthly')
     , h('span', {class: {'u-hide': !state.params$().designation && !gift.id}}, [ ' for ' + (desig || gift.name) ])
     ])
   , h('button.button.u-marginBottom--20', {on: {click: [state.currentStep$, 1]}}, I18n.t('nonprofits.donate.amount.next'))
   ])
 }
-
-// function feeCoverageField(isFeeCovered, state) {
-//   return h('section.donate-feeCoverageCheckbox.u-paddingX--5 u-marginBottom--10', [
-//     h('div.u-padding--8.u-background--grey.u-centered', {
-//       class: {highlight: isFeeCovered}
-//     }, [
-//       h('input.u-margin--0.donationWizard-amount-input', {
-//         props: {type: 'checkbox', selected: isFeeCovered, id: 'checkbox-feeCoverage'}
-//       , on: {change: ev => state.evolveDonation$({feeCovering: t => !t})}
-//       })
-//     , h('label', {props: {htmlFor: 'checkbox-feeCoverage'}}, I18n.t('nonprofits.donate.amount.feeCoverage', {organization_possessive: app.nonprofit.name + "'s"})
-//       )
-//     ])
-//     ])
-// }
 
 module.exports = {view, init}
 

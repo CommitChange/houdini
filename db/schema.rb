@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20230427003235) do
+ActiveRecord::Schema.define(version: 20240209011057) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -325,6 +325,12 @@ ActiveRecord::Schema.define(version: 20230427003235) do
     t.integer "payment_import_id"
   end
 
+  create_table "drip_email_lists", force: :cascade do |t|
+    t.string   "mailchimp_list_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
   create_table "e_tap_import_contacts", force: :cascade do |t|
     t.integer  "e_tap_import_id"
     t.jsonb    "row"
@@ -350,6 +356,17 @@ ActiveRecord::Schema.define(version: 20230427003235) do
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end
+
+  create_table "email_customizations", force: :cascade do |t|
+    t.string   "name"
+    t.text     "contents"
+    t.integer  "nonprofit_id", null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "email_customizations", ["name"], name: "index_email_customizations_on_name", using: :btree
+  add_index "email_customizations", ["nonprofit_id"], name: "index_email_customizations_on_nonprofit_id", using: :btree
 
   create_table "email_lists", force: :cascade do |t|
     t.integer  "nonprofit_id",                  null: false
@@ -588,12 +605,13 @@ ActiveRecord::Schema.define(version: 20230427003235) do
   end
 
   create_table "misc_campaign_infos", force: :cascade do |t|
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
     t.integer  "campaign_id"
     t.boolean  "manual_cover_fees"
     t.boolean  "hide_cover_fees_option"
-    t.boolean  "paused",                 default: false, null: false
+    t.boolean  "paused",                     default: false, null: false
+    t.string   "fee_coverage_option_config"
   end
 
   add_index "misc_campaign_infos", ["campaign_id"], name: "index_misc_campaign_infos_on_campaign_id", using: :btree
@@ -604,6 +622,7 @@ ActiveRecord::Schema.define(version: 20230427003235) do
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
     t.string   "custom_get_tickets_button_label"
+    t.string   "fee_coverage_option_config"
   end
 
   create_table "misc_payment_infos", force: :cascade do |t|
@@ -633,13 +652,15 @@ ActiveRecord::Schema.define(version: 20230427003235) do
   end
 
   create_table "miscellaneous_np_infos", force: :cascade do |t|
-    t.string   "donate_again_url",        limit: 255
+    t.string   "donate_again_url",           limit: 255
     t.integer  "nonprofit_id"
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
     t.text     "change_amount_message"
     t.boolean  "first_charge_email_sent"
-    t.boolean  "hide_cover_fees",                     default: false, null: false
+    t.boolean  "hide_cover_fees",                        default: false, null: false
+    t.boolean  "temp_block",                             default: false
+    t.string   "fee_coverage_option_config"
   end
 
   add_index "miscellaneous_np_infos", ["nonprofit_id"], name: "index_miscellaneous_np_infos_on_nonprofit_id", using: :btree
@@ -1374,6 +1395,7 @@ ActiveRecord::Schema.define(version: 20230427003235) do
   add_index "widget_descriptions", ["houid"], name: "index_widget_descriptions_on_houid", unique: true, using: :btree
 
   add_foreign_key "campaign_gifts", "campaign_gift_options", name: "campaign_gifts_to_option_fk"
+  add_foreign_key "email_customizations", "nonprofits"
   add_foreign_key "export_formats", "nonprofits"
   add_foreign_key "fee_coverage_detail_bases", "fee_eras"
   add_foreign_key "fee_structures", "fee_eras"
@@ -1433,10 +1455,10 @@ ActiveRecord::Schema.define(version: 20230427003235) do
   create_trigger :update_donations_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_donations_fts BEFORE INSERT OR UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION update_fts_on_donations()
   SQL
-  create_trigger :update_supporters_fts, sql_definition: <<-SQL
-      CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
-  SQL
   create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
       CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
+  SQL
+  create_trigger :update_supporters_fts, sql_definition: <<-SQL
+      CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
   SQL
 end

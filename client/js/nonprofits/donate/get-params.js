@@ -1,30 +1,19 @@
 // License: LGPL-3.0-or-later
 const R = require('ramda')
-const {getDefaultAmounts} = require('./custom_amounts');
-
-const splitParam = str =>
-  R.split(/[_;,]/, str)
+const { parseCustomFields, parseCustomAmounts, splitParam }  = require('./parseFields');
 
 module.exports = params => {
-  const defaultAmts = getDefaultAmounts().join()
   // Set defaults
-  const merge = R.merge({
-    custom_amounts: ''
-  })
+  const merge = (params) => ({ custom_amounts: '', ...params })
   // Preprocess data
   const evolve = R.evolve({
     multiple_designations: splitParam
-  , custom_amounts: amts => R.compose(R.map(Number), splitParam)(amts || defaultAmts)
-  , custom_fields: fields => R.map(f => {
-      const [name, label] = R.map(R.trim, R.split(':', f))
-      return {name, label: label ? label : name}
-    }, R.split(',',  fields))
-  , tags: tags => R.map(tag => {
-      return tag.trim()
-    }, R.split(',', tags))
+  , custom_amounts: parseCustomAmounts
+  , custom_fields: parseCustomFields
+  , tags: tags => tags.split(',').map(tag => tag.trim())
   })
 
-  const outputParams = R.compose(evolve, merge)(params)
+  const outputParams = evolve(merge(params))
   if (window.app && window.app.widget && window.app.widget.custom_amounts) {
     outputParams.custom_amounts = window.app.widget.custom_amounts
   }

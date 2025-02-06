@@ -2,6 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe User, :type => :model do
+	it_behaves_like 'a model with a calculated first and last name'
 
   it {is_expected.to have_db_column(:locked_at).of_type(:datetime)}
   it {is_expected.to have_db_column(:unlock_token).of_type(:string)}
@@ -14,6 +15,26 @@ RSpec.describe User, :type => :model do
     10.times { user.valid_for_authentication?{ false } }
     assert user.reload.access_locked?
   end
+  
+  describe '.nonprofit_personnel' do 
+    let!(:user) {create(:user)}
+    let!(:user_as_nonprofit_admin) {create(:user_as_nonprofit_admin)}
+    let!(:user_as_nonprofit_associate) {create(:user_as_nonprofit_associate)}
+
+    it 'returns a user that is a nonprofit_admin' do 
+      expect(User.nonprofit_personnel).to include(user_as_nonprofit_admin)
+    end  
+
+
+    it 'returns a user that is a nonprofit_associate' do
+      expect(User.nonprofit_personnel).to include(user_as_nonprofit_associate)
+    end 
+
+    it 'DOES NOT return a user that is a nonprofit_admin OR a nonprofit_associate' do 
+      expect(User.nonprofit_personnel).to_not include(user)
+    end 
+
+  end 
 
   describe '.send_reset_password_instructions' do
 
