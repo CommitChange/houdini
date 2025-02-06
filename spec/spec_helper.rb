@@ -52,6 +52,23 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  config.include BetterRailsSystemTests, type: :system
+
+  # make urls in mailers contain the correct server host
+  # you need this info to test links in emails
+  config.around(:each, type: :system) do |ex|
+    was_host = Rails.application.default_url_options[:host]
+    Rails.application.default_url_options[:host] = Capybara.server_host
+    ex.run
+    Rails.application.default_url_options[:host] = was_host
+  end
+
+  # this hook needs to run before the others
+  config.prepend_before(:each, type: :system) do
+    #continue to use JS driver
+    driven_by Capybara.javascript_driver
+  end
+
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
   # have no way to turn it off -- the option exists only for backwards
   # compatibility in RSpec 3). It causes shared context metadata to be
@@ -108,7 +125,6 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
- 
 
   config.example_status_persistence_file_path = "tmp/failed-examples.txt"
 end

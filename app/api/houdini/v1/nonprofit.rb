@@ -8,16 +8,18 @@ class Houdini::V1::Nonprofit < Houdini::V1::BaseAPI
   desc 'Return a nonprofit.' do
     success Houdini::V1::Entities::Nonprofit
   end
+
   params do
     requires :id, type: Integer, desc: 'Status id.'
   end
+
   route_param :id do
     get do
       np = Nonprofit.find(params[:id])
       present np, as: Houdini::V1::Entities::Nonprofit
     end
   end
-   
+
   desc 'Register a nonprofit' do
     success Houdini::V1::Entities::Nonprofit
 
@@ -26,7 +28,6 @@ class Houdini::V1::Nonprofit < Houdini::V1::BaseAPI
   end
 
   params do
-
     requires :nonprofit, type: Hash  do
       requires :name, type:String, desc: 'Organization Name', allow_blank: false, documentation: { param_type: 'body' }
       optional :website, type:String, desc: 'Organization website URL', allow_blank:true, regexp: URI::regexp, documentation: { param_type: 'body' }, coerce_with: ->(url) {
@@ -49,9 +50,8 @@ class Houdini::V1::Nonprofit < Houdini::V1::BaseAPI
       requires :password, type:String, desc: 'Password', allow_blank: false, is_equal_to: :password_confirmation, documentation: { param_type: 'body' }
       requires :password_confirmation, type:String, desc: 'Password confirmation', allow_blank: false, documentation: { param_type: 'body' }
     end
-
-
   end
+
   post do
     declared_params = declared(params)
     np = nil

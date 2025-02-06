@@ -44,13 +44,7 @@ Commitchange::Application.configure do
 
 	# creds = Aws::Credentials.new(ENV['AWS_ACCESS_KEY'], ENV['AWS_SECRET_ACCESS_KEY'])
 
-	# Aws::Rails.add_action_mailer_delivery_method(
-	# 	:ses,
-	# 	credentials: creds,
-	# 	region: 'us-east-1'
-	# )
-	# config.action_mailer.delivery_method = :ses
-	config.action_mailer.default_url_options = { host: 'localhost', port: 5000}
+	config.action_mailer.default_url_options = { host: 'localhost', port: 5000 }
 
 	# Print deprecation notices to the Rails logger
 	config.active_support.deprecation = :log
@@ -63,12 +57,10 @@ Commitchange::Application.configure do
 
 	# Expands the lines which load the assets
 	config.assets.debug = true
-
 	config.assets.quiet = true
-
 	config.log_level = :debug
-
 	config.dependency_loading = true if $rails_rake_task
+
 	# Turn this on if you want to mess with code inside /node_modules
 	# config.browserify_rails.evaluate_node_modules = true
 

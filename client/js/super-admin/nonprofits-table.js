@@ -13,17 +13,17 @@ const header = [
 
 const link = (href, text) => h('p.m-0', [ h('a', {props: {href, target: '_blank'}}, text)])
 
-const npoLinkCurry = id => (path, text) => link(`/nonprofits/${id}/${path}`, text ? text : path) 
+const npoLinkCurry = id => (path, text) => link(`/nonprofits/${id}/${path}`, text ? text : path)
 
-const links = (npoLink, data) => 
+const links = (npoLink, data) =>
   h('div', [
     npoLink('payments')
-  , npoLink('supporters')
-  , npoLink('settings')
+  , npoLink('supporters', 'supporters')
+  , npoLink('settings', 'settings bar')
   , npoLink('campaigns', 'campaigns: ' + data.campaigns_count)
   , npoLink('events', 'events: ' + data.events_count)
   , link('https://dashboard.stripe.com/search?query=' + data.stripe_account_id, 'Stripe account')
-  , data.stripe_customer_id 
+  , data.stripe_customer_id
     ? link('https://dashboard.stripe.com/search?query=' + data.stripe_customer_id, 'Stripe customer')
     : ''
   ])
@@ -63,4 +63,3 @@ const row = (data={}, i) => {
 }
 
 module.exports = state => searchTable(state, header, row, 'Search NPOs')
-

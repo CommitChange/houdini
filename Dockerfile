@@ -66,7 +66,7 @@ RUN curl https://cli-assets.heroku.com/install.sh | sh
 
 RUN groupadd --gid 1000 app && \
   useradd --uid 1000 --no-log-init --create-home --gid app app
-  
+
 USER app
 
 COPY --from=builder --chown=app:app /app /app
@@ -81,4 +81,5 @@ ARG RAILS_ROOT=/app/
 WORKDIR $RAILS_ROOT
 RUN touch /home/app/.netrc
 RUN mkdir -p tmp/pids
+
 CMD bundle check || (bundle update --bundler && bundle install -j4 --retry 3) && foreman start

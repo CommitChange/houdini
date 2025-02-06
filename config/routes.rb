@@ -238,7 +238,7 @@ Commitchange::Application.routes.draw do
 		post "/webhooks/stripe/receive" => "webhooks/stripe#receive"
 		post "/webhooks/stripe/receive_connect" => "webhooks/stripe#receive_connect"
 	end
-  
+
 
 	# Nonprofits
 	get ':state_code/:city/:name' => 'nonprofits#show', :as => :nonprofit_location
