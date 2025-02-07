@@ -344,32 +344,57 @@ describe QueryPayments do
           expect(result[:data].count).to eq 1
         end
       end
+
+      #full code coverage -- filtering and sort work together
+      #search by campaign name 
+      #search by event name
+      #filtering by campaign_id
+      #filtering by event_id
+      #edge cases -- empty search?
       
-      context 'when filtering by campaign AND adding a sort' do
-        #create a fake world
+      context 'filtering payment queries by campaign id' do 
         let(:input) {{
           amount: 100,
           nonprofit_id: nonprofit.id,
           supporter_id: supporter.id,
           token: source_tokens[4].token,
           date: (Time.now - 1.day).to_s,
-          comment: 'This is a test',
+          comment: 'donation comment',
           dedication: 'dedication',
           designation: 'designation'
         }}
 
-        it 'returns result filtered or sorted by campaign or event' do
+        it 'returns one Campaign result' do
           InsertDonation.with_stripe(input)
-          donation_result_yesterday 
           donation_result_tomorrow
-          result = QueryPayments::full_search(nonprofit.id, { search: Campaign.id || search: Event.id }) # a campaign only has 1 nonprofit
+          donation_result_yesterday
+
+          result = QueryPayments::full_search(nonprofit.id, { search: Campaign.last.id })
           expect(result[:data].count).to eq 1
         end 
+      end 
 
-        binding.pry
-       end 
+      # context 'filtering payment queries by event id' do 
+      #   let(:input) {{
+      #     amount: 100,
+      #     nonprofit_id: nonprofit.id,
+      #     supporter_id: supporter.id,
+      #     token: source_tokens[4].token,
+      #     date: (Time.now - 1.day).to_s,
+      #     comment: 'donation comment',
+      #     dedication: 'dedication',
+      #     designation: 'designation'
+      #   }}
 
-      binding.pry 
+      #   it 'returns one Event result' do
+      #     InsertDonation.with_stripe(input)
+      #     donation_result_tomorrow
+      #     donation_result_yesterday
+
+      #     result = QueryPayments::full_search(nonprofit.id, { search: Event.last.id })
+      #     expect(result[:data].count).to eq 1
+      #   end 
+      end 
 
       context 'when the search includes a number that is not a payment ID' do
         let(:input) {{
