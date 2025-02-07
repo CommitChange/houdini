@@ -362,7 +362,7 @@ describe QueryPayments do
           InsertDonation.with_stripe(input)
           donation_result_yesterday 
           donation_result_tomorrow
-          result = QueryPayments::full_search(nonprofit.id, { search: Campaign.id || Event.id }) # a campaign only has 1 nonprofit
+          result = QueryPayments::full_search(nonprofit.id, { search: Campaign.id || search: Event.id }) # a campaign only has 1 nonprofit
           expect(result[:data].count).to eq 1
         end 
 
