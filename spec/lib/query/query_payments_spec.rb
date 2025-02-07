@@ -394,7 +394,7 @@ describe QueryPayments do
       #     result = QueryPayments::full_search(nonprofit.id, { search: Event.last.id })
       #     expect(result[:data].count).to eq 1
       #   end 
-      end 
+      #end 
 
       context 'when the search includes a number that is not a payment ID' do
         let(:input) {{
