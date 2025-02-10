@@ -7,8 +7,6 @@ Dear <%= @nonprofit.name %>,
 Thank you for continuing to use <%= Settings.general.name %>!
 </p>
 <br>
-<% href = "#{root_url}nonprofits/#{@nonprofit.id}/card/edit" %>
-Unfortunately, the credit card we currently have on file (<%= @card.name %>, expiring <%= @card.expiration_month %>/<%= @card.expiration_year %>) has been declined and we are unable to process your subscription. Please give us a call or go to <strong><a href='<%= href %>'> <%=href%> </a></strong> to update your billing information to avoid any lapse in service.
 </p>
 <br>
 <p>
