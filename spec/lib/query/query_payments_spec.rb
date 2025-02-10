@@ -345,57 +345,6 @@ describe QueryPayments do
         end
       end
 
-      #full code coverage -- filtering and sort work together
-      #search by campaign name 
-      #search by event name
-      #filtering by campaign_id
-      #filtering by event_id
-      #edge cases -- empty search?
-      
-      context 'filtering payment queries by campaign id' do 
-        let(:input) {{
-          amount: 100,
-          nonprofit_id: nonprofit.id,
-          supporter_id: supporter.id,
-          token: source_tokens[4].token,
-          date: (Time.now - 1.day).to_s,
-          comment: 'donation comment',
-          dedication: 'dedication',
-          designation: 'designation'
-        }}
-
-        it 'returns one Campaign result' do
-          InsertDonation.with_stripe(input)
-          donation_result_tomorrow
-          donation_result_yesterday
-
-          result = QueryPayments::full_search(nonprofit.id, { search: Campaign.last.id })
-          expect(result[:data].count).to eq 1
-        end 
-      end 
-
-      # context 'filtering payment queries by event id' do 
-      #   let(:input) {{
-      #     amount: 100,
-      #     nonprofit_id: nonprofit.id,
-      #     supporter_id: supporter.id,
-      #     token: source_tokens[4].token,
-      #     date: (Time.now - 1.day).to_s,
-      #     comment: 'donation comment',
-      #     dedication: 'dedication',
-      #     designation: 'designation'
-      #   }}
-
-      #   it 'returns one Event result' do
-      #     InsertDonation.with_stripe(input)
-      #     donation_result_tomorrow
-      #     donation_result_yesterday
-
-      #     result = QueryPayments::full_search(nonprofit.id, { search: Event.last.id })
-      #     expect(result[:data].count).to eq 1
-      #   end 
-      #end 
-
       context 'when the search includes a number that is not a payment ID' do
         let(:input) {{
           amount: 100,
@@ -1006,4 +955,8 @@ describe QueryPayments do
       end
     end
   end
+
+  describe 'select to filter search' do 
+    
+  end 
 end
