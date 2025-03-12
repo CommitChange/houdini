@@ -87,9 +87,6 @@ gem 'rest-client' # recommended for fullcontact
 # for stylizing emails
 gem 'premailer-rails'
 
-# Nice table printing of data for the console
-gem 'table_print'
-
 gem 'rails-i18n' # For 4.0.x
 gem 'i18n-js'
 gem 'countries'
@@ -115,6 +112,7 @@ group :development, :ci, :test do
   gem 'rspec-json_expectations'
   gem 'yard'
   gem 'faker' # test data generation
+  gem 'table_print' # Nice table printing of data for the console
 end
 
 
