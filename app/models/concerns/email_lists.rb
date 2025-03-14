@@ -1,6 +1,6 @@
 # License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 module EmailLists
-	extend ActiveSupport::Concern
+  extend ActiveSupport::Concern
   include Supporter::Tags # not needed but helpful for tracking dependencies
   included do
     has_many :email_lists, through: :tag_masters
