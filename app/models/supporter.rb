@@ -12,7 +12,7 @@ class Supporter < ApplicationRecord
   before_save :update_primary_address
 
   attr_accessor :address_line2
-  
+
   attr_accessible \
     :profile_id, :profile,
     :nonprofit_id, :nonprofit,
@@ -45,7 +45,7 @@ class Supporter < ApplicationRecord
     :primary_address
 
   # fts is generated via a trigger
-	attr_readonly :fts
+  attr_readonly :fts
 
   belongs_to :profile
   belongs_to :nonprofit
@@ -91,50 +91,9 @@ class Supporter < ApplicationRecord
   has_many :recurring_donations
   has_many :object_events, as: :event_entity
 
-  concerning :Tags do
-    included do
-      has_many :tag_joins, dependent: :destroy
-      has_many :tag_masters, through: :tag_joins
-      has_many :undeleted_tag_masters, -> { not_deleted }, through: :tag_joins, source: 'tag_master'
-    end
-  end
+  include Tags
+  include EmailLists
 
-  concerning :EmailLists do
-    include Supporter::Tags # not needed but helpful for tracking dependencies
-    included do
-      has_many :email_lists, through: :tag_masters
-      has_many :active_email_lists, through: :undeleted_tag_masters, source: :email_list do
-        def update_member_on_all_lists
-          proxy_association.reload.target.each do |list| # We're reloading the association and running .each on target
-            #to make sure we get any newly saved email lists. I think this should be simpler but I'm not sure how to do it.
-            MailchimpSignupJob.perform_later(proxy_association.owner, list)
-          end
-        end
-      end
-
-      after_save :try_update_member_on_all_lists
-    end
-
-    def must_update_email_lists?
-      changes.has_key?("name") || changes.has_key?("email")
-    end
-
-    def publish_created
-      object_events.create(event_type: 'supporter.created')
-    end
-
-    private
-    
-    def try_update_member_on_all_lists
-      update_member_on_all_lists if must_update_email_lists?
-    end 
-
-    def update_member_on_all_lists
-      active_email_lists.update_member_on_all_lists
-    end
-
-  end
-  
   has_many :custom_field_joins, dependent: :destroy
   has_many :custom_field_masters, through: :custom_field_joins
   belongs_to :merged_into, class_name: 'Supporter', :foreign_key => 'merged_into'
@@ -166,22 +125,7 @@ class Supporter < ApplicationRecord
     self.profile.get_profile_picture(size)
   end
 
-  concerning :Path do
-    class_methods do
-      ModernParams = Struct.new(:to_param)
-    end
-    included do
-      # When you use a routing helper like `api_new_nonprofit_supporter``, you need to provide objects which have a `#to_param`
-      # method. By default that's set to the value of `#id`. In our case, for the api objects, we want the id to instead be
-      # the value of `#houid`. We can't override `to_param` though because we may use route helpers which expect `#to_param` to 
-      # return the value of `#id`. This is the hacky workaround.
-      def to_modern_param
-        ModernParams.new(houid)
-      end
-    end
-  end
-
-
+  include Path
 
   # Supporters can be merged many times. This finds the last
   # supporter after following merged_into until it gets a nil
@@ -192,7 +136,6 @@ class Supporter < ApplicationRecord
       merged_into.end_of_merge_chain
     end
   end
-
 
   def as_json(options = {})
     h = super(options)
@@ -207,6 +150,7 @@ class Supporter < ApplicationRecord
   end
 
   private
+
   def cleanup_address
     if address.present? && address_line2.present?
       assign_attributes(address_line2: nil, address: self.address + " " + self.address_line2)
@@ -216,7 +160,7 @@ class Supporter < ApplicationRecord
     end
   end
 
-  def cleanup_name 
+  def cleanup_name
     if first_name.present? || last_name.present?
       assign_attributes(name: [first_name&.strip, last_name&.strip].select{|i| i.present?}.join(" "))
       assign_attributes(first_name: nil, last_name: nil)

@@ -16,7 +16,7 @@ module Model::CalculatedNames
         name_parts[0..-2].join(" ")
       end
     end
-  
+
     def calculated_last_name
       name_parts = name&.strip&.split(' ')&.map(&:strip)
       case name_parts&.count || 0
