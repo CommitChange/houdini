@@ -10,6 +10,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+      env:
+        CUSTOM_RUBY_VERSION: ${{ matrix.ruby }}
       runs-on: ${{ matrix.os }}
       strategy:
         matrix:
@@ -51,7 +53,10 @@ jobs:
                 - '.babelrc'
                 - '.bootstraprc'
                 - '.browserlistrc'
-              
+                # include Gemfiles because some of the Gems could break yarn build
+                - 'Gemfile' 
+                - 'Gemfile.lock'
+
         - name: Setup PostgreSQL with PostgreSQL extensions and unprivileged user
           uses: Daniel-Marynicz/postgresql-action@1.0.0
           with:
@@ -62,8 +67,6 @@ jobs:
           with:
             node-version: ${{ matrix.node }}
             cache: 'yarn'
-        - name: set CUSTOM_RUBY_VERSION environment variable
-          run: echo "CUSTOM_RUBY_VERSION=${{ matrix.ruby }}" >> $GITHUB_ENV
         - uses: ruby/setup-ruby@v1
           with:
             ruby-version: ${{ matrix.ruby }}

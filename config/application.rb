@@ -1,10 +1,11 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 
-require File.expand_path('../boot', __FILE__)
-
+require_relative 'boot'
 require 'rails/all'
 
-Bundler.require *Rails.groups(:assets) if defined?(Bundler)
+# Require the gems listed in Gemfile, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(*Rails.groups)
 
 module Commitchange
 	class Application < Rails::Application
@@ -79,10 +80,16 @@ module Commitchange
 		#
 		#config.browserify_rails.commandline_options = "-t [ babelify --presets es2015 ]"
 
-		config.session_store ActionDispatch::Session::CacheStore, :expire_after => 12.hours
+		# Require `belongs_to` associations by default. Previous versions had false.
+		# it's a bunch of work to verify everything that should be marked optional actually is.
+		# we should do that over time.
+		# Added in rails 5.0
+		config.active_record.belongs_to_required_by_default = false
 
-		# opt into raising errors in transactional callbacks so the deprecation warning goes away
-		config.active_record.raise_in_transactional_callbacks = true
+		# Makes hash conversion of the parameters raise an error if they are not permitted.
+		# We don't use strong parameters that much yet so let's not do this for now
+		# Added in rails 5.0
+		config.action_controller.raise_on_unfiltered_parameters = false
 
 		config.middleware.insert_before 0, Rack::Cors do
 			allow do
