@@ -1158,6 +1158,7 @@ describe QuerySupporters do
     describe 'Just first name field' do
       it 'when supporter has no name, just first name is blank' do
         s = create(:supporter, name: '')
+        expect(s.nonprofit.supporters.all.to_a).to eq [s]
         supporters = QuerySupporters.for_export_enumerable(s.nonprofit.id, {}).to_a
         expect(supporters[2][2]).to be_blank
       end
