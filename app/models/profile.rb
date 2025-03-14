@@ -2,7 +2,6 @@
 class Profile < ApplicationRecord
 
 	attr_accessible \
-		:registered, # bool
 		:mini_bio,
 		:first_name, # str
 		:last_name, # str
@@ -15,12 +14,11 @@ class Profile < ApplicationRecord
 		:zip_code, # str
 		:picture, # str: either their social network pic or a stored pic on S3
 		:anonymous, # bool: negates all privacy_settings
-		:city_state,
 		:user_id
 
 	validates :email, format: {with: Email::Regex}, allow_blank: true
 
-	attr_accessor :email, :city_state
+	attr_accessor :email
 
 	mount_uploader :picture, ProfileUploader
 
@@ -33,7 +31,7 @@ class Profile < ApplicationRecord
 	has_many :recurring_donations
 	has_many :nonprofits, through: :supporters
 	has_many :activities, dependent: :destroy
-#	has_one :card, as: :holder
+  # has_one :card, as: :holder
 
 	#accepts_nested_attributes_for :card
 
@@ -45,11 +43,14 @@ class Profile < ApplicationRecord
 	end
 
 	def set_defaults
-		self.name    ||= self.user.name    if self.user
-		self.email   ||= self.user.email   if self.user
-		self.picture ||= self.user.picture if self.user
+    if self.user
+      self.name ||= self.user.name
+      self.email ||= self.user.email
+      self.picture ||= self.user.picture
+    end
+
 		if self.name.blank? && self.first_name.present? && self.last_name.present?
-			self.name    ||= self.first_name + ' ' + self.last_name
+      self.name ||= self.full_name
 		end
 	end
 
@@ -91,7 +92,7 @@ class Profile < ApplicationRecord
 		return Image::DefaultProfileUrl
 	end
 
-	def url 
+	def url
 		Rails.application.routes.url_helpers.profile_path(self)
 	end
 
@@ -103,7 +104,7 @@ class Profile < ApplicationRecord
 	end
 
 	# Cache setters
-	
+  # TODO: Is this still called?
 	def set_caches!
 		self.total_raised = self.donations.pluck(:amount).sum
 		self.total_recurring = self.recurring_donations.active.pluck(:amount).sum
