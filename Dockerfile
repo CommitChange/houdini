@@ -54,11 +54,11 @@ RUN yarn install
 
 RUN ls -lart /app
 
-RUN sh debug.sh
-RUN mkdir node_modules
+#RUN sh debug.sh
+#RUN mkdir node_modules
 
-RUN ls -lart /app/node_modules
-COPY --chown=rails node_modules node_modules
+RUN ls -lart node_modules
+#COPY --chown=rails node_modules node_modules
 
 RUN gem install bundler:2.4.20
 RUN bundle install

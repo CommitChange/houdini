@@ -6,7 +6,7 @@
     "url": "https://github.com/houdiniproject/houdini"
   },
   "scripts": {
-    "watch": "export HOUDINI_WATCH=1; script/build.sh",
+    "watch": "yarn webpack --watch",
     "build": "script/build.sh",
     "build-all": "yarn --frozen-lockfile && script/compile-assets.sh && yarn build",
     "build-all-staging": "export RAILS_ENV=staging; export NODE_ENV=development; yarn --frozen-lockfile && script/compile-assets.sh && yarn build",
