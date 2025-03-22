@@ -38,35 +38,14 @@ USER rails
 WORKDIR /app
 
 COPY --chown=rails package.json yarn.lock Gemfile Gemfile.lock .ruby-version .tool-versions ./
-RUN ls -lart
 COPY --chown=rails gems gems
-RUN ls -lart
 
-# COPY --chown=rails vendor vendor
-# run mkdir vendor
-
-RUN echo $PATH
-# RUN set
-
-RUN node -v
-RUN yarn -v
 RUN yarn install
-
-RUN ls -lart /app
-
-#RUN sh debug.sh
-#RUN mkdir node_modules
-
-RUN ls -lart node_modules
-#COPY --chown=rails node_modules node_modules
 
 RUN gem install bundler:2.4.20
 RUN bundle install
 
-# COPY . ${RAILS_ROOT}
-
 #RUN curl https://cli-assets.heroku.com/install.sh | sh
-
 
 # -----------------------------------------------
 FROM base AS dev
@@ -76,7 +55,6 @@ USER rails
 WORKDIR /app
 
 COPY --chown=rails:rails --from=base "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-# COPY --from=base --chown=rails:rails /app /app
 COPY --chown=rails:rails bin/ bin/
 COPY --chown=rails:rails config/ config/
 
@@ -89,7 +67,6 @@ ENV PORT 3000
 #RUN touch /home/app/.netrc && \
     #mkdir -p tmp/pids
 RUN mkdir -p tmp/pids
-
 RUN chown rails:rails /app
 
 # ENTRYPOINT ["bin/docker-entrypoint"]

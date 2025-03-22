@@ -1,6 +1,4 @@
 #!/bin/bash
-
-
 (
 echo $HOUDINI_WATCH
 set -e
