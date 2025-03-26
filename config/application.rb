@@ -1,13 +1,17 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 
-require File.expand_path('../boot', __FILE__)
-
+require_relative 'boot'
 require 'rails/all'
 
-Bundler.require *Rails.groups(:assets) if defined?(Bundler)
+# Require the gems listed in Gemfile, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(*Rails.groups)
 
 module Commitchange
 	class Application < Rails::Application
+		# Initialize configuration defaults for originally generated Rails version.
+		config.load_defaults 5.2
+
 		# Settings in config/environments/* take precedence over those specified here.
 		# Application configuration should go into files in config/initializers
 		# -- all .rb files in that directory are automatically loaded.
@@ -79,10 +83,18 @@ module Commitchange
 		#
 		#config.browserify_rails.commandline_options = "-t [ babelify --presets es2015 ]"
 
-		config.session_store ActionDispatch::Session::CacheStore, :expire_after => 12.hours
+		# Require `belongs_to` associations by default. Previous versions had false.
+		# it's a bunch of work to verify everything that should be marked optional actually is.
+		# we should do that over time.
+		# Added in rails 5.0
+		config.active_record.belongs_to_required_by_default = false
 
-		# opt into raising errors in transactional callbacks so the deprecation warning goes away
-		config.active_record.raise_in_transactional_callbacks = true
+		# just have unknown assets return path like they did before Rails 5.1
+		Rails.application.config.assets.unknown_asset_fallback = true
+
+		# keep our forgery protection in ApplicationController, not ActionController::BaseController
+		# added in Rails 5.2
+		config.action_controller.default_protect_from_forgery = false
 
 		config.middleware.insert_before 0, Rack::Cors do
 			allow do
