@@ -128,7 +128,6 @@ group :test do
   gem 'webmock'
   gem 'capybara'
   gem 'cuprite'
-  gem 'selenium-webdriver'
 end
 
 # Gems used for asset compilation
