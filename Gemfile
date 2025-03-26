@@ -190,5 +190,3 @@ gem 'has_scope'
 gem 'globalid', git: "https://github.com/CommitChange/globalid.git", tag: "0.4.2.1"
 
 gem 'js-routes'
-
-gem "evil_systems", "~> 1.1", :group => :test

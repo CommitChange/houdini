@@ -236,9 +236,6 @@ GEM
       dry-types (~> 0.12.0)
     equalizer (0.0.11)
     erubis (2.7.0)
-    evil_systems (1.1.5)
-      capybara
-      zeitwerk (>= 2)
     factory_bot (5.2.0)
       activesupport (>= 4.2.0)
     factory_bot_rails (5.2.0)
@@ -545,7 +542,6 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yard (0.9.36)
-    zeitwerk (2.6.18)
 
 PLATFORMS
   ruby
@@ -576,7 +572,6 @@ DEPENDENCIES
   devise (~> 4.1)
   dotenv-rails
   dry-validation
-  evil_systems (~> 1.1)
   factory_bot
   factory_bot_rails
   faker
