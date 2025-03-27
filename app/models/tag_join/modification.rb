@@ -5,8 +5,7 @@ class TagJoin::Modification
   attr_reader :tag_master_id, :selected
 
   def initialize(opts={})
-    # TODO move the parameters further out
-    assign_attributes(ActionController::Parameters.new(opts).permit(:tag_master_id, :selected))
+    assign_attributes(opts)
   end
 
   def tag_master_id=(value)
@@ -25,10 +24,10 @@ class TagJoin::Modification
   private
 
   def cast_boolean(value)
-    ActiveRecord::Type::Boolean.new.type_cast_from_user(value)
+    ActiveRecord::Type::Boolean.new.cast(value)
   end
 
   def cast_integer(value)
-    ActiveRecord::Type::Integer.new.type_cast_from_user(value)
+    ActiveRecord::Type::Integer.new.cast(value)
   end
 end

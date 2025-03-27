@@ -3,9 +3,11 @@ source 'https://rubygems.org'
 ruby ENV['CUSTOM_RUBY_VERSION'] || '2.6.10' # heroku needs a specific ruby version in the Gemfile
 
 gem 'rake'
-gem 'rails', '~> 4.0'
+gem 'rails', '~> 6.0.6.1'
+gem 'mail', '= 2.7.1' # 2.8.1 on Rails 5.0 and Ruby 2.6 raises a `an superclass mismatch for class InternetMessageIO` error
+gem 'sprockets', '~> 3.7' # Sprockets 4.0 stops allowing us to add a proc to the config.assets.precompile array, which we currently use
 
-gem 'rack', git: "https://github.com/CommitChange/rack.git", branch: "1-6-stable"
+gem 'rack', '~> 2.2.13'
 
 gem 'date', '~> 2.0.3'
 
@@ -24,7 +26,6 @@ gem 'kaminari'
 
 gem 'bootsnap', require: false
 gem 'rack-timeout'
-gem 'puma_worker_killer'
 
 gem 'test-unit'
 gem 'hamster'
@@ -93,19 +94,15 @@ gem 'rails-i18n' # For 4.0.x
 gem 'i18n-js'
 gem 'countries'
 
-
-group :development, :ci do
-  gem 'traceroute'
-end
-
 group :development, :ci, :test do
+  gem 'listen'
   gem 'letter_opener'
 	gem 'timecop'
 	gem 'pry'
 	gem 'pry-byebug'
 	gem 'binding_of_caller'
   gem 'rspec', "~> 3"
-	gem 'rspec-rails', "~> 4"
+	gem 'rspec-rails', "~> 5"
 	gem 'database_cleaner'
   gem 'dotenv-rails'
 	gem 'stripe-ruby-mock', '~> 2.5.1', :require => 'stripe_mock'
@@ -135,7 +132,7 @@ gem 'sassc-rails'
 # make logging less terrible in rails
 gem 'lograge'
 
-gem 'config', '> 1.5'
+gem 'config', '~> 2.0'
 gem 'dry-validation' # used only for config validation
 
 gem 'foreman'
@@ -149,17 +146,14 @@ end
 
 
 group :production, :staging do
-  gem 'heroku_rails_deflate'
+  gem 'heroku-deflater'
   gem "hiredis", "~> 0.6.0"
   gem "redis", ">= 3.2.0"
   gem 'redis-actionpack'
-  gem 'rails_12factor'
 end
 
-gem 'grape', '~> 1.1.0'
+gem 'grape', '~> 1.8.0'
 gem 'grape-entity', git: 'https://github.com/ruby-grape/grape-entity.git', ref: '0e04aa561373b510c2486282979085eaef2ae663'
-gem 'grape-swagger'
-gem 'grape-swagger-entity'
 gem 'grape_url_validator'
 gem 'grape_logging'
 
@@ -171,7 +165,7 @@ gem 'connection_pool'
 
 gem "barnes"
 
-gem 'protected_attributes' # because we upgraded from 3
+gem 'protected_attributes_continued' # because we upgraded from 3 and then 4
 
 gem 'actionpack-action_caching' # because we use action caching
 
@@ -179,12 +173,10 @@ gem 'rack-cors'
 
 gem 'ruby2_keywords' # needed because we're backporting code from Rails 6.2
 
-gem 'securerandom' # needed becuase we're on a pre-2.5 Ruby version
-
 gem 'fx',  git: 'https://github.com/teoljungberg/fx.git', ref: '946cdccbd12333deb8f4566c9852b49c0231a618'
 
 gem 'has_scope'
 
-gem 'globalid', git: "https://github.com/CommitChange/globalid.git", tag: "0.4.2.1"
+gem 'globalid', ">= 1.0.1"
 
 gem 'js-routes'
