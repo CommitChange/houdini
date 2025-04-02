@@ -847,11 +847,6 @@ describe QueryPayments do
           expect(sort_order[:data].count).to eq 2
           expect(sort_order[:data]).to_not include donation_result_tomorrow
 
-
-          # result = QueryPayments::full_search(nonprofit.id, {campaign_id: campaign.id})
-          # sort_order = result.map { |o| o[:campaign_id] }.sort_by { |id| -hash[id][:campaign] }
-          # expect(sort_order[:data].count).to eq 2
-          # expect(sort_order[:data]).to_not include donation_result_tomorrow
         end 
       end 
     end
