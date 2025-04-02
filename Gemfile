@@ -59,8 +59,8 @@ gem 'chronic'
 
 # Images
 # https://github.com/carrierwaveuploader/carrierwave
-gem 'carrierwave', '~> 1', '< 2'
-gem 'carrierwave-aws' # for uploading images to amazon s3
+gem 'carrierwave', '~> 2.0'
+gem 'fog-aws'
 gem 'mini_magick'
 
 # https://github.com/jnunemaker/httparty
