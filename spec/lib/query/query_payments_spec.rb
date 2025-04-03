@@ -837,13 +837,11 @@ describe QueryPayments do
 
       context 'and sorts results' do 
         it 'returns sorted campaign results' do 
-          donation_results = [
-          donation_result_today,
-          donation_result_tomorrow,
+          donation_result_today
+          donation_result_tomorrow
           donation_result_yesterday
-        ]
 
-          sort_order = donation_results.sort
+          result = QueryPayments::full_search(nonprofit.id, {campaign_id: campaign.id}).sort 
           expect(sort_order[:data].count).to eq 2
           expect(sort_order[:data]).to_not include donation_result_tomorrow
 
