@@ -55,6 +55,7 @@ class Nonprofit < ApplicationRecord
   has_many :payouts
   has_many :charges
   has_many :refunds, through: :charges
+  has_many :disputes, through: :charges
   has_many :donations
   has_many :recurring_donations
   has_many :payments do
@@ -63,7 +64,7 @@ class Nonprofit < ApplicationRecord
     end
 
     def pending_totals
-      net, gross = pending.pluck('SUM("payments"."net_amount") AS net, SUM("payments"."gross_amount") AS gross').first
+      net, gross = pending.pluck(Arel.sql('SUM("payments"."net_amount") AS net, SUM("payments"."gross_amount") AS gross')).first
       {'net' => net, 'gross' => gross}
     end
 
@@ -79,7 +80,7 @@ class Nonprofit < ApplicationRecord
       end
     end
   end
-  has_many :transactions, through: :supporters
+  
   has_many :supporters, dependent: :destroy do
     def dupes_on_email(strict_mode = true)
       QuerySupporters.dupes_on_email(proxy_association.owner.id, strict_mode)
@@ -129,15 +130,16 @@ class Nonprofit < ApplicationRecord
       QuerySupporters.for_export_enumerable(proxy_association.owner.id, query, chunk_limit)
     end
   end
+  has_many :transactions, through: :supporters
   has_many :supporter_notes, through: :supporters
   has_many :profiles, through: :donations
   has_many :campaigns, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :tickets, through: :events
+  has_many :roles,        as: :host, dependent: :destroy
   has_many :users, through: :roles
   has_many :tag_masters, dependent: :destroy
   has_many :custom_field_masters, dependent: :destroy
-  has_many :roles,        as: :host, dependent: :destroy
   has_many :activities,   as: :host, dependent: :destroy
   has_many :imports
   has_many :email_settings

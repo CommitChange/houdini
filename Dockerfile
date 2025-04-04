@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG BASE_IMAGE=ruby
-ARG RUBY_VERSION=2.6.10
+ARG RUBY_VERSION=2.7.8
 ARG BASE_TAG=${RUBY_VERSION}-slim
 ARG BASE=${BASE_IMAGE}:${BASE_TAG}
 
@@ -42,7 +42,7 @@ FROM ${BASE}
 
 ENV LANG en_US.UTF-8
 RUN apt-get update -qq \
-  && apt-get install -y libjemalloc2 tzdata libv8-dev curl default-jre git build-essential libpq-dev \
+  && apt-get install -y libjemalloc2 tzdata libv8-dev curl git build-essential libpq-dev \
   && curl -sL https://deb.nodesource.com/setup_16.x | bash \
   && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
   && echo "deb https://dl.yarnpkg.com/debian/ stable main" \

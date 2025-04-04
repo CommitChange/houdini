@@ -1,6 +1,6 @@
 # CommitChange's version of Houdini
 
-This is a Rails 4.2 app.
+This is a Rails 6.0 app.
 
 The frontend is written in a few custom frameworks, the largest of which is called Flimflam.
 We endeavor to migrate to React as quickly as possible to increase development
@@ -13,9 +13,9 @@ All backend code and React components should be well-tested
 
 Houdini is designed and tested to run with the following:
 
-* Ruby 2.6
-* Node 14
-* PostgreSQL 12
+* Ruby 2.7
+* Node 16
+* PostgreSQL 16
 * run on Heroku-20
 
 ## Dev Setup
@@ -41,7 +41,7 @@ One-time setup:
 ```bash
 touch ~/.netrc #prevents docker compose from creating it as a directory if you don't have it yet
 
-docker-compose run web bin/rake db:setup
+docker-compose run web bin/rails db:setup
 ```
 
 Running:
@@ -110,7 +110,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 Ruby install
 ```bash
 cd houdini
-rbenv install 2.6
+rbenv install 2.7
 ```
 
 Run the following command as the `postgres` user and then enter your admin
@@ -130,11 +130,11 @@ Set your Ruby version with `rbenv`.
 ```bash
 brew install rbenv
 rbenv versions # see which ruby versions are already installed
-rbenv install  # the app currently uses version 2.6.10
+rbenv install  # the app currently uses version 2.7.8
 rbenv local # rbenv local --unset reverses the action
 
 # To switch between rbenv versions installed locally, use the following command:
-rbenv shell 2.6.10
+rbenv shell 2.7.8
 
 ```
 
@@ -207,7 +207,7 @@ When you run foreman in dev, you start up the server, the job runner and webpack
 foreman start
 ```
 
-If you get `ActiveRecord::NoDatabaseError` errors, run `bin/rake db:create:all` to make sure all the databases are built.
+If you get `ActiveRecord::NoDatabaseError` errors, run `bin/rails db:create:all` to make sure all the databases are built.
 
 ## Frontend
 
@@ -336,6 +336,13 @@ git push production HEAD:master
 
 * Run the workflow at https://github.com/CommitChange/deploy-houdini/actions/workflows/create-release.yml.
 * Once the deploy finishes, increase ASSET_VERSION in https://dashboard.heroku.com/apps/commitchange-test/settings by 1
+* To get the latest backup of the prod database on staging, you need to run the following command locally. NOTE: this will
+override any changes you've made in the staging database.
+
+```
+heroku pg:backups:restore $(heroku pg:backups:url --app commitchange) --app commitchange-test
+```
+
 
 ## Creating issues
 
