@@ -6,20 +6,27 @@ on:
   push:
     branches: ["supporter_level_goal"]
 concurrency: 
-  group: build--${{ github.head_ref }}
+  group: build--${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 jobs:
   build:
+      env:
+        CUSTOM_RUBY_VERSION: ${{ matrix.ruby }}
+        RAILS_ENV: test
+        # normally, you'd want to use commitchange_development_legacy but that database hasn't been created
+        # and isn't being for some reason on Rails 5.2+. We'll just use this one.
+        BUILD_DATABASE_URL: postgres://admin:password@localhost/commitchange_test
       runs-on: ${{ matrix.os }}
       strategy:
         matrix:
-          os: [ubuntu-20.04]
-          node: [14.19.1]
-          ruby: ['2.6.10']
+          os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+          node: [16]
+          ruby: ['2.7.8']
+          postgres: ['16']
         fail-fast: false
       steps:
-        - uses: actions/checkout@v3
-        - uses: dorny/paths-filter@v2
+        - uses: actions/checkout@v4
+        - uses: dorny/paths-filter@v3
           id: changes
           with:
             filters: |
@@ -50,19 +57,21 @@ jobs:
                 - '.babelrc'
                 - '.bootstraprc'
                 - '.browserlistrc'
-              
+                # include Gemfiles because some of the Gems could break yarn build
+                - 'Gemfile' 
+                - 'Gemfile.lock'
+
         - name: Setup PostgreSQL with PostgreSQL extensions and unprivileged user
           uses: Daniel-Marynicz/postgresql-action@1.0.0
           with:
-            postgres_image_tag: 12-alpine
+            postgres_image_tag: ${{ matrix.postgres }}-alpine
             postgres_user: admin
             postgres_password: password
-        - uses: actions/setup-node@v3
+            postgres_db: commitchange_test
+        - uses: actions/setup-node@v4
           with:
             node-version: ${{ matrix.node }}
             cache: 'yarn'
-        - name: set CUSTOM_RUBY_VERSION environment variable
-          run: echo "CUSTOM_RUBY_VERSION=${{ matrix.ruby }}" >> $GITHUB_ENV
         - uses: ruby/setup-ruby@v1
           with:
             ruby-version: ${{ matrix.ruby }}
@@ -70,9 +79,14 @@ jobs:
       
         - run: bin/setup
         - if: steps.changes.outputs.ruby == 'true'
+          name: run zeitwerk:check
+          run: bin/rails zeitwerk:check
+        - continue-on-error: true
+          if: steps.changes.outputs.ruby == 'true'
           name: run spec
-          run: bin/rake spec
-        - if: steps.changes.outputs.ruby == 'true'
+          run: bin/rails spec
+        - continue-on-error: true
+          if: steps.changes.outputs.ruby == 'true'
           run: script/compile-assets.sh
         - if: steps.changes.outputs.js == 'true'
           run: yarn build

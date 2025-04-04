@@ -7,29 +7,6 @@ require File.expand_path('../../config/environment', __FILE__)
 
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
-module ActionController::TestCase::Behavior
-  def raw_post(action, params, body)
-    @request.env['RAW_POST_DATA'] = body
-    response = post(action, params)
-    @request.env.delete('RAW_POST_DATA')
-    response
-  end
-end
-
-if RUBY_VERSION>='2.6.0'
-  if Rails.version < '5'
-    class ActionController::TestResponse < ActionDispatch::TestResponse
-      def recycle!
-        # hack to avoid MonitorMixin double-initialize error:
-        @mon_mutex_owner_object_id = nil
-        @mon_mutex = nil
-        initialize
-      end
-    end
-  else
-    puts "Monkeypatch for ActionController::TestResponse no longer needed"
-  end
-end
 
 require 'spec_helper'
 require 'rspec/rails'
@@ -98,6 +75,7 @@ RSpec.configure do |config|
   end
 
   config.include ActionMailerMatchers
+
   config.before(:suite) do
 
     DatabaseCleaner.strategy = :transaction

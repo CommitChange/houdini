@@ -1,6 +1,6 @@
 # CommitChange's version of Houdini
 
-This is a Rails 4.2 app.
+This is a Rails 6.0 app.
 
 The frontend is written in a few custom frameworks, the largest of which is called Flimflam.
 We endeavor to migrate to React as quickly as possible to increase development
@@ -13,9 +13,9 @@ All backend code and React components should be well-tested
 
 Houdini is designed and tested to run with the following:
 
-* Ruby 2.6
-* Node 14
-* PostgreSQL 12
+* Ruby 2.7
+* Node 16
+* PostgreSQL 16
 * run on Heroku-20
 
 ## Dev Setup
@@ -24,6 +24,43 @@ Houdini is designed and tested to run with the following:
 ```bash
 git clone https://github.com/Commitchange/houdini
 git checkout supporter_level_goal
+```
+
+##### Get your .env file
+If you don't already have access to the CommitChange 1Password vault, ask to be added. Then
+download the .env file in 1Password and place it in the root directory.
+
+> *Note:* Double check that your .env file has the '.' in front of the file name.
+
+#### Dockerized
+This is a work-in-progress method of running a development environment. The standard is still the bare metal instructions below.
+
+Mac users can ignore this, but if your host machine is Linux, you might run into permission issues with the tmp files created by the postgres image. To proactively avoid this, run `cp docker-compose.override.yml.example docker-compose.override.yml` and change the values inside the newly copied file to match the output of `echo $(id -u):$(id -g)`
+
+One-time setup:
+```bash
+touch ~/.netrc #prevents docker compose from creating it as a directory if you don't have it yet
+
+docker-compose run web bin/rails db:setup
+```
+
+Running:
+```bash
+docker-compose up
+```
+
+Restoring the DB from Prod (Linux):
+```bash
+# Enter `password` when prompted for a password after the download step.
+docker-compose exec web script/restore_from_heroku.sh
+```
+
+Restoring the DB from Prod (Mac). The above command will work on Mac, but will take an hour or more due to differences in how docker handles storage. Use the below to reduce how long it takes (will still take a long time).
+```bash
+curl -o ./tmp/shared/latest.dump `heroku pg:backups:url -a commitchange`
+
+# Enter `password` when prompted for a password.
+docker-compose exec db -e CC_PROD_DUMP_PATH="/tmp/shared/latest.dump" script/pg_restore_local_from_production.sh
 ```
 
 #### One-time setup (Ubuntu)
@@ -73,7 +110,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 Ruby install
 ```bash
 cd houdini
-rbenv install 2.6
+rbenv install 2.7
 ```
 
 Run the following command as the `postgres` user and then enter your admin
@@ -93,11 +130,11 @@ Set your Ruby version with `rbenv`.
 ```bash
 brew install rbenv
 rbenv versions # see which ruby versions are already installed
-rbenv install  # the app currently uses version 2.6.10
+rbenv install  # the app currently uses version 2.7.8
 rbenv local # rbenv local --unset reverses the action
 
 # To switch between rbenv versions installed locally, use the following command:
-rbenv shell 2.6.10
+rbenv shell 2.7.8
 
 ```
 
@@ -117,16 +154,32 @@ echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This
 # Reference Stack Overflow post: https://stackoverflow.com/questions/53118850/brew-install-nvm-nvm-command-not-found
 ```
 
+Make sure you've installed Yarn.
+
+```bash
+yarn --version
+brew install yarn
+```
+
 Set your Postgres version with homebrew.
 
 ```bash
-brew install postgresql@12
-brew switch postgres@12
+brew install postgresql@16
+brew switch postgres@16
 
 # To start postgres locally run:
-brew services start postgresql@12
+brew services start postgresql@16
 
 ```
+
+You might get segmentation faults if you don't configure `pg` with the correct macports. One of these should work.
+```bash
+gem install pg -- --with-pg-config="${HOMEBREW_PREFIX}/opt/libpq/bin/pg_config"
+# Or?
+bundle config build.pg --with-pg-config="${HOMEBREW_PREFIX}/opt/libpq/bin/pg_config"
+```
+
+You may also need to set the env variable `PGGSSENCMODE=disable` to resolve segmentation faults.
 
 Create necessary postgres users in the `psql` console.
 
@@ -136,18 +189,15 @@ CREATE ROLE admin WITH SUPERUSER CREATEDB LOGIN PASSWORD 'password';
 CREATE ROLE postgres WITH SUPERUSER CREATEDB LOGIN PASSWORD 'password';
 ```
 
+You may need to disable AirPlay Receiver in your System Settings if it is hogging port 5000.
+
+
 #### System configuration (all)
 There are a number of steps for configuring your Houdini instance for startup
 ##### Run bin/setup
 ```sh
 bin/setup
 ```
-
-##### Get your .env file
-If you don't already have access to the CommitChange 1Password vault, ask to be added. Then
-download the .env file in 1Password and place it in the root directory.
-
-> *Note:* Double check that your .env file has the '.' in front of the file name.
 
 #### Startup
 ##### run foreman for development
@@ -157,7 +207,7 @@ When you run foreman in dev, you start up the server, the job runner and webpack
 foreman start
 ```
 
-If you get `ActiveRecord::NoDatabaseError` errors, run `bin/rake db:create:all` to make sure all the databases are built.
+If you get `ActiveRecord::NoDatabaseError` errors, run `bin/rails db:create:all` to make sure all the databases are built.
 
 ## Frontend
 
@@ -286,6 +336,13 @@ git push production HEAD:master
 
 * Run the workflow at https://github.com/CommitChange/deploy-houdini/actions/workflows/create-release.yml.
 * Once the deploy finishes, increase ASSET_VERSION in https://dashboard.heroku.com/apps/commitchange-test/settings by 1
+* To get the latest backup of the prod database on staging, you need to run the following command locally. NOTE: this will
+override any changes you've made in the staging database.
+
+```
+heroku pg:backups:restore $(heroku pg:backups:url --app commitchange) --app commitchange-test
+```
+
 
 ## Creating issues
 

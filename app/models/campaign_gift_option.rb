@@ -1,5 +1,5 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-class CampaignGiftOption < ActiveRecord::Base
+class CampaignGiftOption < ApplicationRecord
 
 	attr_accessible \
 		:amount_one_time, #int (cents)
@@ -13,13 +13,12 @@ class CampaignGiftOption < ActiveRecord::Base
 		:order, #int (optional) 
 		:hide_contributions #boolean (optional) 
 
-	belongs_to :campaign
+	belongs_to :campaign, required: true
 	has_many :campaign_gifts
 	has_many :donations, through: :campaign_gifts
 	has_one :nonprofit, through: :campaign
 
 	validates :name, presence: true
-	validates :campaign, presence: true
 	validates :amount_one_time,  presence: true, numericality: { only_integer: true }, unless: :amount_recurring
 	validates :amount_recurring, presence: true, numericality: { only_integer: true }, unless: :amount_one_time
 

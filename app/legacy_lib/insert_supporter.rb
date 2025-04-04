@@ -12,7 +12,7 @@ module InsertSupporter
     address_keys = ['name', 'address', 'city', 'country', 'state_code']
     custom_fields = data['customFields']
     tags = data['tags']
-    data = HashWithIndifferentAccess.new(Format::RemoveDiacritics.from_hash(data, address_keys))
+    data = HashWithIndifferentAccess.new(Format::RemoveDiacritics.from_hash(data.to_deprecated_h, address_keys))
       .except(:customFields, :tags)
     nonprofit = Nonprofit.find(np_id)
 
@@ -28,8 +28,6 @@ module InsertSupporter
     InsertTagJoins.find_or_create(np_id, [supporter['id']], tags) if tags.present?
 
     #GeocodeModel.delay.supporter(supporter['id'])
-    InsertFullContactInfos.enqueue([supporter['id']])
-
     return supporter
   end
 
