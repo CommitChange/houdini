@@ -1,14 +1,9 @@
 // License: LGPL-3.0-or-later
 const thunk = require('vdom-thunk')
 const h = require('virtual-dom/h')
-const flyd = require('flyd')
 const showMoreBtn = require('../../../components/show-more-button.es6')
-const format = require("../../../common/format")
-const date = format.date
-const sql = format.sql
 
 const root = state => {
-  console.log({state})
 	var supporters = state.get('supporters')
 	if(state.get('loading')) {
 		return h('p.noResults', ' Loading...')

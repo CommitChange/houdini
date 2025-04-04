@@ -21,6 +21,8 @@ const format = require('../../common/format')
 const brandedWizard = require('../../components/styles/branded-wizard')
 const renderStyles = require('../../components/styles/render-styles')
 
+const closeButton = require('../../../../app/assets/images/ui_components/close.svg')
+
 renderStyles()(brandedWizard(null))
 
 // pass in a stream of configuration parameters
@@ -154,34 +156,42 @@ const postDedication = (dedication, donor, donation) => {
   }).load)
 }
 
+const titleInfo = state => {
+  if (state.params$().title_image_url) {
+    return [
+      h('img', {
+        props: {
+          src: state.params$().title_image_url
+        , alt: state.params$().title_image_alt || app.campaign.tagline || app.nonprofit.tagline || ''
+        },
+      }),
+    ];
+  }
+
+  return [
+    h('h2', app.campaign.name || app.nonprofit.name)
+  , h('p', [
+      state.params$().designation && !state.params$().single_amount
+        ? headerDesignation(state)
+        : app.campaign.tagline || app.nonprofit.tagline || '',
+    ]),
+  ];
+}
+
 const view = state => {
   return h('div.js-donateForm', {
     class: {'is-modal': state.params$().offsite}
   }, [
     h('img.closeButton', {
-      props: {src: '/assets/ui_components/close.svg'}
+      props: {src: closeButton}
       , on: {click: ev => state.params$().offsite && !state.params$().embedded ? parent.postMessage('commitchange:close', '*') : null}
       , class: {'u-hide': (state.params$().embedded || state.params$().mode === 'embedded') || !state.params$().offsite }
     })
   , h('div.titleRow', [
-      h('img', {props: {src: app.nonprofit.logo.normal.url}})
-    , h('div.titleRow-info', [
-        h('h2', app.campaign.name || app.nonprofit.name )
-      , h('p', [
-          state.params$().designation && !state.params$().single_amount
-          ? headerDesignation(state)
-          : app.campaign.tagline || app.nonprofit.tagline || ''
-        ])
-      ])
+      h('img.logo', {props: {src: app.nonprofit.logo.normal.url}})
+    , h('div.titleRow-info', titleInfo(state))
     ])
   , wizardWrapper(state)
-  , h('footer.donateForm-footer', {
-      class: {'u-hide': !app.user}
-    }, [
-      h('span', `${I18n.t('nonprofits.donate.signed_in')} `)
-    , h('strong', String(app.user && app.user.email))
-    , h('a.logout-button', {on: {click: state.clickLogout$}}, ` ${I18n.t('nonprofits.donate.log_out')}`)
-    ])
   ])
 }
 

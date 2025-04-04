@@ -1,7 +1,7 @@
 // License: LGPL-3.0-or-later
 const flyd = require('flyd')
 const h = require('snabbdom/h')
-const R = require('ramda')
+const pick = require('lodash/pick')
 const autocomplete = require('./address-autocomplete')
 flyd.filter = require('flyd/module/filter')
 flyd.lift = require('flyd/module/lift')
@@ -10,14 +10,15 @@ autocomplete.initScript()
 
 function init(state, params$) {
   state = state||{}
-  state = R.merge({
+  state = {
     isManual$: flyd.stream(!app.autocomplete)
-  , data$: flyd.stream(app.profile ? R.pick(['address', 'city', 'state_code', 'zip_code'], app.profile) : {})
+  , data$: flyd.stream(app.profile ? pick(app.profile, ['address', 'city', 'state_code', 'zip_code']) : {})
   , autocompleteInputInserted$: flyd.stream()
-  }, state)
+  , ...state
+  }
 
   const loaded$ = flyd.filter(
-    R.identity
+    i => i
   , flyd.lift((x, input) => input, autocomplete.loaded$, state.autocompleteInputInserted$) )
   
   state.autoData$ = flyd.flatMap(
@@ -36,7 +37,7 @@ function calculateToShip(state)
 }
 
 function view(state) {
-  return h('section.u-padding--5.pastelBox--grey clearfix', [
+  return h('section.address', [
     calculateToShip(state)
     ? h('label.u-centered.u-marginBottom--5', [
         'Shipping address (required)'
@@ -61,8 +62,8 @@ const autoField = state => {
 }
 
 const manualFields = state => {
-  return h('div', [
-    h('fieldset.col-8.u-fontSize--14', [
+  return h('div.manual-address-fields', [
+    h('fieldset.u-fontSize--14', [
       h('input.u-marginBottom--0', {props: {
         type: 'text'
       , title: 'Street Addresss'
@@ -72,7 +73,7 @@ const manualFields = state => {
           , required: calculateToShip(state) ? state.params$().gift_option.to_ship : undefined
       }})
     ])
-  , h('fieldset.col-right-4.u-fontSize--15', [
+  , h('fieldset.u-fontSize--15', [
       h('input.u-marginBottom--0', {props: {
         type: 'text'
       , name: 'city'
@@ -82,7 +83,7 @@ const manualFields = state => {
           , required: calculateToShip(state) ? state.params$().gift_option.to_ship : undefined
       }})
     ])
-  , h('fieldset.u-marginBottom--0.u-floatL.col-4', [
+  , h('fieldset.u-marginBottom--0', [
       h('input.u-marginBottom--0', {props: {
         type: 'text'
       , name: 'state_code'
@@ -92,7 +93,7 @@ const manualFields = state => {
           , required: calculateToShip(state) ? state.params$().gift_option.to_ship : undefined
       }})
     ])
-  , h('fieldset.u-marginBottom--0.u-floatL.col-right-4.u-fontSize--14', [
+  , h('fieldset.u-marginBottom--0.u-fontSize--14', [
       h('input.u-marginBottom--0', {props: {
         type: 'text'
       , title: 'Zip/Postal'
@@ -102,7 +103,7 @@ const manualFields = state => {
       , required: calculateToShip(state) ? state.params$().gift_option.to_ship : undefined
       }})
     ])
-  , h('fieldset.u-marginBottom--0.u-floatL.col-right-4', [
+  , h('fieldset.u-marginBottom--0', [
       h('input.u-marginBottom--0', {props: {
         type: 'text'
       , title: 'Country'
@@ -111,7 +112,7 @@ const manualFields = state => {
       , value: state.data$().country
       , required: calculateToShip(state) ? state.params$().gift_option.to_ship : undefined
       }})
-    ]), h('p.u-margin--0.u-centered', { style: { display: !!app.autocomplete ? 'block' : 'none' } }, [
+    ]), h('p.u-margin--0.search-link', { style: { display: !!app.autocomplete ? 'block' : 'none' } }, [
       h('a', {on: {click: [state.isManual$, false]}}, [h('small', 'Search for your address')])
     ])
   ])

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`customFields sets the the field correctly 1`] = `
+exports[`customFields with index sets the the field correctly 1`] = `
 Object {
   "children": Array [
     Object {

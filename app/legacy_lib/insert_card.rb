@@ -1,5 +1,4 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-require 'hash'
 module InsertCard
 
 
@@ -21,7 +20,7 @@ module InsertCard
     def self.with_stripe(card_data, stripe_account_id=nil, event_id=nil, current_user = nil)
 
     begin
-      ParamValidation.new(card_data.merge({event_id: event_id}), {
+      ParamValidation.new(card_data.to_deprecated_h.merge({event_id: event_id}), {
           holder_type: {required: true, included_in: ['Nonprofit', 'Supporter']},
           holder_id: {required: true},
           stripe_card_id: {not_blank: true, required: true},
@@ -37,7 +36,7 @@ module InsertCard
 
     # validate that the user is with the correct nonprofit
 
-    card_data = card_data.keep_keys(:holder_type, :holder_id, :stripe_card_id, :stripe_card_token, :name )
+    card_data = card_data.slice(:holder_type, :holder_id, :stripe_card_id, :stripe_card_token, :name )
     holder_types = {'Nonprofit' => :nonprofit, 'Supporter' => :supporter}
     holder_type = holder_types[card_data[:holder_type]]
     holder = nil
@@ -118,7 +117,7 @@ module InsertCard
       return {json: {error: "Oops! There was an error saving your card, and it did not complete. Please try again in a moment. Error: #{e}"}, status: :unprocessable_entity}
     end
 
-    return { status: :ok, json: card.attributes.with_indifferent_access.merge(token: source_token) }
+    return { status: :ok, json: card.attributes.to_deprecated_h.with_indifferent_access.merge(token: source_token) }
   end
 
   def self.customer_data(holder, card_data)
