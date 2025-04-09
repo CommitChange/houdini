@@ -21,7 +21,7 @@ jobs:
         matrix:
           os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
           node: [16]
-          ruby: ['2.6.10']
+          ruby: ['2.7.8']
           postgres: ['16']
         fail-fast: false
       steps:
@@ -78,10 +78,12 @@ jobs:
             bundler-cache: true
       
         - run: bin/setup
-        - continue-on-error: true
-          if: steps.changes.outputs.ruby == 'true'
+        - if: steps.changes.outputs.ruby == 'true'
+          name: run zeitwerk:check
+          run: bin/rails zeitwerk:check
+        - if: steps.changes.outputs.ruby == 'true'
           name: run spec
-          run: bin/rake spec
+          run: bin/rails spec
         - continue-on-error: true
           if: steps.changes.outputs.ruby == 'true'
           run: script/compile-assets.sh
