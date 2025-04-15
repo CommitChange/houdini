@@ -2,8 +2,6 @@
 Rails.application.routes.draw do
  	# For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  mount Houdini::API => '/api'
-
   if Rails.env == 'development'
     get '/button_debug/embedded' => 'button_debug#embedded'
     get '/button_debug/button' => 'button_debug#button'
@@ -13,6 +11,9 @@ Rails.application.routes.draw do
   get 'onboard' => 'onboard#index'
 
   defaults format: :json do # they're APIs, you have to use JSON
+    namespace :api do
+      resources :nonprofits, only: [:create]
+    end
     namespace :api_new do
       resources :users, only: [] do
         get :current, on: :collection
@@ -295,6 +296,20 @@ Rails.application.routes.draw do
 
   # Mailchimp Landing
   get '/mailchimp-landing' => 'nonprofits/nonprofit_keys#mailchimp_landing'
+
+  # Will create a slugged route for `Nonprofit`. So, if `nonprofit` is a `Nonprofit` with a state_code_slug: wi,
+  # city_slug: appleton and slug: sample-commitchange-nonprofit, then `slugged_nonprofit_path(nonprofit)` would return:
+  # /wi/appleton/sample-commitchange-nonprofit
+  direct(:slugged_nonprofit) do |model, options|
+    nonprofit_location_path(state_code: model.state_code_slug, city: model.city_slug, name: model.slug, **options)
+  end
+
+  # Will create a slugged route for `Nonprofit`'s dashboard. So, if `nonprofit` is a `Nonprofit` with a state_code_slug: wi,
+  # city_slug: appleton and slug: sample-commitchange-nonprofit, then `slugged_nonprofit_dashboard_path(nonprofit)` would 
+  # return: /wi/appleton/sample-commitchange-nonprofit/dashboard
+  direct(:slugged_nonprofit_dashboard) do |model, options|
+    np_dashboard_path(state_code: model.state_code_slug, city: model.city_slug, name: model.slug, **options)
+  end
 
   # Webhooks
   get '/static/terms_and_privacy' => 'static#terms_and_privacy'

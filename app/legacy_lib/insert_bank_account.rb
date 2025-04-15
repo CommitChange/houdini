@@ -8,7 +8,7 @@ module InsertBankAccount
    #   name: data.stripe_resp.bank_account.bank_name + ' *' + data.stripe_resp.bank_account.last4,
     #  email: app.user.email
 
-  def self.with_stripe(nonprofit, user, params)
+  def self.with_stripe(nonprofit, user, params={})
     ParamValidation.new({nonprofit: nonprofit, user: user}, {
         :nonprofit => {
             :required => true,
@@ -52,7 +52,7 @@ module InsertBankAccount
         )
 
         NonprofitMailer.delay.new_bank_account_notification(bank_account)
-        return bank_account
+        bank_account
       rescue Stripe::StripeError => error
         params[:failure_message] = "Failed to connect the bank account: #{error.inspect}"
         raise ArgumentError.new("Failed to connect the bank account: #{error.inspect}")
