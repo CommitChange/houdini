@@ -120,6 +120,8 @@ end
 
 group :test do
   gem 'webmock'
+  gem 'capybara'
+  gem 'cuprite'
 end
 
 # Gems used for asset compilation

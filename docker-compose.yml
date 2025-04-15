@@ -33,3 +33,14 @@ services:
     depends_on:
       - db
     env_file: ".env"
+  chrome:
+    # See https://github.com/browserless/chrome/issues/1393
+    image: browserless/chrome:latest
+    ports:
+      - '3333:3333'
+    environment:
+      PORT: 3333
+      CHROME_URL: http://chrome:3333
+      # Set connection timeout for debugging
+      # https://docs.browserless.io/docs/docker.html#connection-timeout
+      CONNECTION_TIMEOUT: 600000
