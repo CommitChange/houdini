@@ -147,8 +147,6 @@ end
 
 gem 'recaptcha', '~> 5.8.1'
 
-gem 'hashie'
-
 gem 'connection_pool'
 
 gem "barnes"
