@@ -13,6 +13,12 @@ module InsertDonation
     ParamValidation.new(data, common_param_validations
                                   .merge(token: {required: true, format: UUID::Regex}))
 
+    if Limits.minimum_charge_amount
+      if data[:amount] < Limits.minimum_charge_amount
+        raise ParamValidation::ValidationError.new "Oops!", {}
+      end
+    end
+
     source_token = QuerySourceToken.get_and_increment_source_token(data[:token], current_user)
     tokenizable = source_token.tokenizable
     QuerySourceToken.validate_source_token_type(source_token)

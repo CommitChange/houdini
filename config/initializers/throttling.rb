@@ -103,3 +103,10 @@ end
 Rack::Attack.throttled_response = lambda do |env|
   [ 429, {'Content-Type' => 'application/json'}, [JSON.generate({'error': "I'm sorry; something went wrong. Please contact support@commitchange.com for help."})]]
 end
+
+Limits = OpenStruct.new()
+
+if ENV['MINIMUM_CHARGE_AMOUNT'] && ENV['MINIMUM_CHARGE_AMOUNT'].to_i.to_s == ENV['MINIMUM_CHARGE_AMOUNT'] # is this an int? Let's verify
+  Limits.minimum_charge_amount = ENV['MINIMUM_CHARGE_AMOUNT'].to_i
+end
+  
