@@ -545,9 +545,9 @@ GEM
       base64
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
-    sprockets-rails (3.4.2)
-      actionpack (>= 5.2)
-      activesupport (>= 5.2)
+    sprockets-rails (3.5.2)
+      actionpack (>= 6.1)
+      activesupport (>= 6.1)
       sprockets (>= 3.0.0)
     ssrf_filter (1.2.0)
     standard (1.50.0)
@@ -579,12 +579,14 @@ GEM
     test-unit (3.2.7)
       power_assert
     thor (1.3.2)
-    tilt (2.0.10)
+    tilt (2.6.0)
     timecop (0.9.10)
     timeout (0.4.3)
     tunemygc (1.0.71)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    uglifier (4.2.1)
+      execjs (>= 0.3.0, < 3)
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
@@ -694,6 +696,7 @@ DEPENDENCIES
   test-unit
   timecop
   tunemygc
+  uglifier
   webmock
   yaaf
   yard
