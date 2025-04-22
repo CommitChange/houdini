@@ -64,8 +64,8 @@ describe ExportSupporters do
                            status: "queued",
                            export_type: "ExportSupporters",
                            parameters: params.to_json,
-                           updated_at: Time.now,
-                           created_at: Time.now,
+                           updated_at: Time.zone.now,
+                           created_at: Time.zone.now,
                            url: nil,
                            ended: nil,
                            exception: nil}.with_indifferent_access
@@ -118,8 +118,8 @@ describe ExportSupporters do
               @export.reload
               expect(@export.status).to eq "failed"
               expect(@export.exception).to eq error.to_s
-              expect(@export.ended).to eq Time.now
-              expect(@export.updated_at).to eq Time.now
+              expect(@export.ended).to eq Time.zone.now
+              expect(@export.updated_at).to eq Time.zone.now
             end)
           end
         end
@@ -137,8 +137,8 @@ describe ExportSupporters do
               @export.reload
               expect(@export.status).to eq "failed"
               expect(@export.exception).to eq error.to_s
-              expect(@export.ended).to eq Time.now
-              expect(@export.updated_at).to eq Time.now
+              expect(@export.ended).to eq Time.zone.now
+              expect(@export.updated_at).to eq Time.zone.now
             end)
           end
         end
@@ -159,8 +159,8 @@ describe ExportSupporters do
             @export.reload
             expect(@export.status).to eq "failed"
             expect(@export.exception).to eq error.to_s
-            expect(@export.ended).to eq Time.now
-            expect(@export.updated_at).to eq Time.now
+            expect(@export.ended).to eq Time.zone.now
+            expect(@export.updated_at).to eq Time.zone.now
 
             expect(@user).to have_received_email(subject: "Your supporters export has failed")
           end)
@@ -170,7 +170,7 @@ describe ExportSupporters do
 
     it "uploads as expected" do
       Timecop.freeze(2020, 4, 5) do
-        @export = create(:export, user: @user, created_at: Time.now, updated_at: Time.now)
+        @export = create(:export, user: @user, created_at: Time.zone.now, updated_at: Time.zone.now)
         # expect_job_queued.with(JobTypes::ExportSupportersCompletedJob, @export)
         Timecop.freeze(2020, 4, 6, 1, 2, 3) do
           ExportSupporters.run_export(@nonprofit.id, {root_url: "https://localhost:8080/"}.to_json, @user.id, @export.id)
@@ -180,8 +180,8 @@ describe ExportSupporters do
           expect(@export.url).to eq "http://fake.url/tmp/csv-exports/supporters-#{@export.id}-04-06-2020--01-02-03.csv"
           expect(@export.status).to eq "completed"
           expect(@export.exception).to be_nil
-          expect(@export.ended).to eq Time.now
-          expect(@export.updated_at).to eq Time.now
+          expect(@export.ended).to eq Time.zone.now
+          expect(@export.updated_at).to eq Time.zone.now
           csv = CSV.parse(TestChunkedUploader.output)
           expect(csv.length).to eq(3)
 

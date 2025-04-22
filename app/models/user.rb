@@ -111,7 +111,7 @@ class User < ApplicationRecord
   def make_confirmation_token!
     raw, db = Devise.token_generator.generate(User, :confirmation_token)
     self.confirmation_token = db
-    self.confirmation_sent_at = Time.now
+    self.confirmation_sent_at = Time.zone.now
     save!
     raw
   end
@@ -125,7 +125,7 @@ class User < ApplicationRecord
   def self.send_reset_password_instructions(attributes = {})
     recoverable = find_or_initialize_with_errors(reset_password_keys, attributes, :not_found)
     if recoverable.persisted?
-      if recoverable.reset_password_sent_at.nil? || Time.now > recoverable.reset_password_sent_at + 5.minutes
+      if recoverable.reset_password_sent_at.nil? || Time.zone.now > recoverable.reset_password_sent_at + 5.minutes
         recoverable.send_reset_password_instructions
         return recoverable
       else

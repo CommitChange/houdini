@@ -11,14 +11,14 @@ module CreateCustomFieldJoin
   #								* value [Object] the expected value of the field. If this key is an empty string, we remove the custom_field
 
   def self.modify(np, user, supporter_ids, custom_fields)
-    return if supporter_ids.nil? || supporter_ids.empty?
-    return if custom_fields.nil? || custom_fields.empty?
+    return if supporter_ids.blank?
+    return if custom_fields.blank?
     supporter_ids.each do |sid|
       supporter = np.supporters.find(sid)
       custom_fields.each do |custom_field|
         existing = supporter.custom_field_joins.find_by_custom_field_master_id(custom_field[:custom_field_master_id])
         if existing
-          existing.update_attributes({
+          existing.update({
             custom_field_master_id: custom_field[:custom_field_master_id],
             value: custom_field[:value]
           })

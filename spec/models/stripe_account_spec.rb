@@ -90,7 +90,7 @@ RSpec.describe StripeAccount, type: :model do
     end
 
     it "has Time.at(1581712639) deadline" do
-      expect(sa.deadline).to eq Time.at(1581712639)
+      expect(sa.deadline).to eq Time.zone.at(1581712639)
     end
   end
 
@@ -104,7 +104,7 @@ RSpec.describe StripeAccount, type: :model do
     end
 
     it "has Time.at(1581712639) deadline" do
-      expect(sa.deadline).to eq Time.at(1581712639)
+      expect(sa.deadline).to eq Time.zone.at(1581712639)
     end
   end
 
@@ -132,7 +132,7 @@ RSpec.describe StripeAccount, type: :model do
     end
 
     it "has nil deadline" do
-      expect(sa.deadline).to eq Time.at(1580858639)
+      expect(sa.deadline).to eq Time.zone.at(1580858639)
     end
   end
 

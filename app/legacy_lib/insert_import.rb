@@ -98,7 +98,7 @@ module InsertImport
       # Create new tags
       if table_data["supporter"]["id"] && table_data["tags"] && table_data["tags"].any?
         # Split tags by semicolons
-        tags = table_data["tags"].select { |t| t.present? }.map { |t| t.split(/[;,]/).map(&:strip) }.flatten
+        tags = table_data["tags"].compact_blank.map { |t| t.split(/[;,]/).map(&:strip) }.flatten
         InsertTagJoins.find_or_create(data[:nonprofit_id], [table_data["supporter"]["id"]], tags)
       end
 

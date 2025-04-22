@@ -101,7 +101,7 @@ Rails.application.configure do
   # Precompile all "page" files, it needs to be set here so the proper env is setup
   config.assets.precompile << proc do |path|
     if /.*page\.(css|js)/.match?(path)
-      puts "Compiling asset: " + path
+      Rails.logger.debug "Compiling asset: " + path
       true
     else
       false

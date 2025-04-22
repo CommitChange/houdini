@@ -3,7 +3,7 @@ class AddDisputeStartedAtAndLegacy < ActiveRecord::Migration
     add_column :disputes, :started_at, :datetime
     add_column :disputes, :is_legacy, :boolean, default: false
 
-    Dispute.all.each do |d|
+    Dispute.all.find_each do |d|
       d.started_at = d.created_at
       d.save!
     end

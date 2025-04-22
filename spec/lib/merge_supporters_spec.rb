@@ -41,8 +41,8 @@ describe MergeSupporters do
 
     let(:cfj_on_1) { force_create(:custom_field_join, supporter: old_supporter1, custom_field_master: custom_field_master, value: "cfj_on_1") }
     let(:cfj_on_2) { force_create(:custom_field_join, supporter: old_supporter2, custom_field_master: custom_field_master2, value: "cfj_on_2") }
-    let(:cfj_on_3) { force_create(:custom_field_join, supporter: old_supporter1, custom_field_master: custom_field_master3, value: "old_cfj", created_at: Time.now - 1.day) }
-    let(:cfj_on_4) { force_create(:custom_field_join, supporter: old_supporter2, custom_field_master: custom_field_master3, value: "new_cfj", created_at: Time.now + 1.day) }
+    let(:cfj_on_3) { force_create(:custom_field_join, supporter: old_supporter1, custom_field_master: custom_field_master3, value: "old_cfj", created_at: 1.day.ago) }
+    let(:cfj_on_4) { force_create(:custom_field_join, supporter: old_supporter2, custom_field_master: custom_field_master3, value: "new_cfj", created_at: 1.day.from_now) }
 
     let(:profile) { force_create(:profile) }
 
@@ -63,7 +63,7 @@ describe MergeSupporters do
       cfj_on_2
       cfj_on_3
       cfj_on_4
-      old_supporters = Supporter.where("supporters.id IN (?)", [old_supporter1.id, old_supporter2.id])
+      old_supporters = Supporter.where(supporters: {id: [old_supporter1.id, old_supporter2.id]})
       MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
       old_supporter1.reload
       old_supporter2.reload
@@ -88,7 +88,7 @@ describe MergeSupporters do
       tag_on_1
       cfj_on_1
       cfj_on_3
-      old_supporters = Supporter.where("supporters.id IN (?)", [old_supporter1.id, old_supporter2.id])
+      old_supporters = Supporter.where(supporters: {id: [old_supporter1.id, old_supporter2.id]})
       MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
       old_supporter1.reload
       old_supporter2.reload
@@ -112,7 +112,7 @@ describe MergeSupporters do
       tag_on_2
       cfj_on_2
       cfj_on_4
-      old_supporters = Supporter.where("supporters.id IN (?)", [old_supporter1.id, old_supporter2.id])
+      old_supporters = Supporter.where(supporters: {id: [old_supporter1.id, old_supporter2.id]})
       MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
       old_supporter1.reload
       old_supporter2.reload
@@ -132,7 +132,7 @@ describe MergeSupporters do
     end
 
     it "merges with tags and cfjs on neighter" do
-      old_supporters = Supporter.where("supporters.id IN (?)", [old_supporter1.id, old_supporter2.id])
+      old_supporters = Supporter.where(supporters: {id: [old_supporter1.id, old_supporter2.id]})
       MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
       old_supporter1.reload
       old_supporter2.reload
@@ -147,13 +147,13 @@ describe MergeSupporters do
     end
 
     it "updates the card information on the supporter" do
-      old_supporters = Supporter.where("supporters.id IN (?)", [old_supporter1.id, old_supporter2.id])
+      old_supporters = Supporter.where(supporters: {id: [old_supporter1.id, old_supporter2.id]})
       MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
       expect(new_supporter.reload.cards.first).to eq(card.reload)
     end
 
     it "updates the supporter information on the card" do
-      old_supporters = Supporter.where("supporters.id IN (?)", [old_supporter1.id, old_supporter2.id])
+      old_supporters = Supporter.where(supporters: {id: [old_supporter1.id, old_supporter2.id]})
       MergeSupporters.update_associations(old_supporters, new_supporter, np.id, profile.id)
       expect(card.reload.holder).to eq(new_supporter.reload)
     end

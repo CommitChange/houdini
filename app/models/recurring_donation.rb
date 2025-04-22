@@ -62,8 +62,6 @@ class RecurringDonation < ApplicationRecord
   has_many :activities, as: :attachment
 
   validates :paydate, numericality: {less_than: 29}, allow_blank: true
-  validates :donation_id, presence: true
-  validates :nonprofit_id, presence: true
   validates :start_date, presence: true
   validates :interval, presence: true, numericality: {greater_than: 0}
   validates :time_unit, presence: true, inclusion: {in: Timespan::Units}
@@ -123,7 +121,7 @@ class RecurringDonation < ApplicationRecord
   private
 
   def set_anonymous
-    update_attributes(anonymous: false) if anonymous.nil?
+    update(anonymous: false) if anonymous.nil?
   end
 
   def fire_recurring_donation_created

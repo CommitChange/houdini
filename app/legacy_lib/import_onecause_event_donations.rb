@@ -70,7 +70,7 @@ module ImportOnecauseEventDonations
     possible_supporters = if email
       np.supporters.not_deleted.where("email = ? ", email)
     else
-      np.supporters.not_deleted.where("name = ?", name)
+      np.supporters.not_deleted.where(name: name)
     end
 
     if possible_supporters.none?
@@ -79,7 +79,7 @@ module ImportOnecauseEventDonations
       return possible_supporters.first
     end
 
-    tickets_for_supporters = event.tickets.where("supporter_id IN (?)", possible_supporters.map { |i| i.id })
+    tickets_for_supporters = event.tickets.where(supporter_id: possible_supporters.map { |i| i.id })
 
     if tickets_for_supporters.none?
       possible_supporters.first
@@ -91,7 +91,7 @@ module ImportOnecauseEventDonations
   end
 
   def self.winnow_tickets(event, supporter)
-    event.tickets.where("supporter_id = ?", supporter.id).first
+    event.tickets.where(supporter_id: supporter.id).first
   end
 
   def self.create_notes(p_row, np_rows)

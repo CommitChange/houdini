@@ -56,8 +56,8 @@ class FeeEra < ApplicationRecord
   # @param at [DateTime,nil]
   def in_era?(at = nil)
     at ||= Time.current
-    test_start_time = start_time || Time.at(0)
-    test_end_time = end_time || Time.new(9999, 1)
+    test_start_time = start_time || Time.zone.at(0)
+    test_end_time = end_time || Time.zone.local(9999, 1)
     (test_start_time...test_end_time).cover? at
   end
 

@@ -11,17 +11,17 @@ RSpec.shared_context :disputes_context do
     event_json["data"]["object"]
   end
 
-  let(:dispute_created_time) { Time.at(1596429790) }
+  let(:dispute_created_time) { Time.zone.at(1596429790) }
   let(:dispute_created_time__partial1) { dispute_created_time }
 
-  let(:dispute_withdrawal_payment_time) { Time.at(1596430500) }
+  let(:dispute_withdrawal_payment_time) { Time.zone.at(1596430500) }
   let(:dispute_withdrawal_payment_time__partial1) { dispute_withdrawal_payment_time }
 
-  let(:dispute_created__partial2) { Time.at(1596430600) }
+  let(:dispute_created__partial2) { Time.zone.at(1596430600) }
 
-  let(:dispute_withdrawal_payment_time__partial2) { Time.at(1596430650) }
+  let(:dispute_withdrawal_payment_time__partial2) { Time.zone.at(1596430650) }
 
-  let(:dispute_reinstatement_payment_time) { Time.at(1596432510) }
+  let(:dispute_reinstatement_payment_time) { Time.zone.at(1596432510) }
 
   let(:dispute) { obj.dispute }
   let(:dispute_transactions) { dispute.dispute_transactions }

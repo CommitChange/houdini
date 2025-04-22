@@ -90,9 +90,7 @@ module PaymentDupes
     deleted_payments = []
     nonprofit = Nonprofit.find(np_id)
     etap_id_cf = CustomFieldMaster.find_by(name: "E-Tapestry Id #").id
-    supp = nonprofit.supporters.not_deleted.joins(:custom_field_joins).where(
-      "custom_field_joins.custom_field_master_id = ?", etap_id_cf
-    ).references(:custom_field_joins)
+    supp = nonprofit.supporters.not_deleted.joins(:custom_field_joins).where(custom_field_joins: {custom_field_master_id: etap_id_cf}).references(:custom_field_joins)
 
     supp.find_each do |s|
       offsite_payments = s.payments.includes(:donation).where("kind = 'OffsitePayment'").joins(:journal_entries_to_item)

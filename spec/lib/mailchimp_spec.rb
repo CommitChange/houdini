@@ -12,9 +12,9 @@ describe Mailchimp do
   let(:tag_join) { force_create(:tag_join, tag_master: tag_master, supporter: supporter_on_both) }
   let(:tag_join2) { force_create(:tag_join, tag_master: tag_master, supporter: supporter_on_local) }
 
-  let(:active_recurring_donation_1) { force_create(:recurring_donation_base, supporter_id: supporter_on_local.id, start_date: Time.new(2019, 10, 12)) }
-  let(:cancelled_recurring_donation_1) { force_create(:recurring_donation_base, supporter_id: supporter_on_local.id, start_date: Time.new(2020, 1, 12), active: false) }
-  let(:active_recurring_donation_2) { force_create(:recurring_donation_base, supporter_id: supporter_on_local.id, start_date: Time.new(2019, 11, 12)) }
+  let(:active_recurring_donation_1) { force_create(:recurring_donation_base, supporter_id: supporter_on_local.id, start_date: Time.zone.local(2019, 10, 12)) }
+  let(:cancelled_recurring_donation_1) { force_create(:recurring_donation_base, supporter_id: supporter_on_local.id, start_date: Time.zone.local(2020, 1, 12), active: false) }
+  let(:active_recurring_donation_2) { force_create(:recurring_donation_base, supporter_id: supporter_on_local.id, start_date: Time.zone.local(2019, 11, 12)) }
 
   describe ".hard_sync_list" do
     let(:ret_val) {

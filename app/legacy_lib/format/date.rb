@@ -52,7 +52,7 @@ module Format
 
     def self.parse_partial_str(str)
       return nil if str.nil?
-      Time.new(*str.match(/(\d\d\d\d)-?(\d\d)?-?(\d\d)?/).to_a[1..].compact.map(&:to_i))
+      Time.zone.local(*str.match(/(\d\d\d\d)-?(\d\d)?-?(\d\d)?/).to_a[1..].compact.map(&:to_i))
     end
   end
 end

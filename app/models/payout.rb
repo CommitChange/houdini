@@ -30,7 +30,6 @@ class Payout < ApplicationRecord
   has_many :object_events, as: :event_entity
 
   validates :stripe_transfer_id, presence: true, uniqueness: true
-  validates :nonprofit, presence: true
   validates :bank_account, presence: true
   validates :email, presence: true
   validates :net_amount, presence: true, numericality: {greater_than: 0}

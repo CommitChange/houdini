@@ -22,8 +22,8 @@ class ParamValidation
     if errors.length == 1
       raise ValidationError.new(errors[0][:msg], errors[0][:data])
     elsif errors.length > 1
-      msg = errors.collect { |e| e[:msg] }.join('\n')
-      raise ValidationError.new(msg, errors.collect { |e| e[:data] })
+      msg = errors.pluck(:msg).join('\n')
+      raise ValidationError.new(msg, errors.pluck(:data))
     end
   end
 

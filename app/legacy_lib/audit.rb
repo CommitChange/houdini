@@ -21,7 +21,7 @@ module Audit
     gross = p.payments.sum(:gross_amount)
     fees = p.payments.sum(:fee_total)
     net = p.payments.sum(:net_amount)
-    puts [
+    Rails.logger.debug [
       [p.gross_amount, p.fee_total, p.net_amount].join(", ") + " -- payout columns",
       [gross, fees, net].join(", ") + " -- summed from payments",
       [p.gross_amount - gross, p.fee_total - fees, p.net_amount - net].join(", ") + " -- differences"
@@ -55,9 +55,9 @@ module Audit
   # Audit some basic balances for a nonprofit with those on Stripe
   def self.audit_balances(id)
     np = Nonprofit.find(id)
-    puts "Stripe Dashboard: https://dashboard.stripe.com/#{np.stripe_account_id}"
-    puts "CC Payments: https://commitchange.com/nonprofits/#{id}/payments"
-    puts "CC Payouts: https://commitchange.com/nonprofits/#{id}/payouts"
+    Rails.logger.debug { "Stripe Dashboard: https://dashboard.stripe.com/#{np.stripe_account_id}" }
+    Rails.logger.debug { "CC Payments: https://commitchange.com/nonprofits/#{id}/payments" }
+    Rails.logger.debug { "CC Payouts: https://commitchange.com/nonprofits/#{id}/payouts" }
 
     begin
       stripe_balances = Stripe::Balance.retrieve(stripe_account: np.stripe_account_id)
@@ -66,7 +66,7 @@ module Audit
     rescue Exception
       available = 0
       pending = 0
-      puts "UNRECOGNIZED STRIPE ACCOUNT ID: #{np.stripe_account_id}"
+      Rails.logger.debug { "UNRECOGNIZED STRIPE ACCOUNT ID: #{np.stripe_account_id}" }
     end
     bal = np_balances(id)
     {

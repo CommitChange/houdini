@@ -65,8 +65,8 @@ module Mailchimp
   # Get all lists owned by the nonprofit represented by the mailchimp token
   def get_all_lists(mailchimp_token)
     uri = base_uri(mailchimp_token)
-    puts "URI #{uri}"
-    puts "KEY #{mailchimp_token}"
+    Rails.logger.debug { "URI #{uri}" }
+    Rails.logger.debug { "KEY #{mailchimp_token}" }
     get(uri + "/lists", {
       basic_auth: {username: "", password: mailchimp_token},
       headers: {"Content-Type" => "application/json"}
@@ -78,8 +78,8 @@ module Mailchimp
   def self.create_mailchimp_lists(npo_id, tag_master_ids)
     mailchimp_token = get_mailchimp_token(npo_id)
     uri = base_uri(mailchimp_token)
-    puts "URI #{uri}"
-    puts "KEY #{mailchimp_token}"
+    Rails.logger.debug { "URI #{uri}" }
+    Rails.logger.debug { "KEY #{mailchimp_token}" }
 
     npo = Qx.fetch(:nonprofits, npo_id).first
     tags = Qx.select("DISTINCT(tag_masters.name) AS tag_name, tag_masters.id")
@@ -126,7 +126,7 @@ module Mailchimp
   # See here: http://developer.mailchimp.com/documentation/mailchimp/guides/how-to-use-batch-operations/
   # Perform all the batch operations and return a status report
   def self.perform_batch_operations(npo_id, post_data)
-    post_data = post_data.map(&:to_h).select(&:present?) # the select removes any nil items
+    post_data = post_data.map(&:to_h).compact_blank # the select removes any nil items
     return if post_data.empty?
     mailchimp_token = get_mailchimp_token(npo_id)
     uri = base_uri(mailchimp_token)
@@ -168,7 +168,7 @@ module Mailchimp
   end
 
   def self.get_emails_for_supporter_ids(npo_id, supporters_ids = [])
-    Nonprofit.find(npo_id).supporters.where("id in (?)", supporters_ids).pluck(:email).select(&:present?)
+    Nonprofit.find(npo_id).supporters.where(id: supporters_ids).pluck(:email).compact_blank
   end
 
   def self.get_mailchimp_list_ids(tag_master_ids)
@@ -177,7 +177,7 @@ module Mailchimp
       .from(:tag_masters)
       .where("tag_masters.id IN ($ids)", ids: tag_master_ids)
       .join("email_lists", "email_lists.tag_master_id=tag_masters.id")
-      .execute.map { |h| h["mailchimp_list_id"] }
+      .execute.pluck("mailchimp_list_id")
   end
 
   # @param [Nonprofit] nonprofit

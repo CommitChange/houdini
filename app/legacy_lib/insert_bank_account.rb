@@ -37,7 +37,7 @@ module InsertBankAccount
       ba.default_for_currency = true
       ba.save
 
-      BankAccount.where("nonprofit_id = ?", nonprofit.id).update_all(deleted: true)
+      BankAccount.where(nonprofit_id: nonprofit.id).update_all(deleted: true)
 
       bank_account = BankAccount.create(
         stripe_bank_account_id: ba.id,

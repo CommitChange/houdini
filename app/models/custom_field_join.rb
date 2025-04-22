@@ -5,8 +5,6 @@ class CustomFieldJoin < ApplicationRecord
     :custom_field_master, :custom_field_master_id,
     :value
 
-  validates :custom_field_master, presence: true
-
   belongs_to :custom_field_master
   belongs_to :supporter
 

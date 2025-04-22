@@ -45,7 +45,7 @@ class ProfilesController < ApplicationController
     else
       current_user.profile
     end
-    @profile.update_attributes(params[:profile])
+    @profile.update(params[:profile])
     json_saved @profile, "Profile updated"
   end
 

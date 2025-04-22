@@ -47,7 +47,7 @@ module InsertCard
 
     begin
       if holder_type == :supporter && event_id
-        event = Event.where("id = ?", event_id).first
+        event = Event.where(id: event_id).first
         unless event
           raise ParamValidation::ValidationError.new("#{event_id} is not a valid event", {key: :event_id})
         end

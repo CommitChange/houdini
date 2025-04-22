@@ -19,7 +19,7 @@ module Nonprofits
         end
 
         format.csv do
-          file_date = Date.today.strftime("%m-%d-%Y")
+          file_date = Time.zone.today.strftime("%m-%d-%Y")
           supporters = QuerySupporters.for_export(params[:nonprofit_id], params)
           send_data(Format::Csv.from_vectors(supporters), filename: "supporters-#{file_date}.csv")
         end
@@ -82,7 +82,7 @@ module Nonprofits
 
     def bulk_delete
       supporter_ids = if params[:selecting_all]
-        QuerySupporters.full_filter_expr(current_nonprofit.id, params[:query]).select("supporters.id").execute.map { |h| h["id"] }
+        QuerySupporters.full_filter_expr(current_nonprofit.id, params[:query]).select("supporters.id").execute.pluck("id")
       else
         params[:supporter_ids].map(&:to_i)
       end

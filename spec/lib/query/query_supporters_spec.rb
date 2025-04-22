@@ -142,19 +142,19 @@ describe QuerySupporters do
     end
 
     it "returns the converted date when the timezone is specified" do
-      np.update_attributes(timezone: "America/New_York")
+      np.update(timezone: "America/New_York")
       result = QuerySupporters.full_search(np.id, {search: "Cacau"})
       expect(result[:data].first["last_contribution"]).to eq((payment_utc_time - 1.day).strftime("%m/%d/%y"))
     end
 
     it "finds the payments on dates after the specified dates" do
-      np.update_attributes(timezone: "America/New_York")
+      np.update(timezone: "America/New_York")
       result = QuerySupporters.full_search(np.id, {last_payment_after: (payment2_utc_time + 1.day).to_s})
       expect(result[:data].count).to eq 1
     end
 
     it "finds the payments on dates before the specified dates" do
-      np.update_attributes(timezone: "America/New_York")
+      np.update(timezone: "America/New_York")
       result = QuerySupporters.full_search(np.id, {last_payment_before: payment_utc_time.to_s})
       expect(result[:data].count).to eq 2
     end

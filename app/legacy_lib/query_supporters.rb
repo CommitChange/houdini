@@ -898,13 +898,13 @@ UNION DISTINCT
 
   # this is inefficient, don't use in live code
   def self.find_supporters_with_multiple_recurring_donations_evil_way(npo_id)
-    supporters = Supporter.where("supporters.nonprofit_id = ?", npo_id).includes(:recurring_donations)
+    supporters = Supporter.where(supporters: {nonprofit_id: npo_id}).includes(:recurring_donations)
     supporters.select { |s| s.recurring_donations.length > 1 }
   end
 
   # this is inefficient, don't use in live code
   def self.find_supporters_with_multiple_active_recurring_donations_evil_way(npo_id)
-    supporters = Supporter.where("supporters.nonprofit_id = ?", npo_id).includes(:recurring_donations)
+    supporters = Supporter.where(supporters: {nonprofit_id: npo_id}).includes(:recurring_donations)
     supporters.select { |s| s.recurring_donations.count { |rd| rd.active } > 1 }
   end
 

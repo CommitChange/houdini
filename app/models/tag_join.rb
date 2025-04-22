@@ -4,8 +4,6 @@ class TagJoin < ApplicationRecord
     :supporter, :supporter_id,
     :tag_master, :tag_master_id
 
-  validates :tag_master, presence: true
-
   belongs_to :tag_master
   belongs_to :supporter
 

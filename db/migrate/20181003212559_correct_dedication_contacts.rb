@@ -14,7 +14,7 @@ class CorrectDedicationContacts < ActiveRecord::Migration
         phone: split_contact[1],
         address: split_contact[2]
       }
-      puts i
+      Rails.logger.debug i
       i
     end.each_with_index do |i, index|
       unless i[:id]
@@ -23,11 +23,11 @@ class CorrectDedicationContacts < ActiveRecord::Migration
       Qx.update(:donations).where("id = $id", id: i[:id]).set(dedication: JSON.generate(i[:dedication])).ex
     end
 
-    puts "Corrected #{easy_to_split_strings.count} records."
+    Rails.logger.debug { "Corrected #{easy_to_split_strings.count} records." }
 
-    puts ""
-    puts ""
-    puts "You must manually fix the following dedications: "
+    Rails.logger.debug ""
+    Rails.logger.debug ""
+    Rails.logger.debug "You must manually fix the following dedications: "
     really_icky_dedications.each do |i|
       puts i
     end
@@ -42,7 +42,7 @@ class CorrectDedicationContacts < ActiveRecord::Migration
 
     with_contact_to_correct = parsed_dedications.select { |i| i["dedication"]["contact"].is_a?(Hash) }
 
-    puts "#{with_contact_to_correct.count} to revert"
+    Rails.logger.debug { "#{with_contact_to_correct.count} to revert" }
     with_contact_to_correct.each do |i|
       contact_string = "#{i["dedication"]["contact"]["email"]} - #{i["dedication"]["contact"]["phone"]} - #{i["dedication"]["contact"]["address"]}"
       i["dedication"]["contact"] = contact_string

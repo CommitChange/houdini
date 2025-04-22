@@ -10,7 +10,7 @@ FactoryBot.define do
 
     to_create do |instance, evaluator|
       product = StripeMockHelper.stripe_helper.create_product(**instance, id: evaluator.id)
-      instance.update_attributes(product)
+      instance.update(product)
     end
   end
 end

@@ -5,8 +5,8 @@ describe InsertCard do
     let(:stripe_card_token) { StripeMockHelper.generate_card_token(last4: "9191", exp_year: 2011) }
     let(:default_card_attribs) {
       {
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         profile_id: nil,
         status: nil,
         inactive: nil,
@@ -202,7 +202,7 @@ describe InsertCard do
     describe "for supporter" do
       let(:supporter) { force_create(:supporter, nonprofit: nonprofit) }
       let(:event) {
-        force_create(:event, nonprofit: nonprofit, end_datetime: Time.now.since(1.day))
+        force_create(:event, nonprofit: nonprofit, end_datetime: Time.zone.now.since(1.day))
       }
       let(:user_not_from_nonprofit) { force_create(:user) }
       def verify_cust_added_supporter(stripe_customer_id, holder_id)
@@ -210,7 +210,7 @@ describe InsertCard do
       end
 
       def verify_supporter_source_token(source_token, card)
-        verify_source_token(source_token, card, 1, Time.now.since(20.minutes))
+        verify_source_token(source_token, card, 1, Time.zone.now.since(20.minutes))
       end
 
       def verify_event_source_token(source_token, card, event)
@@ -231,7 +231,7 @@ describe InsertCard do
           orig_card = supporter.cards.first
           card_ret = InsertCard.with_stripe(card_data)
           supporter.reload
-          card = supporter.cards.where("cards.name = ?", "card_name").first
+          card = supporter.cards.where(cards: {name: "card_name"}).first
           compare_card_returned_to_real(card_ret, card, card_ret[:json]["token"])
 
           expected_card = {
@@ -269,7 +269,7 @@ describe InsertCard do
           orig_card = supporter.cards.first
           card_ret = InsertCard.with_stripe(card_data, nil, event.id, user)
           supporter.reload
-          card = supporter.cards.where("cards.name = ?", "card_name").first
+          card = supporter.cards.where(cards: {name: "card_name"}).first
           compare_card_returned_to_real(card_ret, card, card_ret[:json]["token"])
 
           expected_card = {
@@ -340,7 +340,7 @@ describe InsertCard do
           card_data = {holder_type: "Supporter", holder_id: supporter.id, stripe_card_id: "card_88888", stripe_card_token: stripe_card_token, name: "card_name"}
           card_ret = InsertCard.with_stripe(card_data)
           supporter.reload
-          card = supporter.cards.where("cards.name = ?", "card_name").first
+          card = supporter.cards.where(cards: {name: "card_name"}).first
           compare_card_returned_to_real(card_ret, card, card_ret[:json]["token"])
           expected_card = {
             id: card.id,
@@ -372,7 +372,7 @@ describe InsertCard do
           card_data = {holder_type: "Supporter", holder_id: supporter.id, stripe_card_id: "card_88888", stripe_card_token: stripe_card_token, name: "card_name"}
           card_ret = InsertCard.with_stripe(card_data, nil, event.id, user)
           supporter.reload
-          card = supporter.cards.where("cards.name = ?", "card_name").first
+          card = supporter.cards.where(cards: {name: "card_name"}).first
           compare_card_returned_to_real(card_ret, card, card_ret[:json]["token"])
 
           expected_card = {
@@ -448,10 +448,10 @@ describe InsertCard do
     end
 
     def verify_source_token(source_token, card, max_uses, expiration_time, event = nil)
-      tok = SourceToken.where("token = ?", source_token).first
+      tok = SourceToken.where(token: source_token).first
       expected = {
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         tokenizable_id: card.id,
         tokenizable_type: "Card",
         max_uses: max_uses,

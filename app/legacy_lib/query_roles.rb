@@ -13,7 +13,7 @@ module QueryRoles
     Qx.select("host_id").from(:roles)
       .where(user_id: user_id)
       .and_where("roles.name IN ($names)", names: role_names)
-      .execute.map { |h| h["host_id"] }
+      .execute.pluck("host_id")
   end
 
   def self.is_nonprofit_user?(user_id, np_id)

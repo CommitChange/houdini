@@ -32,9 +32,9 @@ shared_context "payments for a payout" do
     end
   end
 
-  let(:today) { Time.new(2020, 5, 5, 1) }
-  let(:yesterday) { Time.new(2020, 5, 4, 1) }
-  let(:two_days_ago) { Time.new(2020, 5, 3, 1) }
+  let(:today) { Time.zone.local(2020, 5, 5, 1) }
+  let(:yesterday) { Time.zone.local(2020, 5, 4, 1) }
+  let(:two_days_ago) { Time.zone.local(2020, 5, 3, 1) }
 
   # let(:all_payments) {
   #   payment_with_charge_to_output

@@ -11,14 +11,14 @@ require "qx"
 module Psql
   # Execute a sql statement (string)
   def self.execute(statement)
-    puts statement if ENV["RAILS_ENV"] != "production" && ENV["RAILS_LOG_LEVEL"] == "debug" # log to STDOUT on dev/staging
+    Rails.logger.debug statement if ENV["RAILS_ENV"] != "production" && ENV["RAILS_LOG_LEVEL"] == "debug" # log to STDOUT on dev/staging
     Qx.execute_raw(raw_expr_str(statement))
   end
 
   # A variation of execute that returns a vector of vectors rather than a vector of hashes
   # Useful and faster for creating CSV's
   def self.execute_vectors(statement)
-    puts statement if ENV["RAILS_ENV"] != "production" && ENV["RAILS_LOG_LEVEL"] == "debug" # log to STDOUT on dev/staging
+    Rails.logger.debug statement if ENV["RAILS_ENV"] != "production" && ENV["RAILS_LOG_LEVEL"] == "debug" # log to STDOUT on dev/staging
     statement.to_s.uncolorize.encode("UTF-8", "binary", invalid: :replace, undef: :replace, replace: "")
     Qx.execute_raw(raw_expr_str(statement), format: "csv")
   end

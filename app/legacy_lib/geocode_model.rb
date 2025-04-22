@@ -13,7 +13,7 @@ module GeocodeModel
     begin
       model.geocode
     rescue Exception => e
-      puts e
+      Rails.logger.debug e
     end
     model.save
     model
@@ -24,7 +24,7 @@ module GeocodeModel
       model.geocode
       model.reverse_geocode
     rescue Exception => e
-      puts e
+      Rails.logger.debug e
     end
     model.save
     model
@@ -35,7 +35,7 @@ module GeocodeModel
     begin
       geocode(model)
     rescue Exception => e
-      puts e
+      Rails.logger.debug e
     end
     return model unless model.latitude && model.longitude
 

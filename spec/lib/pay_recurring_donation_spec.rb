@@ -34,12 +34,12 @@ describe PayRecurringDonation do
       force_create(:card, holder: supporter, stripe_customer_id: stripe_cust_id, stripe_card_id: card.id)
     }
     let(:donation) { force_create(:donation, supporter: supporter, amount: 300, card: card, nonprofit: nonprofit) }
-    let(:recurring_donation) { force_create(:recurring_donation, donation: donation, start_date: Time.now - 1.day, active: true, nonprofit: nonprofit, n_failures: 0, interval: 1, time_unit: "month") }
+    let(:recurring_donation) { force_create(:recurring_donation, donation: donation, start_date: 1.day.ago, active: true, nonprofit: nonprofit, n_failures: 0, interval: 1, time_unit: "month") }
     let(:misc_recurring_donation_info__covered) {
       force_create(:misc_recurring_donation_info, recurring_donation: recurring_donation, fee_covered: true)
     }
 
-    let(:recent_charge) { force_create(:charge, donation: donation, card: card, amount: 300, status: "paid", created_at: Time.now - 1.day) }
+    let(:recent_charge) { force_create(:charge, donation: donation, card: card, amount: 300, status: "paid", created_at: 1.day.ago) }
 
     let(:successful_charge_argument) {
       {

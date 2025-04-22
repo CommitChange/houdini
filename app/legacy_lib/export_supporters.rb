@@ -4,11 +4,11 @@ module ExportSupporters
       npo_id: {required: true, is_integer: true},
       params: {required: true, is_hash: true},
       user_id: {required: true, is_integer: true})
-    npo = Nonprofit.where("id = ?", npo_id).first
+    npo = Nonprofit.where(id: npo_id).first
     unless npo
       raise ParamValidation::ValidationError.new("Nonprofit #{npo_id} doesn't exist!", key: :npo_id)
     end
-    user = User.where("id = ?", user_id).first
+    user = User.where(id: user_id).first
     unless user
       raise ParamValidation::ValidationError.new("User #{user_id} doesn't exist!", key: :user_id)
     end
@@ -41,17 +41,17 @@ module ExportSupporters
     unless Nonprofit.exists?(npo_id)
       raise ParamValidation::ValidationError.new("Nonprofit #{npo_id} doesn't exist!", key: :npo_id)
     end
-    user = User.where("id = ?", user_id).first
+    user = User.where(id: user_id).first
     unless user
       raise ParamValidation::ValidationError.new("User #{user_id} doesn't exist!", key: :user_id)
     end
 
-    file_date = Time.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
+    file_date = Time.zone.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
     filename = "tmp/csv-exports/supporters-#{export.id}-#{file_date}.csv"
     url = CHUNKED_UPLOADER.upload(filename, QuerySupporters.for_export_enumerable(npo_id, params, 15000).map { |i| i.to_csv }, content_type: "text/csv", content_disposition: "attachment")
     export.url = url
     export.status = :completed
-    export.ended = Time.now
+    export.ended = Time.zone.now
     export.save!
 
     ExportMailer.delay.export_supporters_completed_notification(export)
@@ -59,7 +59,7 @@ module ExportSupporters
     if export
       export.status = :failed
       export.exception = e.to_s
-      export.ended = Time.now
+      export.ended = Time.zone.now
       export.save!
       if user
         ExportMailer.delay.export_supporters_failed_notification(export)

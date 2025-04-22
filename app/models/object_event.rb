@@ -82,7 +82,7 @@ class ObjectEvent < ApplicationRecord
 
       # Queries the database to find every ObjectEvent of a particular type
       def event_types(types)
-        where("event_type IN (?)", types)
+        where(event_type: types)
       end
     end
   end

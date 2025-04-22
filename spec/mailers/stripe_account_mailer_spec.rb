@@ -6,7 +6,7 @@ RSpec.describe StripeAccountMailer, type: :mailer do
     let(:np) { create(:nonprofit, timezone: "America/Chicago") }
     let(:user) { create(:user) }
     let(:role) { create(:role, host: np, user: user, name: :nonprofit_admin) }
-    let(:deadline) { Time.new(2020, 2, 3, 22, 32, 12) }
+    let(:deadline) { Time.zone.local(2020, 2, 3, 22, 32, 12) }
     let(:deadline_string) { "February 3, 2020 at 4:32:12 PM" }
     let(:generic_deadline_substring) { "advised to complete this" }
 
@@ -33,7 +33,7 @@ RSpec.describe StripeAccountMailer, type: :mailer do
     let(:np) { create(:nonprofit, timezone: "America/Chicago") }
     let(:user) { create(:user) }
     let(:role) { create(:role, host: np, user: user, name: :nonprofit_admin) }
-    let(:deadline) { Time.new(2020, 2, 3, 22, 32, 12) }
+    let(:deadline) { Time.zone.local(2020, 2, 3, 22, 32, 12) }
     let(:deadline_string) { "February 3, 2020 at 4:32:12 PM" }
     let(:generic_deadline_substring) { "advised to complete this" }
 
@@ -60,7 +60,7 @@ RSpec.describe StripeAccountMailer, type: :mailer do
     let(:np) { create(:nonprofit, timezone: "America/Chicago") }
     let(:user) { create(:user) }
     let(:role) { create(:role, host: np, user: user, name: :nonprofit_admin) }
-    let(:deadline) { Time.new(2020, 2, 3, 22, 32, 12) }
+    let(:deadline) { Time.zone.local(2020, 2, 3, 22, 32, 12) }
     let(:deadline_string) { "February 3, 2020 at 4:32:12 PM" }
     let(:generic_deadline_substring) { "advised to complete this" }
 

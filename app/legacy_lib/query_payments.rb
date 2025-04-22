@@ -38,7 +38,7 @@ module QueryPayments
         OR (NOT manual_balance_adjustments.disbursed))
        ))
       .and_where("payments.date <= $date", date: options[:date] || end_of_day)
-      .execute.map { |h| h["id"] }
+      .execute.pluck("id")
   end
 
   # the amount to payout calculates the total payout based upon the payments it's provided, likely provided from ids_to_payout
@@ -429,12 +429,12 @@ module QueryPayments
   def self.find_payments_where_too_far_from_charge_date(id = nil)
     pay = Payment.includes(:donation).includes(:offsite_payment)
     if id
-      pay = pay.where("id = ?", id)
+      pay = pay.where(id: id)
     end
     pay = pay.where.not(date: nil).order("id ASC")
-    pay.all.each { |p|
+    pay.all.find_each { |p|
       next if !p.offsite_payment.nil?
-      lowest_charge_for_payment = Charge.where("payment_id = ?", p.id).order("created_at ASC").limit(1).first
+      lowest_charge_for_payment = Charge.where(payment_id: p.id).order("created_at ASC").limit(1).first
 
       if lowest_charge_for_payment
         diff = p.date - lowest_charge_for_payment.created_at

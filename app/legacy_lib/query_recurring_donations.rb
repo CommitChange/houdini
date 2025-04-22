@@ -210,7 +210,7 @@ module QueryRecurringDonations
   end
 
   def self.recurring_donations_without_cards
-    RecurringDonation.active.includes(:card).includes(:charges).includes(:donation).includes(:nonprofit).includes(:supporter).where("cards.id IS NULL").order("recurring_donations.created_at DESC")
+    RecurringDonation.active.includes(:card).includes(:charges).includes(:donation).includes(:nonprofit).includes(:supporter).where(cards: {id: nil}).order("recurring_donations.created_at DESC")
   end
 
   # @param [Supporter] supporter
@@ -348,7 +348,7 @@ module QueryRecurringDonations
   end
 
   def self.export_for_transfer(nonprofit_id)
-    items = RecurringDonation.where("nonprofit_id = ?", nonprofit_id).active.includes("supporter").includes("card").to_a
+    items = RecurringDonation.where(nonprofit_id: nonprofit_id).active.includes("supporter").includes("card").to_a
     output = items.map { |i|
       {supporter: i.supporter.id,
        supporter_name: i.supporter.name,

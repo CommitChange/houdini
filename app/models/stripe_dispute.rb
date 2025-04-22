@@ -41,14 +41,14 @@ class StripeDispute < ApplicationRecord
 
     self.reason = object_json["reason"]
     self.status = object_json["status"]
-    self.net_change = object_json["balance_transactions"].map { |i| i["net"] }.sum
+    self.net_change = object_json["balance_transactions"].pluck("net").sum
     self.amount = object_json["amount"]
     self.stripe_dispute_id = object_json["id"]
     self.stripe_charge_id = object_json["charge"]
     self.evidence_due_date = (object_json["evidence_details"] && object_json["evidence_details"]["due_by"]) ?
-                        Time.at(object_json["evidence_details"]["due_by"]) :
+                        Time.zone.at(object_json["evidence_details"]["due_by"]) :
                         nil
-    self.started_at = Time.at(object_json["created"])
+    self.started_at = Time.zone.at(object_json["created"])
 
     object
   end
@@ -121,9 +121,9 @@ class StripeDispute < ApplicationRecord
         fee_total: fee_total,
         net_amount: gross_amount + fee_total,
         kind: "Dispute",
-        date: Time.at(funds_withdrawn_balance_transaction["created"])),
+        date: Time.zone.at(funds_withdrawn_balance_transaction["created"])),
       stripe_transaction_id: funds_withdrawn_balance_transaction["id"],
-      date: Time.at(funds_withdrawn_balance_transaction["created"]))
+      date: Time.zone.at(funds_withdrawn_balance_transaction["created"]))
 
     # add dispute payment activity
     transaction.payment.activities.create
@@ -143,9 +143,9 @@ class StripeDispute < ApplicationRecord
         fee_total: fee_total,
         net_amount: gross_amount + fee_total,
         kind: "DisputeReversed",
-        date: Time.at(funds_reinstated_balance_transaction["created"])),
+        date: Time.zone.at(funds_reinstated_balance_transaction["created"])),
       stripe_transaction_id: funds_reinstated_balance_transaction["id"],
-      date: Time.at(funds_reinstated_balance_transaction["created"]))
+      date: Time.zone.at(funds_reinstated_balance_transaction["created"]))
 
     transaction.dispute.original_payment.refund_total += gross_amount * -1
     transaction.dispute.original_payment.save!
@@ -158,10 +158,10 @@ class StripeDispute < ApplicationRecord
     dispute.status = status
     dispute.save!
     if dispute.status == "won"
-      dispute.activities.create("DisputeWon", Time.now)
+      dispute.activities.create("DisputeWon", Time.zone.now)
       JobQueue.queue(JobTypes::DisputeWonJob, dispute)
     elsif dispute.status == "lost"
-      dispute.activities.create("DisputeLost", Time.now)
+      dispute.activities.create("DisputeLost", Time.zone.now)
       JobQueue.queue(JobTypes::DisputeLostJob, dispute)
     else
       raise RuntimeError("Dispute #{dispute.id} was closed " \
@@ -170,7 +170,7 @@ class StripeDispute < ApplicationRecord
   end
 
   def dispute_updated_event
-    dispute.activities.create("DisputeUpdated", Time.now)
+    dispute.activities.create("DisputeUpdated", Time.zone.now)
     JobQueue.queue(JobTypes::DisputeUpdatedJob, dispute)
   end
 

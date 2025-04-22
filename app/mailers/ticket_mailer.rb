@@ -17,7 +17,7 @@ class TicketMailer < BaseMailer
   end
 
   def receipt_admin(ticket_ids, user_id = nil)
-    @tickets = Ticket.where("id IN (?)", ticket_ids)
+    @tickets = Ticket.where(id: ticket_ids)
     @charge = @tickets.last.charge
     @supporter = @tickets.last.supporter
     @event = @tickets.last.event

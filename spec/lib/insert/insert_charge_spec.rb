@@ -198,7 +198,7 @@ describe InsertCharge do
             card_id: card.id,
             statement: "our statement<> blah-no-way")
 
-          common_expected = {id: Charge.first.id, amount: 100, fee: fee_total, stripe_charge_id: nil, status: "failed", failure_message: "There was an error with your card: The card was declined", created_at: Time.now, updated_at: Time.now, disbursed: nil}
+          common_expected = {id: Charge.first.id, amount: 100, fee: fee_total, stripe_charge_id: nil, status: "failed", failure_message: "There was an error with your card: The card was declined", created_at: Time.zone.now, updated_at: Time.zone.now, disbursed: nil}
 
           result_expected = common_expected.merge({card_id: card.id, nonprofit_id: nonprofit.id, donation_id: nil, supporter_id: supporter.id, ticket_id: nil, payment_id: nil, profile_id: nil, direct_debit_detail_id: nil}).with_indifferent_access
 
@@ -218,7 +218,7 @@ describe InsertCharge do
             card_id: card.id,
             statement: "our statement<> blah-no-way")
 
-          common_expected = {id: Charge.first.id, amount: 100, fee: fee_total, stripe_charge_id: nil, status: "failed", failure_message: "We're sorry, but something went wrong. We've been notified about this issue.", created_at: Time.now, updated_at: Time.now, disbursed: nil}
+          common_expected = {id: Charge.first.id, amount: 100, fee: fee_total, stripe_charge_id: nil, status: "failed", failure_message: "We're sorry, but something went wrong. We've been notified about this issue.", created_at: Time.zone.now, updated_at: Time.zone.now, disbursed: nil}
 
           result_expected = common_expected.merge({card_id: card.id, nonprofit_id: nonprofit.id, donation_id: nil, supporter_id: supporter.id, ticket_id: nil, payment_id: nil, profile_id: nil, direct_debit_detail_id: nil}).with_indifferent_access
 
@@ -228,7 +228,7 @@ describe InsertCharge do
           expect(Payment).to_not be_exists
         end
         describe "input success" do
-          let(:date) { Time.new(2002, 10, 31) }
+          let(:date) { Time.zone.local(2002, 10, 31) }
 
           it "saves the payment and updates the charge" do
             saves_the_payment_updates_the_charge(card, fee_total)
@@ -277,7 +277,7 @@ describe InsertCharge do
 
             finished_result = InsertCharge.with_stripe(insert_charge_input(expected_card, fee_total, pass_old_donation))
 
-            common_charge_expected = {id: Charge.first.id, amount: 100, fee: fee_total, stripe_charge_id: stripe_charge_id, status: "pending", failure_message: nil, created_at: Time.now, updated_at: Time.now, disbursed: nil}
+            common_charge_expected = {id: Charge.first.id, amount: 100, fee: fee_total, stripe_charge_id: stripe_charge_id, status: "pending", failure_message: nil, created_at: Time.zone.now, updated_at: Time.zone.now, disbursed: nil}
 
             result_charge_expected = common_charge_expected.merge({card_id: expected_card.id, nonprofit_id: nonprofit.id, donation_id: 555, supporter_id: supporter.id, ticket_id: nil, payment_id: Payment.first.id, profile_id: nil, direct_debit_detail_id: nil}).with_indifferent_access
 
@@ -295,9 +295,9 @@ describe InsertCharge do
                                        nonprofit_id: nonprofit.id,
                                        supporter_id: supporter.id,
                                        refund_total: 0,
-                                       date: Time.now,
-                                       created_at: Time.now,
-                                       updated_at: Time.now}.with_indifferent_access
+                                       date: Time.zone.now,
+                                       created_at: Time.zone.now,
+                                       updated_at: Time.zone.now}.with_indifferent_access
 
             expect(finished_result["payment"].attributes).to eq common_payment_expected
             expect(Payment.first.attributes).to eq common_payment_expected
@@ -314,7 +314,7 @@ describe InsertCharge do
 
             finished_result = InsertCharge.with_stripe(insert_charge_input(expected_card, fee_total, pass_old_donation, true))
 
-            common_charge_expected = {id: Charge.first.id, amount: 100, fee: fee_total, stripe_charge_id: stripe_charge_id, status: "pending", failure_message: nil, created_at: Time.now, updated_at: Time.now, disbursed: nil}
+            common_charge_expected = {id: Charge.first.id, amount: 100, fee: fee_total, stripe_charge_id: stripe_charge_id, status: "pending", failure_message: nil, created_at: Time.zone.now, updated_at: Time.zone.now, disbursed: nil}
 
             result_charge_expected = common_charge_expected.merge({card_id: card.id, nonprofit_id: nonprofit.id, donation_id: 555, supporter_id: supporter.id, ticket_id: nil, payment_id: Payment.first.id, profile_id: nil, direct_debit_detail_id: nil}).with_indifferent_access
 
@@ -333,8 +333,8 @@ describe InsertCharge do
                                        supporter_id: supporter.id,
                                        refund_total: 0,
                                        date: date,
-                                       created_at: Time.now,
-                                       updated_at: Time.now}.with_indifferent_access
+                                       created_at: Time.zone.now,
+                                       updated_at: Time.zone.now}.with_indifferent_access
 
             expect(finished_result["payment"].attributes).to eq common_payment_expected
             expect(Payment.first.attributes).to eq common_payment_expected

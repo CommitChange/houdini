@@ -6,7 +6,7 @@ module UpdatePayouts
       status: {included_in: ["pending", "paid", "canceled", "failed"], required: true},
       failure_message: {not_blank: true, required: true}
     })
-    payout = Payout.where("id = ?", payout_id).first
+    payout = Payout.where(id: payout_id).first
     unless payout
       raise ParamValidation::ValidationError.new("No payout with id number: #{payout_id} ", [{key: :payout_id}])
     end

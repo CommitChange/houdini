@@ -28,8 +28,8 @@ describe UpdateTickets do
         payment: payment,
         charge: charge,
         event_discount: event_discount,
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         checked_in: nil,
         bid_id: 1,
         card_id: nil,
@@ -49,8 +49,8 @@ describe UpdateTickets do
         payment_id: payment.id,
         charge_id: charge.id,
         event_discount_id: event_discount.id,
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         checked_in: nil,
         bid_id: 1,
         card_id: nil,
@@ -232,7 +232,7 @@ describe UpdateTickets do
         skip_attribs = [:updated_at, :card]
         expect(ticket.attributes.except(*skip_attribs)).to eq original_ticket.attributes.except(*skip_attribs)
 
-        expect(ticket.updated_at).to eq Time.now
+        expect(ticket.updated_at).to eq Time.zone.now
       end
     end
 

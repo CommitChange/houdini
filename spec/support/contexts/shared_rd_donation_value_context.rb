@@ -6,14 +6,14 @@ RSpec.shared_context :shared_rd_donation_value_context do
   let(:fake_uuid) { "53a6bc06-0789-11e8-bb3f-f34cac607737" }
   let(:valid_uuid) { "fcf61bac-078a-11e8-aa53-cba5bdb8dcdd" }
   let(:other_uuid) { "a713018c-078f-11e8-ae3b-bf5007844fea" }
-  let(:source_token) { force_create(:source_token, tokenizable: card, expiration: Time.now + 1.day, max_uses: 1, token: valid_uuid) }
+  let(:source_token) { force_create(:source_token, tokenizable: card, expiration: 1.day.from_now, max_uses: 1, token: valid_uuid) }
   let(:source_tokens) {
     (0..10).map { |i|
-      force_create(:source_token, tokenizable: card, expiration: Time.now + 1.day, max_uses: 1, token: SecureRandom.uuid)
+      force_create(:source_token, tokenizable: card, expiration: 1.day.from_now, max_uses: 1, token: SecureRandom.uuid)
     }
   }
 
-  let(:other_source_token) { force_create(:source_token, tokenizable: card_for_other_supporter, expiration: Time.now + 1.day, max_uses: 1, token: other_uuid) }
+  let(:other_source_token) { force_create(:source_token, tokenizable: card_for_other_supporter, expiration: 1.day.from_now, max_uses: 1, token: other_uuid) }
 
   let(:charge_amount) { 100 }
 
@@ -37,9 +37,9 @@ RSpec.shared_context :shared_rd_donation_value_context do
 
         card_id: payment_stuff[:card_id],
 
-        date: Time.now,
-        created_at: Time.now,
-        updated_at: Time.now,
+        date: Time.zone.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         event_id: data[:event] ? event.id : nil,
         campaign_id: data[:campaign] ? campaign.id : nil,
         anonymous: false,
@@ -70,7 +70,7 @@ RSpec.shared_context :shared_rd_donation_value_context do
       result[:activity] = {}
 
       result[:payment] = {
-        date: Time.now,
+        date: Time.zone.now,
         donation_id: donation_id,
         fee_total: -payment_stuff[:fee],
         gross_amount: 100,
@@ -81,16 +81,16 @@ RSpec.shared_context :shared_rd_donation_value_context do
         refund_total: 0,
         supporter_id: supporter.id,
         towards: "designation",
-        created_at: Time.now,
-        updated_at: Time.now
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now
       }
       result[:charge] = {
         id: charge_id || 55555,
         amount: charge_amount,
 
         card_id: payment_stuff[:card_id],
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         stripe_charge_id: stripe_charge_id,
         fee: payment_stuff[:fee],
 
@@ -124,8 +124,8 @@ RSpec.shared_context :shared_rd_donation_value_context do
         cancelled_at: nil,
         donation_id: donation_id,
         nonprofit_id: nonprofit.id,
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         failure_message: nil,
         origin_url: nil,
         amount: charge_amount,

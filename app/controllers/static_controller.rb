@@ -20,11 +20,11 @@ class StaticController < ApplicationController
   private
 
   def git_hash
-    @git_hash ||= File.read("#{Rails.root.join("CCS_HASH")}")
+    @git_hash ||= File.read(Rails.root.join("CCS_HASH").to_s)
   end
 
   def temp_file
-    @temp_file ||= "#{Rails.root.join("tmp/#{Time.current.to_i}.tar.gz")}"
+    @temp_file ||= Rails.root.join("tmp/#{Time.current.to_i}.tar.gz").to_s
   end
 
   def create_archive

@@ -60,11 +60,11 @@ class Nonprofit < ApplicationRecord
   has_many :recurring_donations
   has_many :payments do
     def pending
-      joins(:charges).where("charges.status = ?", "pending")
+      joins(:charges).where(charges: {status: "pending"})
     end
 
     def pending_totals
-      net, gross = pending.pluck(Arel.sql('SUM("payments"."net_amount") AS net, SUM("payments"."gross_amount") AS gross')).first
+      net, gross = pending.pick(Arel.sql('SUM("payments"."net_amount") AS net, SUM("payments"."gross_amount") AS gross'))
       {"net" => net, "gross" => gross}
     end
 

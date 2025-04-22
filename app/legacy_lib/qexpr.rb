@@ -37,7 +37,7 @@ class Qexpr
     query_based_expression = @tree[:update] || @tree[:delete_from] || @tree[:select]
     # Query-based expessions
 
-    if query_based_expression.nil? || query_based_expression.empty?
+    if query_based_expression.blank?
       raise ArgumentError.new("Must have a select, update, or delete clause")
     end
 

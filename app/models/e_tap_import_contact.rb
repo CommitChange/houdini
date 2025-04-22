@@ -5,8 +5,8 @@ class ETapImportContact < ApplicationRecord
 
   def supporters
     nonprofit.supporters.not_deleted.includes(custom_field_joins: :custom_field_master)
-      .where("custom_field_masters.name = ?", "E-Tapestry Id #")
-      .where("custom_field_joins.value = ?", account_id.to_s).references(:custom_field_joins, :custom_field_masters)
+      .where(custom_field_masters: {name: "E-Tapestry Id #"})
+      .where(custom_field_joins: {value: account_id.to_s}).references(:custom_field_joins, :custom_field_masters)
   end
 
   def supporter
@@ -61,12 +61,12 @@ class ETapImportContact < ApplicationRecord
 
     # is this also relate to the latest payment
     if supporter
-      if (latest_journal_entry&.to_wrapper&.date || Time.at(0)) >= (supporter.payments.order("date DESC").first&.date || Time.at(0))
-        puts "update the supporter info"
+      if (latest_journal_entry&.to_wrapper&.date || Time.zone.at(0)) >= (supporter.payments.order("date DESC").first&.date || Time.zone.at(0))
+        Rails.logger.debug "update the supporter info"
         begin
           # did we overwrite the email?
           if supporter.persisted? && supporter.email && to_supporter_args[:email] && supporter.email.downcase != to_supporter_args[:email].downcase
-            cfj = supporter.custom_field_joins.joins(:custom_field_master).where("custom_field_masters.name = ?", "Overwrote previous email").references(:custom_field_masters).first
+            cfj = supporter.custom_field_joins.joins(:custom_field_master).where(custom_field_masters: {name: "Overwrote previous email"}).references(:custom_field_masters).first
             val = (cfj&.split(",") || []) + [supporter.email]
             custom_fields_to_save += [["Overwrote previous email", val.join(",")]]
           end
@@ -76,7 +76,7 @@ class ETapImportContact < ApplicationRecord
           raise e
         end
       else
-        puts "do nothing!"
+        Rails.logger.debug "do nothing!"
       end
     else
       supporter = e_tap_import.nonprofit.supporters.create(to_supporter_args)
@@ -235,12 +235,12 @@ class ETapImportContact < ApplicationRecord
   end
 
   def emails
-    [row["Email Address 1"], row["Email Address 2"], row["Email Address 3"]].select { |i| i.present? }
+    [row["Email Address 1"], row["Email Address 2"], row["Email Address 3"]].compact_blank
   end
 
   private
 
   def phone_numbers
-    [row["Phone - Voice"], row["Phone - Mobile"], row["Phone - Cell"]].select { |i| i.present? }
+    [row["Phone - Voice"], row["Phone - Mobile"], row["Phone - Cell"]].compact_blank
   end
 end

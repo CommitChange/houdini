@@ -29,7 +29,7 @@ class SuperAdminsController < ApplicationController
       profile_id: {required: true, is_integer: true}
     })
 
-    profile = Profile.includes(:user).where("id = ?", params[:profile_id]).first
+    profile = Profile.includes(:user).where(id: params[:profile_id]).first
     unless profile.user
       raise ArgumentError.new("#{params[:profile_id]} is a profile without a valid user")
     end
@@ -56,7 +56,7 @@ class SuperAdminsController < ApplicationController
           }
         }
 
-        send_data(csv_out, filename: "recurring_donations_without_cards-#{Time.now.to_date}.csv")
+        send_data(csv_out, filename: "recurring_donations_without_cards-#{Time.zone.now.to_date}.csv")
       end
     end
   end

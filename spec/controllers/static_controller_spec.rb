@@ -30,7 +30,7 @@ RSpec.describe StaticController, type: :controller do
         end
 
         it "setup github" do
-          expect(File).to receive(:read).with("#{Rails.root.join("CCS_HASH")}").and_return("hash\n")
+          expect(File).to receive(:read).with(Rails.root.join("CCS_HASH").to_s).and_return("hash\n")
           get("ccs")
           expect(response).to redirect_to "https://github.com/account/repo/tree/hash"
         end

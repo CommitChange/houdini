@@ -4,9 +4,9 @@ module UpdateMiscellaneousNpInfo
     ParamValidation.new({np_id: np_id, misc_settings: misc_settings},
       np_id: {required: true, is_integer: true},
       misc_settings: {required: true, is_hash: true})
-    np = Nonprofit.where("id = ?", np_id).first
+    np = Nonprofit.where(id: np_id).first
     raise ParamValidation::ValidationError.new("Nonprofit #{np_id} does not exist", {key: :np_id}) unless np
-    misc = MiscellaneousNpInfo.where("nonprofit_id = ?", np_id).first
+    misc = MiscellaneousNpInfo.where(nonprofit_id: np_id).first
     unless misc
       misc = MiscellaneousNpInfo.new
       misc.nonprofit = np

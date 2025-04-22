@@ -21,7 +21,4 @@ class PaymentPayout < ApplicationRecord
   belongs_to :charge # deprecated
   belongs_to :payment
   belongs_to :payout
-
-  validates :payment, presence: true
-  validates :payout, presence: true
 end

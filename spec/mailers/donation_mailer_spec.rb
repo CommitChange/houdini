@@ -10,7 +10,7 @@ RSpec.describe DonationMailer, type: :mailer do
     let(:default_message) { "You have successfully changed your recurring donation amount. Please see the receipt and details below." }
 
     let(:rd) {
-      create(:recurring_donation, amount: 999, active: true, supporter_id: s.id, donation_id: donation.id, nonprofit_id: np.id, start_date: Date.today, interval: 1, time_unit: "month")
+      create(:recurring_donation, amount: 999, active: true, supporter_id: s.id, donation_id: donation.id, nonprofit_id: np.id, start_date: Time.zone.today, interval: 1, time_unit: "month")
     }
 
     before(:each) {
@@ -179,8 +179,8 @@ RSpec.describe DonationMailer, type: :mailer do
 
       let(:donation) { force_create(:donation, nonprofit_id: np.id, supporter_id: s.id, card_id: oldcard.id, amount: 999) }
 
-      let(:payment_to_send_receipt_for) { force_create(:payment, supporter_id: s.id, amount: 999, donation_id: donation.id, date: Time.at(2020, 5, 1)) }
-      let(:other) { force_create(:payment, supporter_id: s.id, amount: 999, donation_id: donation.id, date: Time.at(2020, 5, 1)) }
+      let(:payment_to_send_receipt_for) { force_create(:payment, supporter_id: s.id, amount: 999, donation_id: donation.id, date: Time.zone.at(2020, 5, 1)) }
+      let(:other) { force_create(:payment, supporter_id: s.id, amount: 999, donation_id: donation.id, date: Time.zone.at(2020, 5, 1)) }
     end
   end
 

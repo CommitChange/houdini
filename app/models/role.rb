@@ -24,7 +24,6 @@ class Role < ApplicationRecord
   scope :campaign_editors, -> { where(name: :campaign_editor) }
   scope :event_editors, -> { where(name: :event_editor) }
 
-  validates :user, presence: true
   validates :name, inclusion: {in: Names}
   validates :host, presence: true, unless: [:super_admin?, :super_associate?]
 

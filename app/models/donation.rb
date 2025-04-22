@@ -26,8 +26,6 @@ class Donation < ApplicationRecord
   attr_readonly :fts
 
   validates :amount, presence: true, numericality: {only_integer: true}
-  validates :supporter, presence: true
-  validates :nonprofit, presence: true
   validates_associated :charges
   validates :payment_provider, inclusion: {in: ["credit_card", "sepa"]}, allow_blank: true
 
@@ -62,6 +60,6 @@ class Donation < ApplicationRecord
   private
 
   def set_anonymous
-    update_attributes(anonymous: false) if anonymous.nil?
+    update(anonymous: false) if anonymous.nil?
   end
 end

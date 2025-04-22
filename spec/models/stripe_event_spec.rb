@@ -72,7 +72,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -95,7 +95,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -127,7 +127,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -149,7 +149,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -180,7 +180,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -202,7 +202,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -236,7 +236,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_2"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -262,7 +262,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_2"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -296,7 +296,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_2"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -322,7 +322,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_2"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -357,7 +357,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -381,7 +381,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -413,7 +413,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -437,7 +437,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -468,7 +468,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -493,7 +493,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do
@@ -527,7 +527,7 @@ RSpec.describe StripeEvent, type: :model do
           it "saved the event" do
             expect(last_event.event_id).to eq "test_evt_1"
             expect(last_event.object_id).to eq "acct_1G8Y94CcxDUSisy4"
-            expect(last_event.event_time).to eq Time.now
+            expect(last_event.event_time).to eq Time.zone.now
           end
 
           it "saves StripeAccount" do

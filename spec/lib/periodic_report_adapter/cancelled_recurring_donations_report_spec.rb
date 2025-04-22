@@ -16,8 +16,8 @@ describe PeriodicReportAdapter::CancelledRecurringDonationsReport do
   let(:params) do
     {
       active: false,
-      cancelled_at_gt_or_eq: Time.new(2021, 9, 1),
-      cancelled_at_lt: Time.new(2021, 10, 1)
+      cancelled_at_gt_or_eq: Time.zone.local(2021, 9, 1),
+      cancelled_at_lt: Time.zone.local(2021, 10, 1)
     }
   end
 

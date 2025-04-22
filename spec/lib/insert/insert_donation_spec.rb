@@ -101,7 +101,7 @@ describe InsertDonation do
       }
       describe "event donation" do
         let(:result) {
-          InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token, event_id: event.id, date: (Time.now + 1.day).to_s, dedication: "dedication", designation: "designation")
+          InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token, event_id: event.id, date: 1.day.from_now.to_s, dedication: "dedication", designation: "designation")
         }
 
         it "process event donation" do
@@ -123,7 +123,7 @@ describe InsertDonation do
 
       describe "campaign donation" do
         let(:result) {
-          InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token, campaign_id: campaign.id, date: (Time.now + 1.day).to_s, dedication: "dedication", designation: "designation")
+          InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token, campaign_id: campaign.id, date: 1.day.from_now.to_s, dedication: "dedication", designation: "designation")
         }
 
         it "process campaign donation" do
@@ -143,7 +143,7 @@ describe InsertDonation do
         end
       end
       describe "general donation" do
-        let(:result) { InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token, profile_id: profile.id, date: (Time.now + 1.day).to_s, dedication: "dedication", designation: "designation") }
+        let(:result) { InsertDonation.with_stripe(amount: charge_amount, nonprofit_id: nonprofit.id, supporter_id: supporter.id, token: source_token.token, profile_id: profile.id, date: 1.day.from_now.to_s, dedication: "dedication", designation: "designation") }
         it "processes general donation" do
           process_general_donation { result }
         end

@@ -13,7 +13,7 @@ module MergeSupporters
         .where("supporter_id IN ($ids)", ids: old_supporter_ids).timestamps.execute
     end
 
-    old_supporters.joins(:cards).each do |supp|
+    old_supporters.joins(:cards).find_each do |supp|
       supp.cards.each do |card|
         card.holder = new_supporter
         card.save!
@@ -59,7 +59,7 @@ module MergeSupporters
   end
 
   def self.selected(merged_data, supporter_ids, np_id, profile_id, skip_conflicting_custom_fields = false)
-    old_supporters = Nonprofit.find(np_id).supporters.where("supporters.id IN (?)", supporter_ids)
+    old_supporters = Nonprofit.find(np_id).supporters.where(supporters: {id: supporter_ids})
 
     if skip_conflicting_custom_fields && conflicting_custom_fields?(old_supporters)
       return {json: supporter_ids, status: :failure}

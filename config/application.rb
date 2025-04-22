@@ -55,7 +55,7 @@ module Commitchange
     # Precompile all "page" files
     config.assets.precompile << proc do |path|
       if /.*page\.(css|js)/.match?(path)
-        puts "Compiling asset: " + path
+        Rails.logger.debug "Compiling asset: " + path
         true
       else
         false

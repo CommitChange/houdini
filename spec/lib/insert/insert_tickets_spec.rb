@@ -4,7 +4,7 @@ require "rails_helper"
 describe InsertTickets do
   include_context :shared_rd_donation_value_context
 
-  let(:switchover_date) { Time.new(2020, 10, 1) }
+  let(:switchover_date) { Time.zone.local(2020, 10, 1) }
   before(:each) do
     stub_const("FEE_SWITCHOVER_TIME", switchover_date)
   end
@@ -15,7 +15,7 @@ describe InsertTickets do
     data[:payment_fee_total] = data[:payment_fee_total] || 0
     result = {
       payment: {
-        date: Time.now,
+        date: Time.zone.now,
         donation_id: nil,
         fee_total: -1 * data[:payment_fee_total],
         gross_amount: amount,
@@ -26,8 +26,8 @@ describe InsertTickets do
         refund_total: 0,
         supporter_id: data[:supporter].id,
         towards: data[:event].name,
-        created_at: Time.now,
-        updated_at: Time.now
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now
       }
     }.with_indifferent_access
 
@@ -40,8 +40,8 @@ describe InsertTickets do
         payment_id: data[:payment_id],
         kind: data[:offsite_payment][:kind],
         check_number: data[:offsite_payment][:check_number],
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         gross_amount: amount,
 
         donation_id: nil,
@@ -55,8 +55,8 @@ describe InsertTickets do
         id: data[:charge_id] || 55555,
         amount: amount,
         card_id: data[:card].id,
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         stripe_charge_id: data[:stripe_charge_id],
         fee: data[:payment_fee_total],
         disbursed: nil,
@@ -87,8 +87,8 @@ describe InsertTickets do
         payment_id: data[:payment_id],
         charge_id: data[:charge_id] || nil,
         event_discount_id: data[:event_discount_id],
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         checked_in: nil,
         bid_id: i + 1,
         card_id: nil,
@@ -529,7 +529,7 @@ describe InsertTickets do
 
     describe "when a free ticket is being inserted" do
       before do
-        ticket_level.update_attributes(amount: 0)
+        ticket_level.update(amount: 0)
       end
 
       let(:ticket) do

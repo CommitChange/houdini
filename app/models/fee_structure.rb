@@ -26,8 +26,6 @@ class FeeStructure < ApplicationRecord
     numericality: {greater_than_or_equal_to: 0, less_than: 1},
     presence: true
 
-  validates :fee_era, presence: true
-
   delegate :charge_international_fee?, :international_surcharge_fee, to: :fee_era
 
   # @param [Hash] opts

@@ -925,9 +925,9 @@ RSpec.shared_context "common fee scenarios" do
     when :now
       Time.current
     when :in_past
-      Time.new(2000, 1, 1)
+      Time.zone.local(2000, 1, 1)
     when :in_future
-      Time.new(2022, 1, 1)
+      Time.zone.local(2022, 1, 1)
     end
   end
 end

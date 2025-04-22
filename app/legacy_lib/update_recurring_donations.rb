@@ -87,11 +87,11 @@ module UpdateRecurringDonations
   end
 
   def self.update_from_start_dates
-    RecurringDonation.inactive.where("start_date >= ?", Date.today).update_all(active: true)
+    RecurringDonation.inactive.where("start_date >= ?", Time.zone.today).update_all(active: true)
   end
 
   def self.update_from_end_dates
-    RecurringDonation.active.where("end_date < ?", Date.today).update_all(active: false)
+    RecurringDonation.active.where("end_date < ?", Time.zone.today).update_all(active: false)
   end
 
   # Cancel a recurring donation (set active='f') and record the supporter/user email who did it
@@ -120,7 +120,7 @@ module UpdateRecurringDonations
 
     params = set_defaults(params)
     if params[:donation]
-      rd.donation.update_attributes(params[:donation])
+      rd.donation.update(params[:donation])
       return rd.donation unless rd.donation.valid?
       params = params.except(:donation)
     end
@@ -131,7 +131,7 @@ module UpdateRecurringDonations
     misc.save!
 
     params = params.except(:fee_covered)
-    rd.update_attributes(params)
+    rd.update(params)
     rd
   end
 

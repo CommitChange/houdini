@@ -5,6 +5,6 @@ module UpdateCharges
   end
 
   def self.reverse_disburse_all_with_payments(payment_ids)
-    Charge.where("payment_id IN (?)", payment_ids).update_all(status: "available")
+    Charge.where(payment_id: payment_ids).update_all(status: "available")
   end
 end

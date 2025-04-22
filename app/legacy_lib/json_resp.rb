@@ -24,8 +24,8 @@ class JsonResp
       @response = block.call(@params)
     rescue Exception => e
       @response = {status: 500, json: {error: "We're sorry, but something went wrong. We've been notified about this issue."}}
-      puts e
-      puts e.backtrace.first(10)
+      Rails.logger.debug e
+      Rails.logger.debug e.backtrace.first(10)
     end
     @response
   end

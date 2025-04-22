@@ -30,7 +30,7 @@ module InsertDonation
 
     result = {}
 
-    data[:date] = Time.now
+    data[:date] = Time.zone.now
     data = amount_from_data(data)
     data = data.except(:old_donation).except("old_donation")
     result = result.merge(insert_charge(data))
@@ -142,7 +142,7 @@ module InsertDonation
 
     result = {}
 
-    data[:date] = Time.now
+    data[:date] = Time.zone.now
     result = result.merge(insert_charge(data))
     result["donation"] = insert_donation(data, entities)
     update_donation_keys(result)

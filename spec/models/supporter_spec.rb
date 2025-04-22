@@ -232,7 +232,7 @@ RSpec.describe Supporter, type: :model do
         context "and address is being created" do
           def create_supporter_and_update_supporter_address
             supporter = create(:supporter_with_fv_poverty)
-            supporter.update_attributes(custom_address_attributes)
+            supporter.update(custom_address_attributes)
             supporter
           end
 

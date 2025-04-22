@@ -18,7 +18,7 @@ module RetrieveActiveRecordItems
       if optional && v.nil?
         ret = [k, nil]
       else
-        ret = [k, k.where("id = ?", our_integer).first]
+        ret = [k, k.where(id: our_integer).first]
         if ret[1].nil?
           raise ParamValidation::ValidationError.new("ID #{v} is not a valid #{k}", {key: k})
         end

@@ -99,8 +99,8 @@ describe InsertBankAccount do
         expected = {email: user.email,
                     stripe_bank_account_token: stripe_bank_account_token,
                     pending_verification: true,
-                    created_at: Time.now,
-                    updated_at: Time.now,
+                    created_at: Time.zone.now,
+                    updated_at: Time.zone.now,
                     status: nil, # doesn't seem to be used
                     id: 1,
                     deleted: false,
@@ -136,8 +136,8 @@ describe InsertBankAccount do
         expected = {email: user.email,
                     stripe_bank_account_token: stripe_bank_account_token,
                     pending_verification: true,
-                    created_at: Time.now,
-                    updated_at: Time.now,
+                    created_at: Time.zone.now,
+                    updated_at: Time.zone.now,
                     status: nil, # doesn't seem to be used
                     id: result["id"],
                     deleted: false,
@@ -150,7 +150,7 @@ describe InsertBankAccount do
         expect(result[:name]).to_not be_blank
 
         expect(nonprofit.bank_account).to eq result
-        expect(BankAccount.where("nonprofit_id = ?", nonprofit.id).count).to eq 4
+        expect(BankAccount.where(nonprofit_id: nonprofit.id).count).to eq 4
         expect(BankAccount.where("nonprofit_id = ? and deleted = true", nonprofit.id).count).to eq 3
       end
     end

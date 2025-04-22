@@ -35,19 +35,19 @@ RSpec.describe FeeEra, type: :model do
       end
 
       it "for passed time during current era" do
-        expect(FeeEra.find_by_time(Time.new(2020, 5, 3))).to eq fee_era
+        expect(FeeEra.find_by_time(Time.zone.local(2020, 5, 3))).to eq fee_era
       end
 
       it "for passed time far in past" do
-        expect(FeeEra.find_by_time(Time.new(2019, 5, 4))).to eq fee_era_with_no_start
+        expect(FeeEra.find_by_time(Time.zone.local(2019, 5, 4))).to eq fee_era_with_no_start
       end
 
       it "for passed time at the beginning of last era" do
-        expect(FeeEra.find_by_time(Time.new(2020, 5, 7))).to eq fee_era_with_no_end
+        expect(FeeEra.find_by_time(Time.zone.local(2020, 5, 7))).to eq fee_era_with_no_end
       end
 
       it "for passed time far in future" do
-        expect(FeeEra.find_by_time(Time.new(2100, 5, 4))).to eq fee_era_with_no_end
+        expect(FeeEra.find_by_time(Time.zone.local(2100, 5, 4))).to eq fee_era_with_no_end
       end
     end
     context "when no era is found" do
@@ -76,7 +76,7 @@ RSpec.describe FeeEra, type: :model do
     end
 
     context "for passed time during current era" do
-      let(:time) { Time.new(2020, 5, 3) }
+      let(:time) { Time.zone.local(2020, 5, 3) }
       it {
         expect(fee_era.in_era?(time)).to eq true
       }
@@ -91,7 +91,7 @@ RSpec.describe FeeEra, type: :model do
     end
 
     context "for passed time far in past" do
-      let(:time) { Time.new(2019, 5, 4) }
+      let(:time) { Time.zone.local(2019, 5, 4) }
       it {
         expect(fee_era.in_era?(time)).to eq false
       }
@@ -106,7 +106,7 @@ RSpec.describe FeeEra, type: :model do
     end
 
     context "for passed time at the beginning of last era" do
-      let(:time) { Time.new(2020, 5, 7) }
+      let(:time) { Time.zone.local(2020, 5, 7) }
       it {
         expect(fee_era.in_era?(time)).to eq false
       }
@@ -121,7 +121,7 @@ RSpec.describe FeeEra, type: :model do
     end
 
     context "for passed time far in future" do
-      let(:time) { Time.new(2100, 5, 4) }
+      let(:time) { Time.zone.local(2100, 5, 4) }
       it {
         expect(fee_era.in_era?(time)).to eq false
       }

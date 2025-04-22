@@ -13,7 +13,7 @@ RSpec.describe AdminMailer, type: :mailer do
     let!(:oldcard) { force_create(:card) }
     let!(:payment) { force_create(:payment, donation_id: donation.id, nonprofit_id: np.id, supporter_id: s.id, gross_amount: 999) }
     let!(:donation) { force_create(:donation, nonprofit_id: np.id, supporter_id: s.id, card_id: oldcard.id, amount: 999) }
-    let!(:charge) { create(:charge, donation: donation, nonprofit: np, amount: 100, created_at: Time.now) }
+    let!(:charge) { create(:charge, donation: donation, nonprofit: np, amount: 100, created_at: Time.zone.now) }
     let(:campaign) { force_create(:campaign, nonprofit: np) }
     let!(:campaign_gift_option_with_desc) { force_create(:campaign_gift_option, description: "desc", amount_one_time: "", campaign: campaign) }
     let!(:campaign_gift_option) { force_create(:campaign_gift_option, campaign: campaign) }

@@ -43,7 +43,7 @@ class RecurringDonationsController < ApplicationController
   end
 
   def update_amount
-    rd = RecurringDonation.where("id = ?", params[:id]).first
+    rd = RecurringDonation.where(id: params[:id]).first
     if rd && params[:edit_token] == rd["edit_token"]
       begin
         amount_response = UpdateRecurringDonations.update_amount(rd, params[:token], params[:amount], params[:fee_covered])

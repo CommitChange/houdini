@@ -6,12 +6,12 @@ module InsertDuplicate
         campaign_id: {required: true, is_integer: true},
         profile_id: {required: true, is_integer: true}
       })
-    campaign = Campaign.where("id = ?", campaign_id).first
+    campaign = Campaign.where(id: campaign_id).first
     unless campaign
       raise ParamValidation::ValidationError.new("#{campaign_id} is not a valid campaign", {key: :campaign_id})
     end
 
-    profile = Profile.where("id = ?", profile_id).first
+    profile = Profile.where(id: profile_id).first
     unless profile
       raise ParamValidation::ValidationError.new("#{profile_id} is not a valid profile", {key: :profile_id})
     end
@@ -55,12 +55,12 @@ module InsertDuplicate
         event_id: {required: true, is_integer: true},
         profile_id: {required: true, is_integer: true}
       })
-    event = Event.where("id = ?", event_id).first
+    event = Event.where(id: event_id).first
     unless event
       raise ParamValidation::ValidationError.new("#{event_id} is not a valid event", {key: :event_id})
     end
 
-    profile = Profile.where("id = ?", profile_id).first
+    profile = Profile.where(id: profile_id).first
     unless profile
       raise ParamValidation::ValidationError.new("#{profile_id} is not a valid profile", {key: :profile_id})
     end
@@ -112,7 +112,7 @@ module InsertDuplicate
 
   def self.misc_event_info(event, dupe)
     original_custom_get_tickets_button_label = event&.misc_event_info&.custom_get_tickets_button_label
-    return unless original_custom_get_tickets_button_label.present?
+    return if original_custom_get_tickets_button_label.blank?
 
     dupe.create_misc_event_info
     dupe.misc_event_info.custom_get_tickets_button_label = original_custom_get_tickets_button_label

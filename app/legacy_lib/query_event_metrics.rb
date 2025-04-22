@@ -67,12 +67,12 @@ module QueryEventMetrics
     end
     if params["active"].present?
       exp = exp
-        .and_where(["events.end_datetime >= $date", date: Time.now])
+        .and_where(["events.end_datetime >= $date", date: Time.zone.now])
         .and_where(["events.published = TRUE AND coalesce(events.deleted, FALSE) = FALSE"])
     end
     if params["past"].present?
       exp = exp
-        .and_where(["events.end_datetime < $date", date: Time.now])
+        .and_where(["events.end_datetime < $date", date: Time.zone.now])
         .and_where(["events.published = TRUE AND coalesce(events.deleted, FALSE) = FALSE"])
     end
     if params["unpublished"].present?
