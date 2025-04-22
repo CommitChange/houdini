@@ -18,7 +18,7 @@ module UpdateActivities
 
   def self.for_one_time_donation(payment)
     activity = generate_for_one_time_donation(payment)
-    activity.save! if activity
+    activity&.save!
   end
 
   def self.generate_for_one_time_donation(payment)

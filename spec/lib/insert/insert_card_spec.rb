@@ -168,7 +168,7 @@ describe InsertCard do
           expect(customer.sources.data.any? { |s| s.object == "card" && s.last4 == "9191" && s.exp_year == 2011 }).to eq(true)
 
           # verify the original card didn't change
-          expect(nonprofit.cards.find(first_card.id).attributes.select { |k, _| k != "inactive" }).to eq first_card.attributes.select { |k, _| k != "inactive" }
+          expect(nonprofit.cards.find(first_card.id).attributes.except("inactive")).to eq first_card.attributes.except("inactive")
 
           expect(nonprofit.cards.find(first_card.id).inactive).to eq true
         end
@@ -426,7 +426,7 @@ describe InsertCard do
       expect(card_ret[:status]).to eq(:ok)
 
       expected_json = db_card.attributes
-      expected_json.merge!({"token" => token})
+      expected_json["token"] = token
       if token
         expect(token).to match(UUID::Regex)
       end
@@ -457,7 +457,7 @@ describe InsertCard do
         max_uses: max_uses,
         total_uses: 0,
         expiration: expiration_time,
-        event_id: event ? event.id : nil,
+        event_id: event&.id,
         token: source_token
       }.with_indifferent_access
 

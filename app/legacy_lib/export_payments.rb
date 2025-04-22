@@ -197,7 +197,7 @@ module ExportPayments
   end
 
   def self.build_custom_value_clause(column_name, custom_columns_and_values, custom_column_name, column_treatment = column_name)
-    custom_values = custom_columns_and_values&.dig(column_name)&.dig("custom_values")
+    custom_values = custom_columns_and_values&.dig(column_name, "custom_values")
     if custom_values.present?
       return build_custom_values_switch_case(custom_values, column_treatment, custom_column_name)
     end
@@ -214,32 +214,32 @@ module ExportPayments
 
   def self.build_custom_names_for_payments(custom_names)
     {
-      "payments.date" => custom_names&.dig("payments.date")&.dig("custom_name") || "date",
-      "payments.gross_amount" => custom_names&.dig("payments.gross_amount")&.dig("custom_name") || "gross_amount",
-      "payments.fee_total" => custom_names&.dig("payments.fee_total")&.dig("custom_name") || "fee_total",
-      "payments.net_amount" => custom_names&.dig("payments.net_amount")&.dig("custom_name") || "net_amount",
-      "payments.kind" => custom_names&.dig("payments.kind")&.dig("custom_name") || "type"
+      "payments.date" => custom_names&.dig("payments.date", "custom_name") || "date",
+      "payments.gross_amount" => custom_names&.dig("payments.gross_amount", "custom_name") || "gross_amount",
+      "payments.fee_total" => custom_names&.dig("payments.fee_total", "custom_name") || "fee_total",
+      "payments.net_amount" => custom_names&.dig("payments.net_amount", "custom_name") || "net_amount",
+      "payments.kind" => custom_names&.dig("payments.kind", "custom_name") || "type"
     }
   end
 
   def self.build_custom_names_for_donations_and_campaigns(custom_names)
     {
-      "donations.designation" => custom_names&.dig("donations.designation")&.dig("custom_name") || "designation",
+      "donations.designation" => custom_names&.dig("donations.designation", "custom_name") || "designation",
       "donations.anonymous OR supporters.anonymous" => (
         custom_names&.dig("donations.anonymous OR supporters.anonymous") ||
         custom_names&.dig("donations.anonymous") ||
         custom_names&.dig("supporters.anonymous")
       )&.dig("custom_name") || '"Anonymous?"',
-      "campaigns_for_export.name" => custom_names&.dig("campaigns_for_export.name")&.dig("custom_name") || "campaign",
-      "campaigns_for_export.id" => custom_names&.dig("campaigns_for_export.id")&.dig("custom_name") || '"Campaign Id"',
-      "campaigns_for_export.creator_email" => custom_names&.dig("campaigns_for_export.creator_email")&.dig("custom_name") || "campaign_creator_email",
-      "campaign_gift_options.name" => custom_names&.dig("campaign_gift_options.name")&.dig("custom_name") || "campaign_gift_level",
-      "events_for_export.name" => custom_names&.dig("events_for_export.name")&.dig("custom_name") || "event_name",
-      "payments.id" => custom_names&.dig("payments.id")&.dig("custom_name") || "payment_id",
-      "offsite_payments.check_number" => custom_names&.dig("offsite_payments.check_number")&.dig("custom_name") || "check_number",
-      "donations.comment" => custom_names&.dig("donations.comment")&.dig("custom_name") || "donation_note",
-      "donations.created_at" => custom_names&.dig("donations.created_at")&.dig("custom_name") || '"Recurring Donation Started At"',
-      "misc_payment_infos.fee_covered" => custom_names&.dig("misc_payment_infos.fee_covered")&.dig("custom_name") || '"Fee Covered by Supporter"'
+      "campaigns_for_export.name" => custom_names&.dig("campaigns_for_export.name", "custom_name") || "campaign",
+      "campaigns_for_export.id" => custom_names&.dig("campaigns_for_export.id", "custom_name") || '"Campaign Id"',
+      "campaigns_for_export.creator_email" => custom_names&.dig("campaigns_for_export.creator_email", "custom_name") || "campaign_creator_email",
+      "campaign_gift_options.name" => custom_names&.dig("campaign_gift_options.name", "custom_name") || "campaign_gift_level",
+      "events_for_export.name" => custom_names&.dig("events_for_export.name", "custom_name") || "event_name",
+      "payments.id" => custom_names&.dig("payments.id", "custom_name") || "payment_id",
+      "offsite_payments.check_number" => custom_names&.dig("offsite_payments.check_number", "custom_name") || "check_number",
+      "donations.comment" => custom_names&.dig("donations.comment", "custom_name") || "donation_note",
+      "donations.created_at" => custom_names&.dig("donations.created_at", "custom_name") || '"Recurring Donation Started At"',
+      "misc_payment_infos.fee_covered" => custom_names&.dig("misc_payment_infos.fee_covered", "custom_name") || '"Fee Covered by Supporter"'
     }
   end
 

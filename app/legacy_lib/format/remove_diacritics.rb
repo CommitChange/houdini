@@ -7,7 +7,7 @@ module Format
       # returns a new hash with any diacritics replaced with a plain character
       # only from values corresponding to specified keys:
       # {"city" => "São Paulo"} ["city"] will return {"city" => "Sao Paulo"}
-      Hash[hash.map { |k, v| [k, keys.include?(k) ? I18n.transliterate(v) : v] }]
+      hash.map { |k, v| [k, keys.include?(k) ? I18n.transliterate(v) : v] }.to_h
     end
   end
 end

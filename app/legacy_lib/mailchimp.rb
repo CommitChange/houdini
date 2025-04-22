@@ -116,7 +116,7 @@ module Mailchimp
         }.to_json
       })
       if list.code != 200
-        raise Exception.new("Failed to create list: #{list}")
+        raise StandardError.new("Failed to create list: #{list}")
       end
       {id: list["id"], name: list["name"], tag_master_id: h["id"]}
     end

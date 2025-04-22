@@ -183,7 +183,7 @@ describe "InsertTagJoins.in_bulk" do
           [35]).pluck(:id))
         original_db_pairs.each { |orig, db|
           expect(orig.attributes.length).to eq(db.attributes.length)
-          expect(orig.attributes.select { |key, value| key != "updated_at" }).to eq(db.attributes.select { |key, value| key != "updated_at" })
+          expect(orig.attributes.except("updated_at")).to eq(db.attributes.except("updated_at"))
           expect(orig.attributes["updated_at"]).to be < db.attributes["updated_at"]
         }
 

@@ -55,17 +55,17 @@ class Payout < ApplicationRecord
   end
 
   def bank_account_must_be_confirmed
-    if bank_account && bank_account.pending_verification
+    if bank_account&.pending_verification
       errors.add(:bank_account, "must be confirmed via email")
     end
   end
 
   def nonprofit_must_have_identity_verified
-    errors.add(:nonprofit, "must be verified") unless nonprofit && nonprofit&.stripe_account&.payouts_enabled
+    errors.add(:nonprofit, "must be verified") unless nonprofit&.stripe_account&.payouts_enabled
   end
 
   def nonprofit_must_be_vetted
-    errors.add(:nonprofit, "must be vetted") unless nonprofit && nonprofit.vetted
+    errors.add(:nonprofit, "must be vetted") unless nonprofit&.vetted
   end
 
   def publish_created

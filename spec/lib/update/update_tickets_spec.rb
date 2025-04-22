@@ -230,7 +230,7 @@ describe UpdateTickets do
         expect(ticket.card).to be_nil
         expect(Ticket.count).to eq(1)
         skip_attribs = [:updated_at, :card]
-        expect(ticket.attributes.select { |k, _| !skip_attribs.include?(k) }).to eq original_ticket.attributes.select { |k, _| !skip_attribs.include?(k) }
+        expect(ticket.attributes.except(*skip_attribs)).to eq original_ticket.attributes.except(*skip_attribs)
 
         expect(ticket.updated_at).to eq Time.now
       end

@@ -278,11 +278,11 @@ module InsertDonation
       raise ParamValidation::ValidationError.new("Supporter #{entities[:supporter_id].id} is deleted", key: :supporter_id)
     end
 
-    if entities[:event_id] && entities[:event_id].deleted
+    if entities[:event_id]&.deleted
       raise ParamValidation::ValidationError.new("Event #{entities[:event_id].id} is deleted", key: :event_id)
     end
 
-    if entities[:campaign_id] && entities[:campaign_id].deleted
+    if entities[:campaign_id]&.deleted
       raise ParamValidation::ValidationError.new("Campaign #{entities[:campaign_id].id} is deleted", key: :campaign_id)
     end
 

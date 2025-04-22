@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
 
   def redirect_to_maintenance
     if Settings&.maintenance&.maintenance_mode && !current_user
-      unless self.class == Users::SessionsController &&
+      unless instance_of?(Users::SessionsController) &&
           ((Settings.maintenance.maintenance_token && params[:maintenance_token] == Settings.maintenance.maintenance_token) || params[:format] == "json")
         redirect_to Settings.maintenance.maintenance_page,
           allow_other_host: true
@@ -156,7 +156,7 @@ class ApplicationController < ActionController::Base
   private
 
   def current_user_id
-    current_user && current_user.id
+    current_user&.id
   end
 
   # Overload handle_unverified_request to ensure that

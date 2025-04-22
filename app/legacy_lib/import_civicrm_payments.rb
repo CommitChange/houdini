@@ -70,9 +70,7 @@ module ImportCivicrmPayments
         d.payments.each { |p|
           p.destroy
         }
-        if d.offsite_payment
-          d.offsite_payment.destroy
-        end
+        d.offsite_payment&.destroy
 
         d.destroy
       }

@@ -81,7 +81,7 @@ module QueryRecurringDonations
     end
 
     if failed_or_active_clauses.any?
-      expr = expr.where("#{failed_or_active_clauses.join(" OR ")}")
+      expr = expr.where(failed_or_active_clauses.join(" OR ").to_s)
     end
 
     if query.key?(:end_date_gt_or_equal)
@@ -215,9 +215,9 @@ module QueryRecurringDonations
 
   # @param [Supporter] supporter
   def self.find_recurring_donation_with_a_card(supporter)
-    supporter.recurring_donations.select { |rd|
+    supporter.recurring_donations.find { |rd|
       !rd.donation.nil? && !rd.donation.card.nil?
-    }.first
+    }
   end
 
   # Check if a single recdon is due -- used in PayRecurringDonation.with_stripe

@@ -16,9 +16,7 @@ module MaintainPaymentRecords
 
   def self.delete_payment_and_offsite_payment_record(id)
     p = Payment.includes(:offsite_payment).find(id)
-    if p.offsite_payment
-      p.offsite_payment.destroy
-    end
+    p.offsite_payment&.destroy
     p.destroy
   end
 end

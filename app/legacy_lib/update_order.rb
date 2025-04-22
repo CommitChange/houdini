@@ -8,7 +8,7 @@ module UpdateOrder
   def self.with_data(table_name, data)
     vals = data.map { |h| "(#{h[:id].to_i}, #{h[:order].to_i})" }.join(", ")
     from_str = "(VALUES #{vals}) AS data(id, \"order\")"
-    Qx.update("#{table_name}")
+    Qx.update(table_name.to_s)
       .set('"order"="data"."order"')
       .timestamps
       .from(from_str)

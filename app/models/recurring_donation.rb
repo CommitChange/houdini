@@ -70,21 +70,15 @@ class RecurringDonation < ApplicationRecord
   validates_associated :donation
 
   def most_recent_charge
-    if charges
-      charges.sort_by { |c| c.created_at }.last
-    end
+    charges&.max_by { |c| c.created_at }
   end
 
   def most_recent_paid_charge
-    if charges
-      charges.find_all { |c| c.paid? }.sort_by { |c| c.created_at }.last
-    end
+    charges&.find_all { |c| c.paid? }&.max_by { |c| c.created_at }
   end
 
   def total_given
-    if charges
-      charges.find_all(&:paid?).sum(&:amount)
-    end
+    charges&.find_all(&:paid?)&.sum(&:amount)
   end
 
   def failed?

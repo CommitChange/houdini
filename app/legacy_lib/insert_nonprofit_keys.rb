@@ -10,7 +10,7 @@ module InsertNonprofitKeys
 
     response = post("https://login.mailchimp.com/oauth2/token", {body: form_data})
     if response["error"]
-      raise Exception.new(response["error"])
+      raise StandardError.new(response["error"])
     end
 
     nonprofit_key = Nonprofit.find(npo_id).nonprofit_key

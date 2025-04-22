@@ -32,9 +32,9 @@ module MergeSupporters
     all_custom_field_joins = old_supporters.map { |i| i.custom_field_joins }.flatten
     group_joins_by_custom_field_master = all_custom_field_joins.group_by { |i| i.custom_field_master.id }
     one_custom_field_join_per_user = group_joins_by_custom_field_master.map { |k, v|
-      v.sort_by { |i|
+      v.max_by { |i|
         i.created_at
-      }.last
+      }
     }
 
     # delete old supporter custom_field

@@ -67,7 +67,7 @@ if ENV["AIRBRAKE_PROJECT_ID"] && ENV["AIRBRAKE_API_KEY"]
     EOFError, [SignalException, lambda { |e| e.signo == Signal.list["TERM"] }]]
   Airbrake.add_filter do |notice|
     ignore_exceptions.each do |type|
-      if type.class == Array
+      if type.instance_of?(Array)
         notice.ignore! if notice.stash[:exception].is_a?(type[0]) && type[1].call(notice.stash[:exception])
       elsif notice.stash[:exception].is_a?(type)
         notice.ignore!

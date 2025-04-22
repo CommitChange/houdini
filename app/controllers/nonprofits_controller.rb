@@ -130,7 +130,7 @@ class NonprofitsController < ApplicationController
     all_countries = ISO3166::Country.translations(locale)
 
     if Settings.intntl.all_countries
-      countries = all_countries.select { |code, name| Settings.intntl.all_countries.include? code }
+      countries = all_countries.slice(*Settings.intntl.all_countries)
       countries = countries.map { |code, name| [code.upcase, name] }.sort_by { |a| a[1] }
       countries.push([Settings.intntl.other_country.upcase, I18n.t("nonprofits.donate.info.supporter.other_country")]) if Settings.intntl.other_country
       countries

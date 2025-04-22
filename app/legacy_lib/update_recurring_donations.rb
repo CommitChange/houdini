@@ -46,7 +46,7 @@ module UpdateRecurringDonations
 
   # Update the paydate for a given recurring donation (provide rd['id'])
   def self.update_paydate(rd, paydate)
-    return ValidationError.new(["Invalid paydate"]) unless (1..28).include?(paydate.to_i)
+    return ValidationError.new(["Invalid paydate"]) unless (1..28).cover?(paydate.to_i)
     Psql.execute(Qexpr.new.update(:recurring_donations, paydate: paydate).where("id=$id", id: rd["id"]))
     rd["paydate"] = paydate
     rd

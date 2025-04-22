@@ -12,7 +12,7 @@ module UpdateCustomFieldJoins
       .join("custom_field_masters cfms", "cfms.id = custom_field_joins.custom_field_master_id")
       .group_by("cfms.name")
       .having("COUNT(custom_field_joins) > 1")
-      .execute.map { |h| h["ids"][1..-1] }.flatten
+      .execute.map { |h| h["ids"][1..] }.flatten
     return unless ids.any?
     Qx.delete_from(:custom_field_joins)
       .where("id IN ($ids)", ids: ids)

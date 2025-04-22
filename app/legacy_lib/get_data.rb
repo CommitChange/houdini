@@ -3,7 +3,7 @@ module GetData
   def self.chain(obj, *methods)
     methods.each do |m|
       if m.is_a?(Array)
-        params = m[1..-1]
+        params = m[1..]
         m = m[0]
       end
 

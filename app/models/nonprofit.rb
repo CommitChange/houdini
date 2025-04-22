@@ -275,7 +275,7 @@ class Nonprofit < ApplicationRecord
 
   # @param [Card] card the new active_card
   def active_card=(card)
-    unless card.class == Card
+    unless card.instance_of?(Card)
       raise ArgumentError.new "Pass a card to active_card or else"
     end
     Card.transaction do
@@ -310,7 +310,7 @@ class Nonprofit < ApplicationRecord
 
     pending_bank_account = bank_account&.pending_verification
 
-    bank_account && bank_account.pending_verification
+    bank_account&.pending_verification
 
     bank_status = if no_bank_account
       :no_bank_account

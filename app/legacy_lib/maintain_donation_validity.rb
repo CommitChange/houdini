@@ -130,9 +130,7 @@ module MaintainDonationValidity
 
   def self.cleanup_for_no_nonprofit(donation)
     if !donation.nonprofit && !donation.supporter && !donation.recurring_donation && !donation.campaign && (!donation.payment || !donation.payment.nonprofit) && donation.campaign_gifts.none? && donation.activities.none?
-      if donation.payment
-        donation.payment.destroy
-      end
+      donation.payment&.destroy
       donation.destroy
     end
   end

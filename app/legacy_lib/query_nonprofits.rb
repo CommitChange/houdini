@@ -32,7 +32,7 @@ module QueryNonprofits
       .where("nonprofits.published='t'")
       .order_by("nonprofits.name ASC")
       .limit(10)
-    )[1..-1]
+    )[1..]
     if results
       results = results.map { |id, name| {id: id, name: name} }
     end

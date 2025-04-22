@@ -412,7 +412,7 @@ RSpec.shared_context :shared_rd_donation_value_context do
 
     expected = generate_expected(@donation_id, nil_or_true(data[:expect_payment]) ? result["payment"].id : nil, nil_or_true(data[:expect_payment]) ? result["charge"].id : nil, pay_method, supporter, nonprofit, @stripe_charge_id, recurring_donation_expected: data[:recurring_donation], recurring_donation: result["recurring_donation"])
 
-    expected["donation"].merge!(profile_id: profile.id)
+    expected["donation"][:profile_id] = profile.id
     expect(result.count).to eq expected.count
     expect(result["donation"].attributes).to match expected[:donation]
     if expect_charge

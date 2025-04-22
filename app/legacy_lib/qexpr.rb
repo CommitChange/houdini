@@ -103,7 +103,7 @@ class Qexpr
       else
         "\n  #{cols.join("\n, ")}"
       end
-      Qexpr.new @tree.put(:select, "\nSELECT".bold.light_blue + "#{cols}".blue)
+      Qexpr.new @tree.put(:select, "\nSELECT".bold.light_blue + cols.to_s.blue)
     end
   end
 

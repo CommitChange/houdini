@@ -10,7 +10,7 @@ module PayRecurringDonation
     # Bulk insert the delayed jobs with a single expression
     ids = Psql.execute_vectors(
       QueryRecurringDonations._all_that_are_due
-    )[1..-1].flatten
+    )[1..].flatten
 
     jobs = ids.map do |id|
       {handler: DelayedJobHelper.create_handler(PayRecurringDonation, :with_stripe, [id])}

@@ -20,16 +20,14 @@ class WidgetDescription < ApplicationRecord
   private
 
   def are_custom_amounts_correct
-    unless custom_amounts.nil?
-      custom_amounts.each_with_index do |amount, index|
-        if amount.is_a? Hash
-          unless amount.has_key?("amount") && amount["amount"].is_a?(Integer)
-            errors.add(:custom_amounts, "has an invalid amount #{amount} at index #{index}")
-          end
-
-        elsif !amount.is_a? Integer
+    custom_amounts&.each_with_index do |amount, index|
+      if amount.is_a? Hash
+        unless amount.has_key?("amount") && amount["amount"].is_a?(Integer)
           errors.add(:custom_amounts, "has an invalid amount #{amount} at index #{index}")
         end
+
+      elsif !amount.is_a? Integer
+        errors.add(:custom_amounts, "has an invalid amount #{amount} at index #{index}")
       end
     end
   end

@@ -914,7 +914,7 @@ RSpec.shared_context "common fee scenarios" do
       ]
     }]
 
-  SCENARIOS ||= [].concat(in_past).concat(now).concat(in_future)
+  SCENARIOS = [].concat(in_past).concat(now).concat(in_future)
 
   def get_source(example_details)
     eval(example_details[:source].to_s)

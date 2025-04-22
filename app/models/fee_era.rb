@@ -17,14 +17,14 @@ class FeeEra < ApplicationRecord
 
   has_many :fee_structures do
     def find_by_source(source)
-      unless source.respond_to?(:brand) and source.respond_to?(:country)
+      unless source.respond_to?(:brand) && source.respond_to?(:country)
         raise ArgumentError,
           "source must be a valid Stripe::Source, Stripe::Card or similar"
       end
-      brand_found = select { |i| i.brand == source.brand }.first
+      brand_found = find { |i| i.brand == source.brand }
       return brand_found if brand_found
 
-      blank_source = select { |i| i.brand.blank? }.first
+      blank_source = find { |i| i.brand.blank? }
       if blank_source.nil?
         raise ArgumentError,
           "source must be a valid Stripe::Source, Stripe::Card or similar"

@@ -32,8 +32,8 @@ RSpec.describe DonationMailer, type: :mailer do
       end
 
       it "renders the body" do
-        expect(mail.body.encoded).to match "#{custom_message}"
-        expect(mail.body.encoded).to_not match "#{default_message}"
+        expect(mail.body.encoded).to match custom_message.to_s
+        expect(mail.body.encoded).to_not match default_message.to_s
       end
     end
 
@@ -48,7 +48,7 @@ RSpec.describe DonationMailer, type: :mailer do
       end
 
       it "renders the body" do
-        expect(mail.body.encoded).to match "#{default_message}"
+        expect(mail.body.encoded).to match default_message.to_s
       end
     end
 
@@ -61,7 +61,7 @@ RSpec.describe DonationMailer, type: :mailer do
       end
 
       it "renders the body" do
-        expect(mail.body.encoded).to match "#{default_message}"
+        expect(mail.body.encoded).to match default_message.to_s
       end
     end
   end

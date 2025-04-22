@@ -24,7 +24,7 @@ class BankAccount < ApplicationRecord
   belongs_to :nonprofit
 
   def nonprofit_must_be_vetted
-    errors.add(:nonprofit, "must be vetted") unless nonprofit && nonprofit.vetted
+    errors.add(:nonprofit, "must be vetted") unless nonprofit&.vetted
   end
 
   def nonprofit_has_stripe_account

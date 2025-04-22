@@ -4,7 +4,7 @@ class GenericMailer < BaseMailer
     @from_email = from_email
     @from_name = from_name
     @message = message
-    mail(to: to_email, from: "#{from_name} <#{Settings.mailer.email}>", reply_to: from_email, subject: "#{subject}")
+    mail(to: to_email, from: "#{from_name} <#{Settings.mailer.email}>", reply_to: from_email, subject: subject.to_s)
   end
 
   # For sending a system notice to super admins

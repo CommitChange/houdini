@@ -201,10 +201,10 @@ module QueryPayments
           )
     end
     if query[:designation].present?
-      expr = expr.where("donations.designation @@ $s", s: "#{query[:designation]}")
+      expr = expr.where("donations.designation @@ $s", s: query[:designation].to_s)
     end
     if query[:dedication].present?
-      expr = expr.where("donations.dedication @@ $s", s: "#{query[:dedication]}")
+      expr = expr.where("donations.dedication @@ $s", s: query[:dedication].to_s)
     end
     if query[:donation_type].present?
       expr = expr.where("payments.kind IN ($kinds)", kinds: query[:donation_type].split(","))
@@ -334,10 +334,10 @@ module QueryPayments
       expr = expr.where("to_char(payments.date, 'YYYY')=$year", year: query[:year])
     end
     if query[:designation].present?
-      expr = expr.where("donations.designation @@ $s", s: "#{query[:designation]}")
+      expr = expr.where("donations.designation @@ $s", s: query[:designation].to_s)
     end
     if query[:dedication].present?
-      expr = expr.where("donations.dedication @@ $s", s: "#{query[:dedication]}")
+      expr = expr.where("donations.dedication @@ $s", s: query[:dedication].to_s)
     end
     if query[:donation_type].present?
       expr = expr.where("payments.kind IN ($kinds)", kinds: query[:donation_type].split(","))

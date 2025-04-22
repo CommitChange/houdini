@@ -154,7 +154,7 @@ module InsertTickets
     InsertActivities.for_tickets(result["tickets"].map { |t| t.id })
 
     ticket_ids = result["tickets"].map { |t| t.id }
-    charge_id = result["charge"] ? result["charge"].id : nil
+    charge_id = result["charge"]&.id
 
     unless skip_notifications
       JobQueue.queue(JobTypes::TicketMailerReceiptAdminJob, ticket_ids)

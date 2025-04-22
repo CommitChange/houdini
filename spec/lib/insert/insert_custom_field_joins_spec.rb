@@ -204,7 +204,7 @@ describe InsertCustomFieldJoins do
 
           result_tag = @supporters[:np_supporter_with_add][:entity].custom_field_joins.where("custom_field_master_id = ?", 25).first
 
-          expect(result_tag.attributes.with_indifferent_access.reject { |k, _| k == "id" }).to eq(expected)
+          expect(result_tag.attributes.with_indifferent_access.except("id")).to eq(expected)
 
           expect(result_tag.attributes[:id]).to_not eq invalid_id
         }
@@ -249,7 +249,7 @@ describe InsertCustomFieldJoins do
           skip_attribs = ["updated_at", "value"]
           original_db_pairs.each { |orig, db|
             expect(db.attributes.length).to eq(orig.attributes.length)
-            expect(db.attributes.select { |key, value| !skip_attribs.include?(key) }).to eq(orig.attributes.select { |key, value| !skip_attribs.include?(key) })
+            expect(db.attributes.except(*skip_attribs)).to eq(orig.attributes.except(*skip_attribs))
             expect(db.attributes["updated_at"]).to be > orig.attributes["updated_at"]
             expect(db.attributes["value"]).to eq "CFM value 35"
           }

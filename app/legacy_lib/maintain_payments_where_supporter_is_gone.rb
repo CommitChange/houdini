@@ -31,9 +31,9 @@ module MaintainPaymentsWhereSupporterIsGone
     Qx.transaction do
       manual_payments = []
 
-      recurring_donations_from_stripe = sorted_by_kind[1][1].select { |i| i.charge && i.charge.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
-      donations_from_stripe = sorted_by_kind[2][1].select { |i| i.charge && i.charge.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
-      ticket_from_stripe = sorted_by_kind[3][1].select { |i| i.charge && i.charge.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
+      recurring_donations_from_stripe = sorted_by_kind[1][1].select { |i| i.charge&.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
+      donations_from_stripe = sorted_by_kind[2][1].select { |i| i.charge&.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
+      ticket_from_stripe = sorted_by_kind[3][1].select { |i| i.charge&.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
 
       payments = recurring_donations_from_stripe.concat(donations_from_stripe).concat(ticket_from_stripe)
 
@@ -59,7 +59,7 @@ module MaintainPaymentsWhereSupporterIsGone
       end
 
       manual_refunds = [] # we have to manually track down these refunds on the connected accounts
-      refunds = sorted_by_kind[4][1].select { |i| i.refund && i.refund.stripe_refund_id }
+      refunds = sorted_by_kind[4][1].select { |i| i.refund&.stripe_refund_id }
 
       refunds.each do |i|
         unless Supporter.exists?(i.supporter_id)
@@ -75,7 +75,7 @@ module MaintainPaymentsWhereSupporterIsGone
         manual_refunds.push(i)
       end
 
-      disputes = sorted_by_kind[5][1].select { |i| i.dispute && i.dispute.stripe_dispute_id }
+      disputes = sorted_by_kind[5][1].select { |i| i.dispute&.stripe_dispute_id }
       manual_disputes = [] # ditto
 
       disputes.each do |i|

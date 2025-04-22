@@ -16,7 +16,7 @@ class StripeDispute < ApplicationRecord
   end
 
   def funds_withdrawn_balance_transaction
-    balance_transactions.any? ? balance_transactions.sort_by { |i| i["created"] }[0] : nil
+    balance_transactions.any? ? balance_transactions.min_by { |i| i["created"] } : nil
   end
 
   def funds_reinstated_balance_transaction
@@ -66,21 +66,20 @@ class StripeDispute < ApplicationRecord
         if old_state != balance_transactions_state
 
           if old_state == :none
+            dispute_funds_withdrawn_event
             if balance_transactions_state == :funds_withdrawn
-              dispute_funds_withdrawn_event
             else
-              dispute_funds_withdrawn_event
               dispute_funds_reinstated_event
             end
           elsif old_state == :funds_withdrawn
             if balance_transactions_state == :funds_reinstated
               dispute_funds_reinstated_event
             else
-              raise RuntimeError("Dispute #{dispute.id} previously had a balance_transaction_state of #{old_state} but is now #{balance_transactions_state}. " +
+              raise RuntimeError("Dispute #{dispute.id} previously had a balance_transaction_state of #{old_state} but is now #{balance_transactions_state}. " \
                 "This shouldn't be possible.")
             end
           elsif balance_transactions_state != :funds_reinstated
-            raise RuntimeError("Dispute #{dispute.id} previously had a balance_transaction_state of #{old_state} but is now #{balance_transactions_state}. " +
+            raise RuntimeError("Dispute #{dispute.id} previously had a balance_transaction_state of #{old_state} but is now #{balance_transactions_state}. " \
               "This shouldn't be possible.")
           end
         end
@@ -89,7 +88,7 @@ class StripeDispute < ApplicationRecord
       if saved_change_to_attribute?(:status)
         if TERMINAL_DISPUTE_STATUSES.include?(after_save_changed_attributes["status"]) && !TERMINAL_DISPUTE_STATUSES.include?(status)
           # if previous status was won or lost and the new one isn't
-          raise RuntimeError("Dispute #{dispute.id} was previously #{after_save_changed_attributes["status"]} but is now #{status}. " +
+          raise RuntimeError("Dispute #{dispute.id} was previously #{after_save_changed_attributes["status"]} but is now #{status}. " \
               "This shouldn't be possible")
         elsif !TERMINAL_DISPUTE_STATUSES.include?(after_save_changed_attributes["status"]) && TERMINAL_DISPUTE_STATUSES.include?(status)
           # previous status was not won or lost but the new one is
@@ -165,7 +164,7 @@ class StripeDispute < ApplicationRecord
       dispute.activities.create("DisputeLost", Time.now)
       JobQueue.queue(JobTypes::DisputeLostJob, dispute)
     else
-      raise RuntimeError("Dispute #{dispute.id} was closed " +
+      raise RuntimeError("Dispute #{dispute.id} was closed " \
         "but had status of #{dispute.status}")
     end
   end

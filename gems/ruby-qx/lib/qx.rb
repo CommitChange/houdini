@@ -339,7 +339,7 @@ class Qx
   def values(vals)
     if vals.is_a?(Array) && vals.first.is_a?(Array)
       cols = vals.first
-      data = vals[1..-1]
+      data = vals[1..]
     elsif vals.is_a?(Array) && vals.first.is_a?(Hash)
       hashes = vals.map { |h| h.sort.to_h } # Make sure hash keys line up with all row data
       cols = hashes.first.keys
@@ -546,7 +546,7 @@ class Qx
   def self.parse_val_params(vals)
     if vals.is_a?(Array) && vals.first.is_a?(Array)
       cols = vals.first
-      data = vals[1..-1]
+      data = vals[1..]
     elsif vals.is_a?(Array) && vals.first.is_a?(Hash)
       hashes = vals.map { |h| h.sort.to_h }
       cols = hashes.first.keys

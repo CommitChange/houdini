@@ -15,7 +15,7 @@ module ImportOnecauseEventDonations
       bidder_groups.keys.each do |i|
         payment_row, non_payment = bidder_groups[i].partition { |row| row["Action"] == "Payment" }
 
-        payment_row = payment_row.select { |i| i["Payment Status"] == "Approved" }.first
+        payment_row = payment_row.find { |i| i["Payment Status"] == "Approved" }
 
         supporter_info_row = payment_row || non_payment.first
 
