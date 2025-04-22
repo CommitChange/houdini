@@ -7,9 +7,9 @@ module InsertEmailLists
     tags_for_nonprofit = Nonprofit.includes(tag_masters: :email_list).find(npo_id).tag_masters.not_deleted
     tag_master_ids = tags_for_nonprofit.where("id in (?)", tag_master_ids).pluck(:id)
     deleted = if tag_master_ids.empty? # no tags were selected; remove all email lists
-      tags_for_nonprofit.includes(:email_list).where("email_lists.id IS NOT NULL").references(:email_lists).map { |i| i.email_list }
+      tags_for_nonprofit.includes(:email_list).where.not(email_lists: {id: nil}).references(:email_lists).map { |i| i.email_list }
     else # Remove all email lists that exist in the db that are not included in tag_master_ids
-      tags_for_nonprofit.includes(:email_list).where("email_lists.tag_master_id NOT IN (?)", tag_master_ids).references(:email_lists).map { |i| i.email_list }
+      tags_for_nonprofit.includes(:email_list).where.not(email_lists: {tag_master_id: tag_master_ids}).references(:email_lists).map { |i| i.email_list }
     end
     EmailList.where("id IN (?)", deleted.map { |i| i.id }).delete_all
     mailchimp_lists_to_delete = deleted.map { |i| i.mailchimp_list_id }

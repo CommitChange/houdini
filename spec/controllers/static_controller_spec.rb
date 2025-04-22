@@ -6,7 +6,7 @@ RSpec.describe StaticController, type: :controller do
     describe "#ccs_method" do
       context "when local_tar_gz" do
         before do
-          Settings.add_source!({ccs: { ccs_method: "local_tar_gz" }})
+          Settings.add_source!({ccs: {ccs_method: "local_tar_gz"}})
           Settings.reload!
         end
 
@@ -24,13 +24,13 @@ RSpec.describe StaticController, type: :controller do
             options: {
               account: "account",
               repo: "repo"
-            } }
-          })
+            }
+          }})
           Settings.reload!
         end
 
         it "setup github" do
-          expect(File).to receive(:read).with("#{Rails.root}/CCS_HASH").and_return("hash\n")
+          expect(File).to receive(:read).with("#{Rails.root.join("CCS_HASH")}").and_return("hash\n")
           get("ccs")
           expect(response).to redirect_to "https://github.com/account/repo/tree/hash"
         end

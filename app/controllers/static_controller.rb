@@ -10,23 +10,21 @@ class StaticController < ApplicationController
     if Settings.ccs&.ccs_method.presence == "github"
       redirect_to "https://github.com/#{Settings.ccs.options.account}/#{Settings.ccs.options.repo}/tree/#{git_hash}",
         allow_other_host: true
+    elsif create_archive
+      send_file(temp_file, type: "application/gzip")
     else
-      if create_archive
-        send_file(temp_file, type: "application/gzip")
-      else
-        head 500
-      end
+      head 500
     end
   end
 
   private
 
   def git_hash
-    @git_hash ||= File.read("#{Rails.root}/CCS_HASH")
+    @git_hash ||= File.read("#{Rails.root.join("CCS_HASH")}")
   end
 
   def temp_file
-    @temp_file ||= "#{Rails.root}/tmp/#{Time.current.to_i}.tar.gz"
+    @temp_file ||= "#{Rails.root.join("tmp/#{Time.current.to_i}.tar.gz")}"
   end
 
   def create_archive
