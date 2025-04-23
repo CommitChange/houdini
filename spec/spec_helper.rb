@@ -21,7 +21,7 @@
 require "support/expect"
 require "support/mock_helpers"
 
-# include Expect
+include Expect
 
 # did a value change? no? then expectation passes
 # Use this in compound expectations like:

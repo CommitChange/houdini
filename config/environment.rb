@@ -4,6 +4,10 @@ require_relative "application"
 
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
+
+# Initialize the Rails application.
+Rails.application.initialize!
+
 @ignore_dotenv = ENV["IGNORE_DOTENV"]
 @env = Rails.env || "development"
 unless @ignore_dotenv
@@ -282,6 +286,3 @@ Config.setup do |config|
 end
 
 Settings.reload!
-
-# Initialize the Rails application.
-Rails.application.initialize!
