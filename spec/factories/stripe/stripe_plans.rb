@@ -11,7 +11,7 @@ FactoryBot.define do
 
     to_create do |instance, evaluator|
       plan = StripeMockHelper.stripe_helper.create_plan(**instance, id: evaluator.id, product: evaluator.product.id)
-      instance.update(plan)
+      instance.update_attributes(plan)
     end
   end
 end

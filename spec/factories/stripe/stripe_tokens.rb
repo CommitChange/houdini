@@ -5,7 +5,7 @@ FactoryBot.define do
 
     to_create do |instance|
       new_token = StripeMockHelper.stripe_helper.generate_card_token(**instance)
-      instance.update(Stripe::Token.retrieve(new_token))
+      instance.update_attributes(Stripe::Token.retrieve(new_token))
     end
   end
 end

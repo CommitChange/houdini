@@ -13,7 +13,7 @@ FactoryBot.define do
 
     to_create do |instance, evaluator|
       source = Stripe::Customer.create_source(evaluator.stripe_customer_id, {source: evaluator.stripe_token_id})
-      instance.update(source)
+      instance.update_attributes(source)
     end
   end
 end
