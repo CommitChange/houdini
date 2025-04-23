@@ -6,6 +6,8 @@ format: progress        # default: Standard::Formatter
 
 ignore:                 # default: []
   - 'vendor/**/*'
+  - 'spec/factories/stripe/*':
+    - Rails/ActiveRecordAliases
 
 plugins:                # default: []
   - standard-rails
