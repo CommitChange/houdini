@@ -30,6 +30,7 @@ class Payout < ApplicationRecord
   has_many :object_events, as: :event_entity
 
   validates :stripe_transfer_id, presence: true, uniqueness: true # rubocop:disable Rails/UniqueValidationWithoutIndex
+  validates :nonprofit, presence: true # rubocop:disable Rails/RedundantPresenceValidationOnBelongsTo
   validates :bank_account, presence: true
   validates :email, presence: true
   validates :net_amount, presence: true, numericality: {greater_than: 0}
