@@ -1,4 +1,6 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+
+# rubocop:disable Lint/ConstantDefinitionInBlock
 shared_context "payments for a payout" do
   class BalanceChangeExpectation
     include ActiveModel::AttributeAssignment
@@ -415,3 +417,4 @@ shared_context "payments for a payout" do
     end
   end
 end
+# rubocop:enable Lint/ConstantDefinitionInBlock

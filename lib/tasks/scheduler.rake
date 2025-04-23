@@ -12,7 +12,7 @@ task :heroku_scheduled_job, [:name] => :environment do |t, args|
   enum.each do |lamb|
     result = lamb.call
     results += "Success: #{result}\n"
-  rescue Exception => e
+  rescue => e
     results += "Failure: #{e}\n"
   end
   GenericMailer.delay.admin_notice({

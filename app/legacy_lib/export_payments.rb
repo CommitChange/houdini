@@ -77,7 +77,7 @@ module ExportPayments
     raise e
   end
 
-  private
+  private_class_method
 
   def self.for_export_enumerable(npo_id, query, chunk_limit = 15000)
     ParamValidation.new({npo_id: npo_id, query: query}, {npo_id: {required: true, is_int: true},

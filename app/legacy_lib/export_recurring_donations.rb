@@ -112,7 +112,7 @@ module ExportRecurringDonations
     end
   end
 
-  private
+  private_class_method
 
   def self.notify_about_export_completion(export, export_type)
     case export_type

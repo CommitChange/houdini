@@ -104,7 +104,8 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  config.dependency_loading = true if $rails_rake_task
+  config.dependency_loading = true if $rails_rake_task # rubocop:disable Style/GlobalVars
+
   # Turn this on if you want to mess with code inside /node_modules
   # config.browserify_rails.evaluate_node_modules = true
 
@@ -112,7 +113,7 @@ Rails.application.configure do
 
   config.middleware.use Rack::Attack
 
-  NONPROFIT_VERIFICATION_SEND_EMAIL_DELAY = 5.minutes
+  NONPROFIT_VERIFICATION_SEND_EMAIL_DELAY = 5.minutes # rubocop:disable Lint/ConstantDefinitionInBlock
 
   ActiveSupport::Notifications.subscribe("factory_bot.run_factory") do |name, start, finish, id, payload|
     Rails.logger.debug(payload)

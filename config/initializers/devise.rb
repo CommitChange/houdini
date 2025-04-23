@@ -228,6 +228,7 @@ Devise.setup do |config|
   config.parent_mailer = "BaseMailer"
 end
 
+# rubocop:disable Lint/ConstantDefinitionInBlock
 ActiveSupport.on_load(:devise_failure_app) do
   module Devise
     class FailureApp
@@ -241,3 +242,4 @@ ActiveSupport.on_load(:devise_failure_app) do
     end
   end
 end
+# rubocop:enable Lint/ConstantDefinitionInBlock

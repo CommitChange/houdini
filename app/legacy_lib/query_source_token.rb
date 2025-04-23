@@ -12,7 +12,7 @@ module QuerySourceToken
   #           or we're past the expiration date
   def self.get_and_increment_source_token(token, user = nil)
     ParamValidation.new({token: token}, {
-      token: {required: true, format: UUID::Regex}
+      token: {required: true, format: UUID::REGEX}
     })
     source_token = SourceToken.where(token: token).first
     if source_token

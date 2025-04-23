@@ -24,7 +24,7 @@ module InsertTickets
       event_id: {required: true, is_reference: true},
       event_discount_id: {is_reference: true},
       kind: {included_in: ["free", "charge", "offsite"]},
-      token: {format: UUID::Regex},
+      token: {format: UUID::REGEX},
       offsite_payment: {is_hash: true},
       amount: {required: true, is_integer: true}
     })

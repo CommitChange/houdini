@@ -40,14 +40,14 @@ class User < ApplicationRecord
   validates :email,
     presence: true,
     uniqueness: {case_sensitive: false},
-    format: {with: Email::Regex}
+    format: {with: Email::REGEX}
 
   has_many :donations, through: :profile
   has_many :roles, dependent: :destroy
   has_one :profile, dependent: :destroy
   has_many :imports
   has_many :email_settings
-  has_and_belongs_to_many :periodic_reports
+  has_and_belongs_to_many :periodic_reports # rubocop:disable Rails/HasAndBelongsToMany
 
   accepts_nested_attributes_for :profile
 
@@ -78,7 +78,7 @@ class User < ApplicationRecord
   # https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview
   def self.new_with_session(params, session)
     super.tap do |user|
-      if data = session["devise.facebook_data"] && session["devise.facebook_data"]["extra"]["raw_info"]
+      if (data = session["devise.facebook_data"]) && session["devise.facebook_data"]["extra"]["raw_info"]
         user.email = data["email"] if user.email.blank?
       end
     end

@@ -174,19 +174,19 @@ class StripeDispute < ApplicationRecord
     JobQueue.queue(JobTypes::DisputeUpdatedJob, dispute)
   end
 
+  def after_save_changed_attributes
+    saved_changes.transform_values(&:first)
+  end
+
+  private_class_method
+
+  # rubocop:disable Lint/IneffectiveAccessModifier
   def self.calc_balance_transaction_state(balance_transactions)
     if !balance_transactions || balance_transactions.count == 0
       :none
     else
-      (balance_transactions.count == 1) ?
-                   :funds_withdrawn :
-                   :funds_reinstated
+      (balance_transactions.count == 1) ? :funds_withdrawn : :funds_reinstated
     end
   end
-
-  private
-
-  def after_save_changed_attributes
-    saved_changes.transform_values(&:first)
-  end
+  # rubocop:enable Lint/IneffectiveAccessModifier
 end

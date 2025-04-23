@@ -4,7 +4,7 @@ module QueryUsers
   # Return all the nonprofit user emails for a given email notification setting
   # for notification_type in ['payments', 'campaigns', 'events', 'payouts', 'recurring_donations']
   def self.nonprofit_user_emails(np_id, notification_type)
-    raise ArgumentError.new("Invalid notification type") unless QueryEmailSettings::Settings.include?(notification_type)
+    raise ArgumentError.new("Invalid notification type") unless QueryEmailSettings::SETTINGS.include?(notification_type)
     Qx.select("users.email")
       .from("users")
       .join("roles", "roles.user_id=users.id")

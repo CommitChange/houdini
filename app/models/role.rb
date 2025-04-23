@@ -1,6 +1,6 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 class Role < ApplicationRecord
-  Names = [
+  NAMES = [
     :super_admin,          # global access
     :super_associate,      # global access to everything except bank acct info
     :nonprofit_admin,      # npo scoped access to everything
@@ -24,7 +24,7 @@ class Role < ApplicationRecord
   scope :campaign_editors, -> { where(name: :campaign_editor) }
   scope :event_editors, -> { where(name: :event_editor) }
 
-  validates :name, inclusion: {in: Names}
+  validates :name, inclusion: {in: NAMES}
   validates :host, presence: true, unless: [:super_admin?, :super_associate?]
 
   def name

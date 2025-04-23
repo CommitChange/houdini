@@ -6,7 +6,7 @@ module InsertRecurringDonation
     data = data.to_deprecated_h.with_indifferent_access
 
     ParamValidation.new(data, InsertDonation.common_param_validations
-                                  .merge(token: {required: true, format: UUID::Regex}))
+                                  .merge(token: {required: true, format: UUID::REGEX}))
 
     if data[:recurring_donation].nil?
       data[:recurring_donation] = {}

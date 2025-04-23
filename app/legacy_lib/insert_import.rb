@@ -14,7 +14,7 @@ module InsertImport
     Qx.transaction do
       InsertImport.from_csv(data)
     end
-  rescue Exception => e
+  rescue => e
     body = "Import failed. Error: #{e}"
     GenericMailer.generic_mail(
       "support@commitchange.com", "Jay Bot", # FROM
@@ -55,7 +55,7 @@ module InsertImport
 
     # no spaces are allowed by open(). We could URI.encode, but spaces seem to be the only problem and we want to avoid double-encoding a URL
     data[:file_uri] = data[:file_uri].gsub(/ /, "%20")
-    CSV.new(open(data[:file_uri]), headers: :first_row).each do |row|
+    CSV.new(open(data[:file_uri]), headers: :first_row).each do |row| # rubocop:disable Security/Open
       row_count += 1
       # triplet of [header_name, value, import_key]
       matches = row.map { |key, val| [key, val, data[:header_matches][key]] }

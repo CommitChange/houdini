@@ -1,9 +1,9 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 module Format
   module Geography
-    StateCodes = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "PR", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+    STATE_CODES = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "PR", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
 
-    StateMappings = {
+    STATE_MAPPINGS = {
       "alabama" => "AL",
       "alaska" => "AK",
       "arizona" => "AZ",
@@ -58,7 +58,7 @@ module Format
       "wyoming" => "WY"
     }
 
-    Countries = [
+    COUNTRIES = [
       "Afghanistan",
       "Albania",
       "Algeria",
@@ -298,8 +298,8 @@ module Format
     # Will leave strings that are already state codes alone
     def self.full_state_to_code(str)
       str = str.strip
-      return str if StateCodes.include?(str.upcase)
-      StateMappings[str.downcase]
+      return str if STATE_CODES.include?(str.upcase)
+      STATE_MAPPINGS[str.downcase]
     end
   end
 end

@@ -1,9 +1,11 @@
 class AddMinimalTrxTablesToCreateDonations < ActiveRecord::Migration
   def change
+    # rubocop:disable Rails/CreateTableWithTimestamps
     create_table :transaction_assignments do |t|
       t.references :transaction, null: false
       t.references :assignable, polymorphic: true, index: {unique: true, name: "idx_trx_assignments_assignable_polymorphic"}, null: false
     end
+    # rubocop:enable Rails/CreateTableWithTimestamps
 
     create_table :modern_donations do |t|
       t.integer :amount

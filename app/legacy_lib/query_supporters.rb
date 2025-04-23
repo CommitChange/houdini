@@ -238,7 +238,7 @@ module QuerySupporters
       expr = expr.and_where("payments.count = 0 OR payments.max_date <= timezone(COALESCE(nonprofits.timezone, 'UTC'), timezone('UTC', $d))", d: d)
     end
     if query[:MAX_payment_before].present?
-      date_ago = Timespan::TimeUnits[query[:MAX_payment_before]].utc
+      date_ago = Timespan::TIME_UNITS[query[:MAX_payment_before]].utc
       expr = expr.and_where("payments.max_date < timezone(COALESCE(nonprofits.timezone, 'UTC'), timezone('UTC', $date)) OR payments.count = 0", date: date_ago)
     end
     if query[:search].present?

@@ -8,7 +8,7 @@
   <%= render 'nonprofits/supporters/fieldset', cssClass: 'col-8 u-fontSize--14', profile: profile, name: 'address', placeholder: 'Address' %>
 
   <%= render 'nonprofits/supporters/fieldset', cssClass: 'col-right-4 u-fontSize--14', profile: profile, name: 'city', placeholder: 'City' %>
-  
+
   <fieldset  class='u-marginBottom--0 u-floatL col-4'>
 
     <% supporter_region = profile ? profile['state_code'] : '' %>
@@ -23,7 +23,7 @@
     <select class='select u-fontSize--14 u-marginBottom--0' name='country'>
       <% supporter_country = profile ? profile['country'] : 'United States' %>
       <option selected="selected" value='<%=supporter_country%>'><%= supporter_country %></option>
-      <% Format::Geography::Countries.each do |c| %>
+      <% Format::Geography::COUNTRIES.each do |c| %>
         <option value='<%=c%>'><%= c %></option>
       <% end %>
     </select>

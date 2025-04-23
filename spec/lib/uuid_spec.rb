@@ -3,25 +3,25 @@ require "securerandom"
 require_relative "../../app/legacy_lib/uuid"
 
 describe UUID do
-  describe "::Regex" do
+  describe "::REGEX" do
     it "rejects nil" do
-      expect(nil).to_not match(UUID::Regex)
+      expect(nil).to_not match(UUID::REGEX)
     end
 
     it "rejects blank" do
-      expect("").to_not match(UUID::Regex)
+      expect("").to_not match(UUID::REGEX)
     end
 
     it "rejects non-uuid string" do
-      expect("thweoihchnao-n  r -fahc").to_not match(UUID::Regex)
+      expect("thweoihchnao-n  r -fahc").to_not match(UUID::REGEX)
     end
 
     it "accepts unbraced uuid" do
-      expect(SecureRandom.uuid).to match(UUID::Regex)
+      expect(SecureRandom.uuid).to match(UUID::REGEX)
     end
 
     it "accepts braced uuid" do
-      expect("{#{SecureRandom.uuid}}").to match(UUID::Regex)
+      expect("{#{SecureRandom.uuid}}").to match(UUID::REGEX)
     end
   end
 end

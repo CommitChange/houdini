@@ -5,6 +5,7 @@
 module Model::CalculatedNames
   extend ActiveSupport::Concern
   included do
+    # rubocop:disable Lint/LiteralAsCondition
     def calculated_first_name
       name_parts = name&.strip&.split(" ")&.map(&:strip)
       case name_parts&.count || 0
@@ -28,5 +29,6 @@ module Model::CalculatedNames
         name_parts[-1]
       end
     end
+    # rubocop:enable Lint/LiteralAsCondition
   end
 end

@@ -3,7 +3,7 @@ class Nonprofit < ApplicationRecord
   include Model::Houidable
   setup_houid :np, :houid
 
-  Categories = ["Public Benefit", "Human Services", "Education", "Civic Duty", "Human Rights", "Animals", "Environment", "Health", "Arts, Culture, Humanities", "International", "Children", "Religion", "LGBTQ", "Women's Rights", "Disaster Relief", "Veterans"]
+  CATEGORIES = ["Public Benefit", "Human Services", "Education", "Civic Duty", "Human Rights", "Animals", "Environment", "Health", "Arts, Culture, Humanities", "International", "Children", "Religion", "LGBTQ", "Women's Rights", "Disaster Relief", "Veterans"]
 
   attr_accessible \
     :name, # str
@@ -166,9 +166,9 @@ class Nonprofit < ApplicationRecord
   validates :name, presence: true
   validates :city, presence: true
   validates :state_code, presence: true
-  validates :email, format: {with: Email::Regex}, allow_blank: true
+  validates :email, format: {with: Email::REGEX}, allow_blank: true
   validate :timezone_is_valid
-  validates :slug, uniqueness: {scope: [:city_slug, :state_code_slug]}
+  validates :slug, uniqueness: {scope: [:city_slug, :state_code_slug]} # rubocop:disable Rails/UniqueValidationWithoutIndex
   validates :slug, presence: true
 
   scope :vetted, -> { where(vetted: true) }
@@ -185,6 +185,7 @@ class Nonprofit < ApplicationRecord
     self
   end
 
+  # rubocop:disable Lint/ConstantDefinitionInBlock
   concerning :Path do
     class_methods do
       ModernParams = Struct.new(:to_param)
@@ -199,6 +200,7 @@ class Nonprofit < ApplicationRecord
       end
     end
   end
+  # rubocop:enable Lint/ConstantDefinitionInBlock
 
   # Register (create) a nonprofit with an initial admin
   def self.register(user, params)
@@ -280,8 +282,9 @@ class Nonprofit < ApplicationRecord
     end
     Card.transaction do
       active_cards.update_all inactive: true
-      return cards << card
+      cards << card
     end
+    cards
   end
 
   def active_card

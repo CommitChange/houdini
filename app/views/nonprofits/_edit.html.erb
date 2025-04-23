@@ -46,7 +46,7 @@
       <label>State <small>(required)</small></label>
       <%= render :partial => "common/states_dropdown", :locals => {:name => 'nonprofit[state_code]', :default => @nonprofit.state_code} %>
     </fieldset>
-    
+
     <fieldset>
       <label>Postal code</label>
       <input type='text' name='nonprofit[zip_code]' value='<%= @nonprofit.zip_code %>'>
@@ -55,8 +55,8 @@
 
   <hr>
 
-  <%= render 'components/forms/slug_field', 
-    fundraiser: @nonprofit, 
+  <%= render 'components/forms/slug_field',
+    fundraiser: @nonprofit,
     url: @nonprofit.url.split('/')[0...-1].join('/')
   %>
 
@@ -67,7 +67,7 @@
 
     <fieldset class='col-left-4'>
       <label class='u-marginBottom--10'>Categories</label>
-      <% Nonprofit::Categories.each_with_index do |cat, i| %>
+      <% Nonprofit::CATEGORIES.each_with_index do |cat, i| %>
         <div class='u-marginBottom--10'>
           <input id='cat-<%= i %>' type='checkbox' name='nonprofit[categories][]' <%= @nonprofit.categories&.include?(cat) ? 'checked="checked"' : '' %> value='<%= cat %>'>
           <label for='cat-<%= i %>'><%= cat %></label>

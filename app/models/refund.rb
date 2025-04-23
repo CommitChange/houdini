@@ -1,6 +1,6 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 class Refund < ApplicationRecord
-  Reasons = [:duplicate, :fraudulent, :requested_by_customer]
+  REASONS = [:duplicate, :fraudulent, :requested_by_customer]
 
   attr_accessible \
     :amount, # int

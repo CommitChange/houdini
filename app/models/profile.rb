@@ -17,14 +17,13 @@ class Profile < ApplicationRecord
     :city_state,
     :user_id
 
-  validates :email, format: {with: Email::Regex}, allow_blank: true
+  validates :email, format: {with: Email::REGEX}, allow_blank: true
 
   attr_accessor :email, :city_state
 
   mount_uploader :picture, ProfileUploader
 
   belongs_to :user
-  has_many :activities # Activities this profile has created
   has_many :supporters
   has_many :donations
   has_many :campaigns

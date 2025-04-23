@@ -63,7 +63,7 @@ module Audit
       stripe_balances = Stripe::Balance.retrieve(stripe_account: np.stripe_account_id)
       available = stripe_balances["available"].first["amount"]
       pending = stripe_balances["pending"].first["amount"]
-    rescue Exception
+    rescue
       available = 0
       pending = 0
       Rails.logger.debug { "UNRECOGNIZED STRIPE ACCOUNT ID: #{np.stripe_account_id}" }

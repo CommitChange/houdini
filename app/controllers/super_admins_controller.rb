@@ -18,7 +18,7 @@ class SuperAdminsController < ApplicationController
   def search_fullcontact
     begin
       result = FullContact.person(email: params[:search])
-    rescue Exception
+    rescue
       result = ""
     end
     render json: [result]

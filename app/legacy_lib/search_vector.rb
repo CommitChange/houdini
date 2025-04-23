@@ -1,7 +1,7 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 
 module SearchVector
-  AcceptedTables = ["supporters", "payments"]
+  ACCEPTED_TABLES = ["supporters", "payments"]
 
   def self.query(query_string, expr = nil)
     query = if (query_string.is_a?(Integer) || query_string.is_int?) && SearchVector.within_postgres_integer_limit(query_string)

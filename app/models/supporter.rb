@@ -164,6 +164,7 @@ class Supporter < ApplicationRecord
     profile.get_profile_picture(size)
   end
 
+  # rubocop:disable Lint/ConstantDefinitionInBlock
   concerning :Path do
     class_methods do
       ModernParams = Struct.new(:to_param)
@@ -178,6 +179,7 @@ class Supporter < ApplicationRecord
       end
     end
   end
+  # rubocop:enable Lint/ConstantDefinitionInBlock
 
   # Supporters can be merged many times. This finds the last
   # supporter after following merged_into until it gets a nil

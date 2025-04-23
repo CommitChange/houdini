@@ -3,7 +3,6 @@
 # combine usage of this library with Qexpr
 
 require "colorize"
-
 require "qx"
 
 # Initialize the database connection
@@ -29,7 +28,7 @@ module Psql
     end
   end
 
-  private
+  private_class_method
 
   # Raw expression string
   def self.raw_expr_str(statement)

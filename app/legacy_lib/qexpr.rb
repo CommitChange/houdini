@@ -266,7 +266,7 @@ class Qexpr
     end
   end
 
-  private
+  private_class_method
 
   # Given some kind of expr object (might be just a string or another whole Qexpr expr), and an 'as' value
   # then give back either a hash for the sub-Qexpr expression, or just a string.

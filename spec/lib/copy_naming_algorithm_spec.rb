@@ -117,6 +117,7 @@ describe CopyNamingAlgorithm do
     end
   end
 
+  # rubocop:disable Lint/ConstantDefinitionInBlock
   class TestCopyNamingAlgorithm < CopyNamingAlgorithm
     attr_accessor :name_entities, :max_copies, :max_length
 
@@ -142,4 +143,5 @@ describe CopyNamingAlgorithm do
 
     attr_reader :max_copies
   end
+  # rubocop:enable Lint/ConstantDefinitionInBlock
 end

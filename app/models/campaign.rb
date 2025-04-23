@@ -36,15 +36,14 @@ class Campaign < ApplicationRecord
     :default_reason_for_supporting
 
   validate :end_datetime_cannot_be_in_past, on: :create
-  validates :goal_amount,
-    presence: true, numericality: {
-      only_integer: true
-    }
+  validates :goal_amount, presence: true, numericality: {only_integer: true}
   validate :validate_goal_amount
-  validates :name,
-    presence: true,
-    length: {maximum: 60}
-  validates :slug, uniqueness: {scope: :nonprofit_id, message: "You already have a campaign with that URL."}, presence: true
+  validates :name, presence: true, length: {maximum: 60}
+
+  # rubocop:disable Rails/UniqueValidationWithoutIndex
+  validates :slug, presence: true,
+    uniqueness: {scope: :nonprofit_id, message: "You already have a campaign with that URL."}
+  # rubocop:enable Rails/UniqueValidationWithoutIndex
 
   validates :starting_point, presence: true,
     numericality: {only_integer: true, greater_than_or_equal_to: 0}

@@ -294,9 +294,9 @@ describe InsertDuplicate do
       result = InsertDuplicate.event(event.id, profile.id)
       expect(Event.count).to eq 2
 
-      result.attributes["start_datetime"] = result.attributes["start_datetime"]
-
+      result.attributes["start_datetime"] = result.attributes["start_datetime"].to_datetime
       result.attributes["end_datetime"] = result.attributes["end_datetime"].to_datetime
+
       expect(result.attributes.with_indifferent_access).to eq(common_result_attributes.merge(
         {
           id: result.id,

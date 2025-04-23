@@ -4,7 +4,7 @@ module UpdateTickets
     ParamValidation.new(data, {
       event_id: {required: true, is_reference: true},
       ticket_id: {required: true, is_reference: true},
-      token: {format: UUID::Regex},
+      token: {format: UUID::REGEX},
       bid_id: {is_integer: true},
       # note: nothing to check?
 

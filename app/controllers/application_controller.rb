@@ -19,6 +19,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # rubocop:disable Style/UnlessLogicalOperators
   def redirect_to_maintenance
     if Settings&.maintenance&.maintenance_mode && !current_user
       unless instance_of?(Users::SessionsController) &&
@@ -28,6 +29,7 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+  # rubocop:enable Style/UnlessLogicalOperators
 
   protected
 
@@ -62,7 +64,7 @@ class ApplicationController < ActionController::Base
     rescue ExpiredTokenError => e
       logger.info "422: #{e}".red.bold
       result = {status: 422, json: {error: e.message}}
-    rescue Exception => e # a non-validation related exception
+    rescue => e # a non-validation related exception
       logger.error "500: #{e}".red.bold
       logger.error e.backtrace.take(5).map { |l| ">>".red.bold + " #{l}" }.join("\n").red
       result = {status: 500, json: {error: e.message, backtrace: e.backtrace}}

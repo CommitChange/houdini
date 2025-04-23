@@ -7,7 +7,7 @@ class PeriodicReport < ApplicationRecord
   # nonprofit_id
 
   belongs_to :nonprofit, optional: false
-  has_and_belongs_to_many :users
+  has_and_belongs_to_many :users # rubocop:disable Rails/HasAndBelongsToMany
   belongs_to :nonprofit_s3_key
 
   validate :valid_report_type?

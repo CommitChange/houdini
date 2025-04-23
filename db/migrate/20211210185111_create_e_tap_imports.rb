@@ -14,10 +14,12 @@ class CreateETapImports < ActiveRecord::Migration
       t.timestamps null: false
     end
 
+    # rubocop:disable Rails/CreateTableWithTimestamps
     create_table :journal_entries_to_items do |t|
       t.references :e_tap_import_journal_entry
       t.references :item, polymorphic: true
     end
+    # rubocop:enable Rails/CreateTableWithTimestamps
 
     # reversible do |dir|
     #   dir.up do

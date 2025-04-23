@@ -29,10 +29,6 @@ class DisputeCase
     @legacy_dispute ||= stripe_dispute.dispute
   end
 
-  def legacy_dispute
-    @legacy_dispute ||= stripe_dispute.dispute
-  end
-
   def withdrawal_dispute_transaction
     legacy_dispute.dispute_transactions.order("date").first
   end

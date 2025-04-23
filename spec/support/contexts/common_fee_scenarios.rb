@@ -1,3 +1,4 @@
+# rubocop:disable Lint/ConstantDefinitionInBlock
 RSpec.shared_context "common fee scenarios" do
   include_context "Stripe::Source doubles"
   include_context :shared_donation_charge_context
@@ -916,9 +917,11 @@ RSpec.shared_context "common fee scenarios" do
 
   SCENARIOS = [].concat(in_past).concat(now).concat(in_future)
 
+  # rubocop:disable Security/Eval
   def get_source(example_details)
     eval(example_details[:source].to_s)
   end
+  # rubocop:enable Security/Eval
 
   def at(example_details)
     case example_details[:at]
@@ -931,3 +934,4 @@ RSpec.shared_context "common fee scenarios" do
     end
   end
 end
+# rubocop:enable Lint/ConstantDefinitionInBlock

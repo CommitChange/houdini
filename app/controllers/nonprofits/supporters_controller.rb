@@ -3,7 +3,7 @@ module Nonprofits
   class SupportersController < ApplicationController
     include Controllers::NonprofitHelper
 
-    before_action :authenticate_nonprofit_user!, except: [:new, :create]
+    before_action :authenticate_nonprofit_user!, except: [:create]
 
     before_action :validate_allowed!, only: [:create]
     rescue_from ::TempBlockError, with: :handle_temp_block_error

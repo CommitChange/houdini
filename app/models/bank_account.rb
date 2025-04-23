@@ -16,7 +16,7 @@ class BankAccount < ApplicationRecord
   # validates :stripe_bank_account_token, presence: true, uniqueness: true
   # validates :stripe_bank_account_id, presence: true, uniqueness: true
   # validates :nonprofit, presence: true
-  # validates :email, presence: true, format: {with: Email::Regex}
+  # validates :email, presence: true, format: {with: Email::REGEX}
   # validate  :nonprofit_must_be_vetted, on: :create
   # validate  :nonprofit_has_stripe_account
 

@@ -98,16 +98,6 @@ class DonationMailer < BaseMailer
     end
   end
 
-  def nonprofit_recurring_donation_change_amount(donation_id, previous_amount = nil)
-    @donation = RecurringDonation.find(donation_id).donation
-    @nonprofit = @donation.nonprofit
-    @emails = QueryUsers.nonprofit_user_emails(@nonprofit.id, "notify_recurring_donations")
-    @previous_amount = previous_amount
-    if @emails.any?
-      mail(to: @emails, subject: "Recurring donation amount changed for #{@donation.supporter.name || @donation.supporter.email}")
-    end
-  end
-
   def donor_recurring_donation_change_amount(donation_id, previous_amount = nil)
     @donation = RecurringDonation.find(donation_id).donation
     @nonprofit = @donation.nonprofit

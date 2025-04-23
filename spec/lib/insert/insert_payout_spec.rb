@@ -122,16 +122,16 @@ describe InsertPayout do
 
         it "works without a date provided" do
           stripe_transfer_id = nil
-          expect(Stripe::Payout).to receive(:create).with({amount: expected_totals[:net_amount],
-                                                             currency: "usd"}, {
-                                                               stripe_account: nonprofit.stripe_account_id
-                                                             })
-            .and_wrap_original { |m, *args|
+          expect(Stripe::Payout).to receive(:create).with(
+            {amount: expected_totals[:net_amount], currency: "usd"},
+            {stripe_account: nonprofit.stripe_account_id}
+          ).and_wrap_original { |m, *args|
             args[0]["status"] = "pending"
             i = m.call(*args)
             stripe_transfer_id = i["id"]
             i
           }
+
           entities_yesterday
           result = InsertPayout.with_stripe(nonprofit.id, {stripe_account_id: nonprofit.stripe_account_id,
                                                     email: user_email,
@@ -230,20 +230,20 @@ describe InsertPayout do
 
         it "works with date provided" do
           stripe_transfer_id = nil
-          expect(Stripe::Payout).to receive(:create).with({amount: expected_totals[:net_amount],
-                                                             currency: "usd"}, {
-                                                               stripe_account: nonprofit.stripe_account_id
-                                                             })
-            .and_wrap_original { |m, *args|
+          expect(Stripe::Payout).to receive(:create).with(
+            {amount: expected_totals[:net_amount], currency: "usd"},
+            {stripe_account: nonprofit.stripe_account_id}
+          ).and_wrap_original { |m, *args|
             args[0]["status"] = "pending"
             i = m.call(*args)
             stripe_transfer_id = i["id"]
             i
           }
           result = InsertPayout.with_stripe(nonprofit.id, {stripe_account_id: nonprofit.stripe_account_id,
-                                                    email: user_email,
-                                                    user_ip: user_ip,
-                                                    bank_name: bank_name}, {date: 1.day.ago})
+                                                           email: user_email,
+                                                           user_ip: user_ip,
+                                                           bank_name: bank_name},
+            {date: 1.day.ago})
 
           expected_result = {
             net_amount: expected_totals[:net_amount],

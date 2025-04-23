@@ -10,7 +10,7 @@ module IncludeAsset
     %(<link rel='stylesheet' type='text/css' media='all' href="#{path}?v=#{asset_version}">).html_safe
   end
 
-  private
+  private_class_method
 
   def self.asset_version
     ENV["ASSET_VERSION"]

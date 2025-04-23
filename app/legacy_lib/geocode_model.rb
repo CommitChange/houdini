@@ -12,7 +12,7 @@ module GeocodeModel
   def self.geocode(model)
     begin
       model.geocode
-    rescue Exception => e
+    rescue => e
       Rails.logger.debug e
     end
     model.save
@@ -23,7 +23,7 @@ module GeocodeModel
     begin
       model.geocode
       model.reverse_geocode
-    rescue Exception => e
+    rescue => e
       Rails.logger.debug e
     end
     model.save
@@ -34,7 +34,7 @@ module GeocodeModel
   def self.with_timezone(model)
     begin
       geocode(model)
-    rescue Exception => e
+    rescue => e
       Rails.logger.debug e
     end
     return model unless model.latitude && model.longitude

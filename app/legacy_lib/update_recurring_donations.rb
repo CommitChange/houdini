@@ -14,7 +14,7 @@ module UpdateRecurringDonations
     ParamValidation.new({rd: rd, token: token},
       {
         rd: {is_hash: true, required: true},
-        token: {format: UUID::Regex, required: true}
+        token: {format: UUID::REGEX, required: true}
       })
 
     ParamValidation.new(rd,
@@ -60,7 +60,7 @@ module UpdateRecurringDonations
     ParamValidation.new({amount: amount, rd: rd, token: token},
       {amount: {is_integer: true, min: 50, required: true},
        rd: {required: true, is_a: RecurringDonation},
-       token: {required: true, format: UUID::Regex}})
+       token: {required: true, format: UUID::REGEX}})
     source_token = QuerySourceToken.get_and_increment_source_token(token, nil)
     tokenizable = source_token.tokenizable
 

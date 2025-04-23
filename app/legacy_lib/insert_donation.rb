@@ -9,7 +9,7 @@ module InsertDonation
     data = data.to_deprecated_h.with_indifferent_access
 
     ParamValidation.new(data, common_param_validations
-                                  .merge(token: {required: true, format: UUID::Regex}))
+                                  .merge(token: {required: true, format: UUID::REGEX}))
 
     source_token = QuerySourceToken.get_and_increment_source_token(data[:token], current_user)
     tokenizable = source_token.tokenizable
@@ -154,7 +154,7 @@ module InsertDonation
     result
   end
 
-  private
+  private_class_method
 
   def self.get_nonprofit_data(nonprofit_id)
     Nonprofit.find(nonprofit_id)

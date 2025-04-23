@@ -505,7 +505,7 @@ class Qx
     self
   end
 
-  private # Internal utils
+  private_class_method
 
   # Turn join params into something that .parse can use
   def self.parse_joins(js)

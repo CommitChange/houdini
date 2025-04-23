@@ -428,7 +428,7 @@ describe InsertCard do
       expected_json = db_card.attributes
       expected_json["token"] = token
       if token
-        expect(token).to match(UUID::Regex)
+        expect(token).to match(UUID::REGEX)
       end
       expect(card_ret[:json]).to eq(expected_json)
     end

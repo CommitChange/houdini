@@ -1,15 +1,14 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 module RetrieveActiveRecordItems
   def self.retrieve(data, optional = false)
-    data.map { |k, v|
-      our_integer = begin
-        Integer(v)
-      rescue
-        nil
-      end
+    data.map do |k, v|
+      our_integer = Integer(v, exception: false)
+
+      # rubocop:disable Style/UnlessLogicalOperators
       unless (optional && v.nil?) || (our_integer && our_integer > 0)
         raise ArgumentError.new("Value '#{v}' for Key '#{k}' is not valid")
       end
+      # rubocop:enable Style/UnlessLogicalOperators
 
       unless k.is_a? Class
         raise ArgumentError.new("Key '#{k}' is not a class")
@@ -24,11 +23,11 @@ module RetrieveActiveRecordItems
         end
       end
       ret
-    }.to_h
+    end.to_h
   end
 
   def self.retrieve_from_keys(input, class_to_key_hash, optional = false)
-    class_to_key_hash.map { |k, v|
+    class_to_key_hash.map do |k, v|
       unless k.is_a? Class
         raise ArgumentError.new("Key '#{k}' is not a class")
       end
@@ -44,6 +43,6 @@ module RetrieveActiveRecordItems
         raise ParamValidation::ValidationError.new("#{input[v]} is not a valid ID for Key '#{v}'", {key: v})
       end
       ret
-    }.to_h
+    end.to_h
   end
 end

@@ -86,5 +86,5 @@ Rails.application.configure do
   end
   config.middleware.use Rack::Attack
 
-  NONPROFIT_VERIFICATION_SEND_EMAIL_DELAY = 2.hours
+  NONPROFIT_VERIFICATION_SEND_EMAIL_DELAY = 2.hours # rubocop:disable Lint/ConstantDefinitionInBlock
 end

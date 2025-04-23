@@ -4,12 +4,9 @@ class EmailList < ApplicationRecord
   belongs_to :tag_master
 
   has_many :tag_joins, through: :tag_master
-
   has_many :supporters, through: :tag_joins
 
-  # you can set this manually for testing but generally, it should be
-  # generated from the api key
-  attr_accessor :base_uri
+  attr_writer :base_uri
 
   # the path on the Mailchimp api for the list
   def list_path

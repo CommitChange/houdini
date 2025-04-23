@@ -403,6 +403,12 @@ module Controllers::ApiNew::JbuilderExpansions
       end
     end
 
+    def self.create_from(root_tree_node)
+      er = ExpansionTree.new
+      er.root_node = root_tree_node
+      er
+    end
+
     private
 
     # given a set of SPaths, build a tree to describe
@@ -414,12 +420,6 @@ module Controllers::ApiNew::JbuilderExpansions
           working_tree = working_tree[path_part]
         end
       end
-    end
-
-    def self.create_from(root_tree_node)
-      er = ExpansionTree.new
-      er.root_node = root_tree_node
-      er
     end
   end
 end

@@ -39,7 +39,8 @@ Rails.application.configure do
 
   config.log_level = :debug
 
-  config.dependency_loading = true if $rails_rake_task
+  config.dependency_loading = true if $rails_rake_task # rubocop:disable Style/GlobalVars
+
   # Turn this on if you want to mess with code inside /node_modules
   # config.browserify_rails.evaluate_node_modules = true
 
@@ -48,5 +49,5 @@ Rails.application.configure do
   config.after_initialize do
     ActiveRecord::Base.logger = nil
   end
-  NONPROFIT_VERIFICATION_SEND_EMAIL_DELAY = 5.minutes
+  NONPROFIT_VERIFICATION_SEND_EMAIL_DELAY = 5.minutes # rubocop:disable Lint/ConstantDefinitionInBlock
 end

@@ -31,9 +31,9 @@ class ETapImportContact < ApplicationRecord
     where("row @> '{\"Account Number\": \"#{account_id}\"}'").first
   end
 
-  def journal_entries
-    e_tap_import.e_tap_import_journal_entries.by_account(row["Account Number"])
-  end
+  # def journal_entries
+  # e_tap_import.e_tap_import_journal_entries.by_account(row["Account Number"])
+  # end
 
   def self.find_by_account_name(account_name, account_email, original_account_id)
     query = where("row @> '{\"Account Name\": \"#{account_name}\"}' OR row @> '{\"Email\": \"#{account_email}\"}' OR row @> '{\"Email Address 2\": \"#{account_email}\"}' OR row @> '{\"Email Address 3\": \"#{account_email}\"}'")
@@ -71,8 +71,7 @@ class ETapImportContact < ApplicationRecord
             custom_fields_to_save += [["Overwrote previous email", val.join(",")]]
           end
           supporter.update(to_supporter_args)
-        rescue PG::NotNullViolation => e
-          byebug
+        rescue PG::NotNullViolation => e # rubocop:disable Lint/UselessRescue
           raise e
         end
       else

@@ -42,7 +42,7 @@ class RecurringDonation < ApplicationRecord
 
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: [false, nil]) }
-  scope :cancelled, -> { where(active: [false, nil]) }
+  scope :cancelled, -> { inactive }
   scope :monthly, -> { where(time_unit: "month", interval: 1) }
   scope :annual, -> { where(time_unit: "year", interval: 1) }
   scope :failed, -> { where("n_failures >= 3") }
@@ -64,7 +64,7 @@ class RecurringDonation < ApplicationRecord
   validates :paydate, numericality: {less_than: 29}, allow_blank: true
   validates :start_date, presence: true
   validates :interval, presence: true, numericality: {greater_than: 0}
-  validates :time_unit, presence: true, inclusion: {in: Timespan::Units}
+  validates :time_unit, presence: true, inclusion: {in: Timespan::UNITS}
   validates_associated :donation
 
   def most_recent_charge
