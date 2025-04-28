@@ -59,7 +59,7 @@ gem 'chronic'
 
 # Images
 # https://github.com/carrierwaveuploader/carrierwave
-gem 'carrierwave', '~> 3.0'
+gem 'carrierwave', '~> 3.1'
 gem 'carrierwave-aws' # for uploading images to amazon s3
 gem 'mini_magick'
 
@@ -145,7 +145,7 @@ group :production, :staging do
   gem 'redis-actionpack'
 end
 
-gem 'recaptcha', '~> 5.8.1'
+gem 'recaptcha', '~> 5.19.0'
 
 gem 'hashie'
 
@@ -165,4 +165,4 @@ gem 'globalid', ">= 1.0.1"
 
 gem 'js-routes'
 
-gem 'concurrent-ruby', '1.3.4' # there's a regression in 1.3.5 that can be removed at Rails 7.1
+gem 'concurrent-ruby', '1.3.5' # there's a regression in 1.3.5 that can be removed at Rails 7.1
