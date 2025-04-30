@@ -8,4 +8,6 @@ class FullContactPhoto < ApplicationRecord
     :url # string
 
   belongs_to :full_contact_info
+
+  validates :full_contact_info, presence: true
 end
