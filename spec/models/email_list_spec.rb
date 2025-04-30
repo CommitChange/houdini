@@ -119,7 +119,7 @@ RSpec.describe EmailList, :type => :model do
       setup
       expect(Mailchimp).to receive(:perform_batch_operations).with(np.id, 
       a_collection_including(
-        an_instance_of(MailchimpBatchOperation).and have_attributes(method: 'POST', list: email_list, supporter: supporter)
+        an_instance_of(MailchimpBatchOperation).and have_attributes(method: 'PUT', list: email_list, supporter: supporter)
       ))
       email_list.populate_list
     end

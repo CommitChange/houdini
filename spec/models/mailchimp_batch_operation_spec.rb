@@ -32,7 +32,7 @@ RSpec.describe MailchimpBatchOperation, :type => :model do
         email_list = build_stubbed(:email_list_base)
         operation = MailchimpBatchOperation.new(supporter: supporter, list: email_list, method: 'POST')
 
-        expect(operation.to_h).to match({method: "POST", path: email_list.list_members_path, body: an_instance_of(String)})
+        expect(operation.to_h).to match({method: "PUT", path: email_list.list_members_path, body: an_instance_of(String)})
       end
     end
   end
