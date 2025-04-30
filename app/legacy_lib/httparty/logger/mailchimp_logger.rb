@@ -22,12 +22,11 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-require_relative './commitchange_logger'
 module HTTParty
   module Logger
     class MailchimpLogger < ::HTTParty::Logger::CommitchangeLogger
       def initialize(logger, level)
-        super(logger, level, 'mailchimp')
+        super(logger, level, "mailchimp")
       end
     end
   end

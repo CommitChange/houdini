@@ -1,17 +1,16 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 class EventDiscountsController < ApplicationController
   include Controllers::EventHelper
-	before_action :authenticate_event_editor!, :except => [:index]
+  before_action :authenticate_event_editor!, except: [:index]
+
+  rescue_from ActiveRecord::RecordInvalid, with: :record_invalid
 
   def create
-    params[:event_discount][:event_id] = current_event.id
+    @event_discount = current_event.event_discounts.build(event_discount_params)
 
-    render JsonResp.new(params[:event_discount]){|data|
-      requires(:code, :name).as_string
-      requires(:event_id, :percent).as_int
-    }.when_valid{|data|
-      { status: 200, json: { event_discount: current_event.event_discounts.create(data) } }
-    }
+    @event_discount.save!
+
+    render status: :created
   end
 
   def index
@@ -19,22 +18,27 @@ class EventDiscountsController < ApplicationController
   end
 
   def update
-    discount = Hamster.to_ruby(
-      Psql.execute(
-        Qexpr.new.update(:event_discounts, params[:event_discount])
-        .where('id=$id', id: params[:id])
-        .returning('*')
-      ).first
-    )
-    render json: {status: 200, data: discount } 
+    @event_discount = current_event.event_discounts.find(params[:id])
+
+    @event_discount.update!(event_discount_params)
+    @event_discount
   end
 
   def destroy
-    Psql.execute(
-      Qexpr.new.delete_from("event_discounts")
-        .where("event_discounts.event_id=$id", id: params["event_id"])
-        .where("event_discounts.id=$id", id: params["id"])
-    )
+    @event_discount = current_event.event_discounts.find(params[:id])
+
+    @event_discount.destroy!
+
+    @event_discount
   end
 
+  private
+
+  def event_discount_params
+    params.require(:event_discount).permit(:code, :name, :percent)
+  end
+
+  def record_invalid(error)
+    render status: :unprocessable_entity, json: {errors: error.record.errors}
+  end
 end

@@ -22,36 +22,35 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 module HTTParty
   module Logger
     class CommitchangeLogger
       attr_accessor :level, :logger, :output_type
 
       def initialize(logger, level, output_type)
-        @logger   = logger
-        @level    = level.to_sym
+        @logger = logger
+        @level = level.to_sym
         @output_type = output_type
         @messages = []
       end
 
       def format(request, response)
-        @request  = request
+        @request = request
         @response = response
 
         log_request
         log_response
 
-        logger.public_send level, JSON::generate(@output)
+        logger.public_send level, JSON.generate(@output)
       end
 
       attr_reader :request, :response
 
       def output_hash
         @output ||= {
-            type: output_type,
-            request: {},
-            response: {}
+          type: output_type,
+          request: {},
+          response: {}
         }
       end
 
@@ -75,12 +74,12 @@ module HTTParty
       end
 
       def log_url
-        http_method = request.http_method.name.split('::').last.upcase
+        request.http_method.name.split("::").last.upcase
         uri = if request.options[:base_uri]
-                request.options[:base_uri] + request.path.path
-              else
-                request.path.to_s
-              end
+          request.options[:base_uri] + request.path.path
+        else
+          request.path.to_s
+        end
 
         output_request[:url] = uri
       end

@@ -1,6 +1,6 @@
 # CommitChange's version of Houdini
 
-This is a Rails 6.0 app.
+This is a Rails 7.0 app.
 
 The frontend is written in a few custom frameworks, the largest of which is called Flimflam.
 We endeavor to migrate to React as quickly as possible to increase development
@@ -13,7 +13,7 @@ All backend code and React components should be well-tested
 
 Houdini is designed and tested to run with the following:
 
-* Ruby 2.7
+* Ruby 3.0
 * Node 16
 * PostgreSQL 16
 * run on Heroku-20
@@ -70,7 +70,7 @@ You'll want to run the next commands as root or via sudo (for Ubuntu 18.04 users
 ```bash
 apt update
 apt install curl -yy
-curl -sL https://deb.nodesource.com/setup_14.x | bash -
+curl -sL https://deb.nodesource.com/setup_16.x | bash -
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 apt update
@@ -110,7 +110,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 Ruby install
 ```bash
 cd houdini
-rbenv install 2.7
+rbenv install 3.0
 ```
 
 Run the following command as the `postgres` user and then enter your admin
@@ -130,11 +130,11 @@ Set your Ruby version with `rbenv`.
 ```bash
 brew install rbenv
 rbenv versions # see which ruby versions are already installed
-rbenv install  # the app currently uses version 2.7.8
+rbenv install  # the app currently uses version 3.2.8
 rbenv local # rbenv local --unset reverses the action
 
 # To switch between rbenv versions installed locally, use the following command:
-rbenv shell 2.7.8
+rbenv shell 3.2.8
 
 ```
 
@@ -144,8 +144,8 @@ Set your Node version with `NVM`.
 brew install nvm
 brew info nvm # command that shows the remaining steps to complete to install nvm properly
 mkdir ~/.nvm
-nvm install 14
-nvm use 14
+nvm install 16
+nvm use 16
 # Add the following lines to your ~/.bashprofile or ~/.zshrc:
 echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
 echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.zshrc
@@ -204,7 +204,7 @@ bin/setup
 
 When you run foreman in dev, you start up the server, the job runner and webpack.
 ```sh
-foreman start
+bin/dev
 ```
 
 If you get `ActiveRecord::NoDatabaseError` errors, run `bin/rails db:create:all` to make sure all the databases are built.
