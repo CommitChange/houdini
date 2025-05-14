@@ -299,7 +299,7 @@ gh auth login
 ```
 brew tap heroku/brew && brew install heroku 
 heroku login 
-heroku git:remote —remote=production -a commitchange 
+heroku git:remote -remote=production -a commitchange 
 git branch 
 git push production HEAD:master 
 ```
