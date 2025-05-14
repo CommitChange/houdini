@@ -297,7 +297,8 @@ gh auth login
 
 # Heroku CLI setup 
 ```
-brew tap heroku/brew && brew install heroku 
+brew install heroku/brew/heroku
+heroku autocomplete
 heroku login 
 heroku git:remote —remote=production -a commitchange 
 git branch 
