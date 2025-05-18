@@ -7,7 +7,5 @@ class FullContactPhoto < ApplicationRecord
     :is_primary, # bool
     :url # string
 
-  belongs_to :full_contact_info
-
-  validates :full_contact_info, presence: true
+  belongs_to :full_contact_info, optional: false
 end
