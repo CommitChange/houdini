@@ -13,6 +13,8 @@ module Commitchange
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
+    config.add_autoload_paths_to_load_path = false # only until line above is set to 7.1
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
