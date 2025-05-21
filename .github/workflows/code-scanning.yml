@@ -1,6 +1,6 @@
 # License: LGPL-3.0-or-later
 # based on the Rubocop code scanning template from GithubS
-name: "Run Standard"
+name: "Run Standardrb"
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
     - name: Install dependencies
       run: bundle install
 
-    - name: Rubocop run
+    - name: Standardrb run
       run: |
         bash -c "
           bin/standardrb --require code_scanning --format CodeScanning::SarifFormatter -o standard.sarif
