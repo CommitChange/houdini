@@ -49,7 +49,7 @@ Rails.application.configure do
 
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
-  config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for nginx
+  # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for nginx
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
@@ -64,7 +64,7 @@ Rails.application.configure do
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  config.log_level = :debug
+  config.log_level = :info
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
@@ -80,8 +80,7 @@ Rails.application.configure do
 
   cdn_url = URI(Settings.cdn.url)
   cdn_url = cdn_url.to_s
-  config.action_controller.asset_host = cdn_url
-  config.action_mailer.asset_host = cdn_url
+  config.asset_host = cdn_url
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   creds = Aws::Credentials.new(ENV["AWS_ACCESS_KEY"], ENV["AWS_SECRET_ACCESS_KEY"])

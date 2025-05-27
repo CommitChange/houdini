@@ -1,12 +1,12 @@
 source "https://rubygems.org"
 
-ruby ENV["CUSTOM_RUBY_VERSION"] || "3.2.8" # heroku needs a specific ruby version in the Gemfile
+ruby ENV["CUSTOM_RUBY_VERSION"] || "3.3.8" # heroku needs a specific ruby version in the Gemfile
 
 gem "rake"
 gem "rails", "~> 7.0.8.7"
 gem "sprockets", "~> 3.7" # Sprockets 4.0 stops allowing us to add a proc to the config.assets.precompile array, which we currently use
 
-gem "rack", "~> 2.2.13"
+gem "rack", "~> 2.2.15"
 
 # https://stripe.com/docs/api
 gem "stripe", "~> 5.0"
@@ -36,9 +36,6 @@ gem "yaaf" # form objects
 
 # for blocking ip addressses
 gem "rack-attack"
-
-# to find middleware thread safety bugs
-gem "rack-freeze"
 
 # Database (postgres)
 gem "pg", "~> 1.5.9"
@@ -75,9 +72,6 @@ gem "airbrake"
 # http://www.rubygeocoder.com/
 gem "geocoder" # for adding latitude and longitude to location-based tables
 
-# https://github.com/buytruckload/nearest_time_zone
-gem "nearest_time_zone" # for detecting timezone from lat/lng
-
 gem "rest-client" # recommended for fullcontact
 
 # https://github.com/fphilipe/premailer-rails
@@ -95,6 +89,7 @@ gem "rexml" # needed on Ruby 3
 
 group :development, :ci, :test do
   gem "standard"
+  gem "standard-rails"
   gem "listen"
   gem "letter_opener"
   gem "timecop"
