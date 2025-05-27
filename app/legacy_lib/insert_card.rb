@@ -41,7 +41,6 @@ module InsertCard
     holder_type = holder_types[card_data[:holder_type]]
     holder = nil
     begin
-      if holder_type == :supporter
         holder = Supporter.select("id, email, nonprofit_id").includes(:cards, :nonprofit).find(card_data[:holder_id])
       end
     rescue ActiveRecord::RecordNotFound
@@ -90,7 +89,6 @@ module InsertCard
     source_token = nil
     begin
       Card.transaction {
-        if (holder_type == :supporter)
           # @type [Supporter] holder
           card = holder.cards.create(card_data)
           params = {}
