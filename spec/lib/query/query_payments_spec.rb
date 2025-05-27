@@ -799,7 +799,6 @@ describe QueryPayments do
 
           result = QueryPayments::full_search(nonprofit.id, {campaign_id: campaign.id})
           expect(result[:data].count).to eq 2
-          # expect(result[:data]).to_not satisfy {|i| i.any?{|j| j['id'] == donation_result_tomorrow['campaign']['id']}}
         end 
       end 
 
@@ -812,7 +811,6 @@ describe QueryPayments do
           result = QueryPayments::full_search(nonprofit.id, {campaign_id: campaign.id}) 
           expect(result[:data].count).to eq 2
           expect(result[:data]).to_not include donation_result_tomorrow
-          #expect(result[:data]).to_not satisfy {|i| i.any?{|j| j['id'] == donation_result_tomorrow['campaign']['id']}}
         end 
       end 
     end
