@@ -91,7 +91,6 @@ module InsertCard
             params[:event] = event
           end
           source_token = InsertSourceToken.create_record(card, params).token
-        end
         card.save!
       }
     rescue ActiveRecord::ActiveRecordError => e
