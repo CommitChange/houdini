@@ -18,9 +18,11 @@ describe InsertCard do
         country: nil
       }
     }
-
+    let(:nonprofit) { force_create(:nonprofit) }
     let(:user) {
       user = force_create(:user)
+      force_create(:role, name: :nonprofit_admin, host: nonprofit, user: user)
+      user
     }
 
     around(:each) { |example|
