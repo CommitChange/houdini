@@ -4,7 +4,7 @@ module InsertCard
   # If a stripe_customer_id is present, then update that customer's primary source; otherwise create a new customer
   # @param [ActiveSupport::HashWithIndifferentAccess] card_data card data
   # @option card_data [Integer] holder_id the primary key of the card's holder
-  # @option card_data [String] holder_type the type of the card holder. Must be 'Nonprofit' or 'Supporter'
+  # @option card_data [String] holder_type the type of the card holder. Must be'Supporter'
 
   # @option card_data [String] stripe_card_token the card token from stripe
   # @option card_data [String] stripe_card_id the card id from stripe

@@ -16,10 +16,5 @@ describe "nonprofits factory" do
       create(:nonprofit_base, :with_billing_subscription_on_stripe)
       expect(BillingPlan.count).to eq 1
     end
-
-    it "creates 1 Card" do
-      create(:nonprofit_base, :with_billing_subscription_on_stripe)
-      expect(Card.count).to eq 1
-    end
   end
 end

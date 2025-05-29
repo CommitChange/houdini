@@ -143,7 +143,6 @@ class Nonprofit < ApplicationRecord
   has_many :activities, as: :host, dependent: :destroy
   has_many :imports
   has_many :email_settings
-  has_many :cards, as: :holder
   has_many :supporter_cards, through: :supporters, source: :cards, class_name: "Card"
   has_many :periodic_reports
   has_many :export_formats
@@ -267,33 +266,6 @@ class Nonprofit < ApplicationRecord
     !!(vetted &&
       stripe_account&.charges_enabled &&
       !nonprofit_deactivation&.deactivated)
-  end
-
-  def active_cards
-    cards.where("COALESCE(cards.inactive, FALSE) = FALSE")
-  end
-
-  # @param [Card] card the new active_card
-  def active_card=(card)
-    unless card.class == Card
-      raise ArgumentError.new "Pass a card to active_card or else"
-    end
-    Card.transaction do
-      active_cards.update_all inactive: true
-      return cards << card
-    end
-  end
-
-  def active_card
-    active_cards.first
-  end
-
-  def create_active_card(card_data)
-    if card_data[:inactive]
-      raise ArgumentError.new "This method is for creating active cards only"
-    end
-    active_cards.update_all inactive: true
-    cards.create(card_data)
   end
 
   def currency_symbol
