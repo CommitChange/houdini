@@ -116,61 +116,61 @@ describe Api::NonprofitsController, type: :request do
     end
 
 
-    # it "succeeds" do
-    #   ActiveJob::Base.queue_adapter = :test
-    #   StripeMockHelper.start
-    #   create(:nonprofit_base, name: "not-something", slug: "n", state_code_slug: "wi", city_slug: "appleton")
+    it "succeeds" do
+      ActiveJob::Base.queue_adapter = :test
+      StripeMockHelper.start
+      create(:nonprofit_base, name: "not-something", slug: "n", state_code_slug: "wi", city_slug: "appleton")
 
-    #   input = {
-    #     nonprofit: {name: "n", state_code: "WI", city: "appleton", zip_code: 54915, url: "www.cs.c", website: "www.cs.c"},
-    #     user: {name: "Name", email: "em@em.com", password: "12345678", password_confirmation: "12345678"}
-    #   }
+      input = {
+        nonprofit: {name: "n", state_code: "WI", city: "appleton", zip_code: 54915, url: "www.cs.c", website: "www.cs.c"},
+        user: {name: "Name", email: "em@em.com", password: "12345678", password_confirmation: "12345678"}
+      }
 
-    #   bp = force_create(:billing_plan)
-    #   Settings.default_bp.id = bp.id
+      bp = force_create(:billing_plan)
+      Settings.default_bp.id = bp.id
 
-    #   post "/api/nonprofits", params: input, xhr: true
+      post "/api/nonprofits", params: input, xhr: true
 
-    #   expect(response.code).to eq "201"
-    #   expect(MailchimpNonprofitUserAddJob).to have_been_enqueued
+      expect(response.code).to eq "201"
+      expect(MailchimpNonprofitUserAddJob).to have_been_enqueued
 
-    #   #Spec failing 5/29/25
-    #   our_np = Nonprofit.all[1]
-    #   expected_np = {
-    #     name: "n",
-    #     state_code: "WI",
-    #     city: "appleton",
-    #     zip_code: "54915",
-    #     state_code_slug: "wi",
-    #     city_slug: "appleton",
-    #     slug: "n-00",
-    #     website: "http://www.cs.c"
-    #   }.with_indifferent_access
+    # code starting on this line is causing spec to fail in GH suite 5/29/25
+      our_np = Nonprofit.all[1]
+      expected_np = {
+        name: "n",
+        state_code: "WI",
+        city: "appleton",
+        zip_code: "54915",
+        state_code_slug: "wi",
+        city_slug: "appleton",
+        slug: "n-00",
+        website: "http://www.cs.c"
+      }.with_indifferent_access
 
-    #   expected_np = our_np.attributes.with_indifferent_access.merge(expected_np)
-    #   expect(our_np.attributes).to eq expected_np
+      expected_np = our_np.attributes.with_indifferent_access.merge(expected_np)
+      expect(our_np.attributes).to eq expected_np
 
-    #   expect(our_np.billing_subscription.billing_plan).to eq bp
+      expect(our_np.billing_subscription.billing_plan).to eq bp
 
-    #   expect(our_np.stripe_account_id).to_not be_nil
+      expect(our_np.stripe_account_id).to_not be_nil
 
-    #   response_body = {
-    #     id: our_np.id
-    #   }.with_indifferent_access
+      response_body = {
+        id: our_np.id
+      }.with_indifferent_access
 
-    #   expect(JSON.parse(response.body)).to eq response_body
+      expect(JSON.parse(response.body)).to eq response_body
 
-    #   user = User.first
-    #   expected_user = {
-    #     email: "em@em.com",
-    #     name: "Name"
-    #   }
+      user = User.first
+      expected_user = {
+        email: "em@em.com",
+        name: "Name"
+      }
 
-    #   expected_user = user.attributes.with_indifferent_access.merge(expected_user)
-    #   expect(our_np.roles.nonprofit_admins.count).to eq 1
-    #   expect(our_np.roles.nonprofit_admins.first.user.attributes).to eq expected_user
+      expected_user = user.attributes.with_indifferent_access.merge(expected_user)
+      expect(our_np.roles.nonprofit_admins.count).to eq 1
+      expect(our_np.roles.nonprofit_admins.first.user.attributes).to eq expected_user
 
-    #   StripeMockHelper.stop
-    # end
+      StripeMockHelper.stop
+    end
   end
 end
