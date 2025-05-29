@@ -806,7 +806,7 @@ describe QueryPayments do
           
           #when sorting by campaign donation amount
             #returns asc order of amounts from the refunds and charges and donations associated with that campaign donation
-          it 'returns results with amount'do
+          it 'returns results sorted by amount'do
             donation_result_today
             donation_result_yesterday
             donation_result_tomorrow
@@ -817,6 +817,14 @@ describe QueryPayments do
 
         #when sorting by campaign donation date 
           #returns asc order of date 
+          it 'returns results sorted by date' do
+            donation_result_today
+            donation_result_yesterday
+            donation_result_tomorrow
+
+            result = QueryPayments.full_search(nonprofit.id, {date: "date"})
+            expect(result[:data].count).to eq 3
+          end 
         #when sorting by campaign donation name 
           #returns asc order of name/s?
         #when sorting by campaign donation type 
