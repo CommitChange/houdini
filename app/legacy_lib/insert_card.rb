@@ -35,8 +35,9 @@ module InsertCard
     holder_types = { "Supporter" => :supporter}
     holder_type = holder_types[card_data[:holder_type]]
     holder = nil
-    holder_type == :supporter
-    holder = Supporter.select("id, email, nonprofit_id").includes(:cards, :nonprofit).find(card_data[:holder_id])
+    begin
+      holder_type == :supporter
+      holder = Supporter.select("id, email, nonprofit_id").includes(:cards, :nonprofit).find(card_data[:holder_id])
     rescue ActiveRecord::RecordNotFound
       return {json: {error: "Sorry, you need to provide a nonprofit or supporter"}, status: :unprocessable_entity}
     end
