@@ -793,16 +793,28 @@ describe QueryPayments do
       context 'filters and sorts' do 
         #when filtering by campaigns 
           #returns only donations and refunds and charges associated with that campaign
-         it 'returns only (donation)results associated with a campaign' do
-          donation_result_yesterday
-          donation_result_today
-          donation_result_tomorrow 
 
-          result = QueryPayments.full_search(nonprofit.id, params:{campaign_id: campaign.id})
-          expect(result[:data]).to_not eq([donation_result_tomorrow])
-         end 
-        #when sorting by campaign donation amount
-          #returns asc order of amounts from the refunds and charges and donations associated with that campaign donation
+          it 'returns only (donation)results associated with a campaign' do
+            donation_result_yesterday
+            donation_result_today
+            donation_result_tomorrow 
+
+            result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id})
+            expect(result[:data].count).to eq 2
+           #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["charge"]["id"] } }
+          end 
+          
+          #when sorting by campaign donation amount
+            #returns asc order of amounts from the refunds and charges and donations associated with that campaign donation
+          it 'returns results with amount'do
+            donation_result_today
+            donation_result_yesterday
+            donation_result_tomorrow
+
+            result = QueryPayments.full_search(nonprofit.id, {amount: "amount"})
+            expect(result[:data].count).to eq 3
+          end
+
         #when sorting by campaign donation date 
           #returns asc order of date 
         #when sorting by campaign donation name 
