@@ -52,9 +52,9 @@ describe InsertCard do
 
 
     describe "for supporter" do
-      let(:supporter) { force_create(:supporter) }
+      let(:supporter) { force_create(:supporter, nonprofit: nonprofit) }
       let(:event) {
-        force_create(:event, end_datetime: Time.now.since(1.day))
+        force_create(:event, nonprofit: nonprofit, end_datetime: Time.now.since(1.day))
       }
       let(:user_not_from_nonprofit) { force_create(:user) }
 
