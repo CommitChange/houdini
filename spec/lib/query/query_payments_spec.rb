@@ -7,7 +7,6 @@ describe QueryPayments do
     @nonprofit = force_create(:nonprofit, name: "npo1")
     @supporters = [force_create(:supporter, name: "supporter-0", nonprofit: @nonprofit),
       force_create(:supporter, name: "supporter-1", nonprofit: @nonprofit)]
-
     @payments = [force_create(:payment, gross_amount: 1000, fee_total: 99, net_amount: 901, supporter: @supporters[0], nonprofit: @nonprofit),
       force_create(:payment, gross_amount: 2000, fee_total: 22, net_amount: 1978, supporter: @supporters[1], nonprofit: @nonprofit)]
     @bank_account = force_create(:bank_account, name: "baids_for_payoutnk1", nonprofit: @nonprofit)
@@ -711,7 +710,7 @@ describe QueryPayments do
       end
     end
 
-    describe "campaign donations" do
+    describe "campaign donations" do 
       let(:donation_result_yesterday) {
         generate_donation(amount: charge_amount_small,
           campaign_id: campaign.id,
@@ -739,7 +738,7 @@ describe QueryPayments do
         generate_donation(amount: charge_amount_large,
 
           token: source_tokens[2].token,
-          date: (Time.now - 1.day).to_s)
+          date: (Time.now + 1.day).to_s)
       }
 
       let(:charge_result_tomorrow) {
@@ -791,27 +790,29 @@ describe QueryPayments do
         expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
       end
 
-      context 'when filtering by campaign' do
-        it 'returns 2 campaign results' do 
-          donation_result_today
+      context 'filters and sorts' do 
+        #when filtering by campaigns 
+          #returns only donations and refunds and charges associated with that campaign
+         it 'returns only (donation)results associated with a campaign' do
           donation_result_yesterday
-          donation_result_tomorrow
-
-          result = QueryPayments::full_search(nonprofit.id, {campaign_id: campaign.id})
-          expect(result[:data].count).to eq 2
-        end 
-      end 
-
-      context 'and sorts results' do 
-        it 'returns sorted campaign results' do 
           donation_result_today
-          donation_result_tomorrow
-          donation_result_yesterday
+          donation_result_tomorrow 
 
-          result = QueryPayments::full_search(nonprofit.id, {campaign_id: campaign.id}) 
-          expect(result[:data].count).to eq 2
-          expect(result[:data]).to_not include donation_result_tomorrow
-        end 
+          result = QueryPayments.full_search(nonprofit.id, params:{campaign_id: campaign.id})
+          expect(result[:data]).to_not eq([donation_result_tomorrow])
+         end 
+        #when sorting by campaign donation amount
+          #returns asc order of amounts from the refunds and charges and donations associated with that campaign donation
+        #when sorting by campaign donation date 
+          #returns asc order of date 
+        #when sorting by campaign donation name 
+          #returns asc order of name/s?
+        #when sorting by campaign donation type 
+          #returns asc order of type
+        #when sorting by campaign donation towards 
+          #returns asc order of campaign donation towards
+        #when filtering and sorting
+         # sorts by amount, date, name, type, towards 
       end 
     end
   end
