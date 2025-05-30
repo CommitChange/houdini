@@ -848,11 +848,6 @@ describe QueryPayments do
           result = QueryPayments.full_search(nonprofit.id, {sort_name: "supporters.name"})
           expect(result[:data].count).to eq 3
         end
-
-        #when sorting by campaign donation type 
-          #returns asc order of type
-        #when sorting by campaign donation towards 
-          #returns asc order of campaign donation towards
       end 
     end
   end
