@@ -13,7 +13,7 @@ module MergeSupporters
         .where("supporter_id IN ($ids)", ids: old_supporter_ids).timestamps.execute
     end
 
-    old_supporters.joins(:cards).each do |supp|
+    old_supporters.joins(:cards).find_each do |supp|
       supp.cards.each do |card|
         card.holder = new_supporter
         card.save!
@@ -31,19 +31,19 @@ module MergeSupporters
 
     all_custom_field_joins = old_supporters.map { |i| i.custom_field_joins }.flatten
     group_joins_by_custom_field_master = all_custom_field_joins.group_by { |i| i.custom_field_master.id }
-    one_custom_field_join_per_user = group_joins_by_custom_field_master.map { |k, v|
-      v.sort_by { |i|
+    one_custom_field_join_per_user = group_joins_by_custom_field_master.map do |k, v|
+      v.sort_by do |i|
         i.created_at
-      }.last
-    }
+      end.reverse.first # rubocop:disable Performance/ReverseFirst
+    end
 
     # delete old supporter custom_field
-    InsertCustomFieldJoins.in_bulk(np_id, old_supporter_ids, one_custom_field_join_per_user.map { |i|
+    InsertCustomFieldJoins.in_bulk(np_id, old_supporter_ids, one_custom_field_join_per_user.map do |i|
       {
         custom_field_master_id: i.custom_field_master_id,
         value: ""
       }
-    })
+    end)
 
     # insert new supporter custom field
     InsertCustomFieldJoins.in_bulk(np_id, [new_supporter_id], one_custom_field_join_per_user.map { |i|
@@ -59,7 +59,7 @@ module MergeSupporters
   end
 
   def self.selected(merged_data, supporter_ids, np_id, profile_id, skip_conflicting_custom_fields = false)
-    old_supporters = Nonprofit.find(np_id).supporters.where("supporters.id IN (?)", supporter_ids)
+    old_supporters = Nonprofit.find(np_id).supporters.where(supporters: {id: supporter_ids})
 
     if skip_conflicting_custom_fields && conflicting_custom_fields?(old_supporters)
       return {json: supporter_ids, status: :failure}

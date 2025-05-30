@@ -1,8 +1,11 @@
 class RemoveVerificationStatusOnNonprofit < ActiveRecord::Migration
   def up
+    # rubocop:disable Rails/CreateTableWithTimestamps
     create_table :nonprofit_verification_backups do |t|
       t.string :verification_status
     end
+    # rubocop:enable Rails/CreateTableWithTimestamps
+
     execute <<-SQL
       INSERT INTO nonprofit_verification_backups SELECT id, verification_status from nonprofits
     SQL

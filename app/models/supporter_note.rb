@@ -10,7 +10,6 @@ class SupporterNote < ApplicationRecord
   belongs_to :user
 
   validates :content, length: {minimum: 1}
-  validates :supporter, presence: true
 
   after_create :create_activity
 

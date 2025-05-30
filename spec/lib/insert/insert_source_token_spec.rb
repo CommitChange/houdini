@@ -3,7 +3,7 @@ require "rails_helper"
 
 describe InsertSourceToken do
   describe ".create_record" do
-    let(:event) { force_create(:event, end_datetime: Time.now + 1.day) }
+    let(:event) { force_create(:event, end_datetime: 1.day.from_now) }
     describe "param validation" do
       it "validates tokenizable" do
         expect { InsertSourceToken.create_record(nil) }.to(raise_error { |error|
@@ -43,9 +43,9 @@ describe InsertSourceToken do
             tokenizable_id: tokenizable.id,
             tokenizable_type: "Card",
             token: ouruuid,
-            expiration: Time.now.since(20.minutes),
-            created_at: Time.now,
-            updated_at: Time.now,
+            expiration: Time.zone.now.since(20.minutes),
+            created_at: Time.zone.now,
+            updated_at: Time.zone.now,
             total_uses: 0,
             max_uses: 1,
             event_id: nil
@@ -73,9 +73,9 @@ describe InsertSourceToken do
             tokenizable_id: tokenizable.id,
             tokenizable_type: "Card",
             token: ouruuid,
-            expiration: Time.now + 1.day + 20.days,
-            created_at: Time.now,
-            updated_at: Time.now,
+            expiration: 1.day.from_now + 20.days,
+            created_at: Time.zone.now,
+            updated_at: Time.zone.now,
             total_uses: 0,
             max_uses: 20,
             event_id: event.id
@@ -103,9 +103,9 @@ describe InsertSourceToken do
           expected = {tokenizable_id: tokenizable.id,
                       tokenizable_type: "Card",
                       token: ouruuid,
-                      expiration: Time.now.since(1.hour),
-                      created_at: Time.now,
-                      updated_at: Time.now,
+                      expiration: Time.zone.now.since(1.hour),
+                      created_at: Time.zone.now,
+                      updated_at: Time.zone.now,
                       total_uses: 0,
                       max_uses: 50,
                       event_id: nil}.with_indifferent_access
@@ -131,9 +131,9 @@ describe InsertSourceToken do
             tokenizable_id: tokenizable.id,
             tokenizable_type: "Card",
             token: ouruuid,
-            expiration: Time.now.since(1.day).since(1.hour),
-            created_at: Time.now,
-            updated_at: Time.now,
+            expiration: Time.zone.now.since(1.day).since(1.hour),
+            created_at: Time.zone.now,
+            updated_at: Time.zone.now,
             total_uses: 0,
             max_uses: 50,
             event_id: event.id

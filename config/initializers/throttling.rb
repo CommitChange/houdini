@@ -25,9 +25,11 @@ class Rack::Attack::Cache
   end
 end
 
+# rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
 def run_throttle?
   !Rails.env.test? || (defined? FORCE_THROTTLE && FORCE_THROTTLE)
 end
+# rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
 
 if ENV["THROTTLE_CARD_L1_LIMIT"] && ENV["THROTTLE_CARD_L1_PERIOD"]
   Rack::Attack.throttle("post to add card by supporter LEVEL 1", limit: ENV["THROTTLE_CARD_L1_LIMIT"].to_i, period: ENV["THROTTLE_CARD_L1_PERIOD"].to_i) do |req|

@@ -6,13 +6,13 @@ class SourceToken < ApplicationRecord
   belongs_to :tokenizable, polymorphic: true
   belongs_to :event
 
-  scope :expired, -> { where("max_uses <= total_uses OR expiration < ?", Time.now) }
-  scope :unexpired, -> { where(" NOT (max_uses <= total_uses OR expiration < ?)", Time.now) }
+  scope :expired, -> { where("max_uses <= total_uses OR expiration < ?", Time.zone.now) }
+  scope :unexpired, -> { where(" NOT (max_uses <= total_uses OR expiration < ?)", Time.zone.now) }
 
   scope :last_used_more_than_a_month_ago, -> { where("source_tokens.updated_at < ? ", 1.month.ago) }
 
   def expired?
-    max_uses <= total_uses || source_token.expiration < Time.now
+    max_uses <= total_uses || source_token.expiration < Time.zone.now
   end
 
   def unexpired?

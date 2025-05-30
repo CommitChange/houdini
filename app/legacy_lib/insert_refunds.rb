@@ -38,7 +38,7 @@ module InsertRefunds
       refund.create_misc_refund_info(is_modern: true, stripe_application_fee_refund_id: results[:stripe_app_fee_refund]&.id)
 
       gross = -h["amount"]
-      fees = (results[:stripe_app_fee_refund] && results[:stripe_app_fee_refund].amount) || 0
+      fees = results[:stripe_app_fee_refund]&.amount || 0
       net = gross + fees
 
       # Create a corresponding./run  negative payment record

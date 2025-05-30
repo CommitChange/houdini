@@ -18,7 +18,6 @@ class TicketLevel < ApplicationRecord
   belongs_to :event
 
   validates :name, presence: true
-  validates :event_id, presence: true
 
   scope :not_deleted, -> { where(deleted: [false, nil]) }
 

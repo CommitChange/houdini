@@ -5,7 +5,6 @@ class Comment < ApplicationRecord
     :profile_id,
     :body
 
-  validates :profile, presence: true
   validates :body, presence: true, length: {maximum: 200}
 
   has_one :activity, as: :attachment, dependent: :destroy

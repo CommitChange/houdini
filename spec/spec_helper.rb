@@ -21,7 +21,8 @@
 require "support/expect"
 require "support/mock_helpers"
 
-include Expect
+include Expect # rubocop:disable Style/MixinUsage
+
 # did a value change? no? then expectation passes
 # Use this in compound expectations like:
 # expect { fire_error_instead_of_creating_user}.to raise_error(ExpectedError).and not_change { User.count }

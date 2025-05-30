@@ -214,7 +214,7 @@ describe PaymentDupes, skip: true do # this was a one-off
     end
 
     around(:each) do |example|
-      Timecop.freeze(Time.local(2022, 2, 9)) do
+      Timecop.freeze(Time.zone.local(2022, 2, 9)) do
         example.run
       end
     end
@@ -223,12 +223,12 @@ describe PaymentDupes, skip: true do # this was a one-off
       it "deletes the offsite payment" do
         source_donation = nonprofit.donations.create(comment: "", amount: 100, supporter: supporter)
         source_donation.save!
-        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
         source_payment.save!
 
         target_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
         target_donation.save!
-        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
         target_payment.save!
 
         etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -242,12 +242,12 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "deletes the offsite payment based on the net amount" do
           source_donation = nonprofit.donations.create(comment: "", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
 
           target_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 95, fee_total: -5, net_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 95, fee_total: -5, net_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -262,12 +262,12 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "matches if the dates are different because of different timezones" do
           source_donation = nonprofit.donations.create(comment: "", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.new(2021, 5, 24, 5, 0, 0), supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.local(2021, 5, 24, 5, 0, 0), supporter: supporter, gross_amount: 100)
           source_payment.save!
 
           target_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.new(2021, 5, 25, 1, 0, 0), kind: "Donation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.local(2021, 5, 25, 1, 0, 0), kind: "Donation", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -281,12 +281,12 @@ describe PaymentDupes, skip: true do # this was a one-off
       it "creates a payment dupe status" do
         source_donation = nonprofit.donations.create(comment: "", amount: 100, supporter: supporter)
         source_donation.save!
-        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
         source_payment.save!
 
         target_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
         target_donation.save!
-        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
         target_payment.save!
 
         etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -299,12 +299,12 @@ describe PaymentDupes, skip: true do # this was a one-off
       it "copies the dedication" do
         source_donation = nonprofit.donations.create(dedication: "A dedication", amount: 100, supporter: supporter)
         source_donation.save!
-        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
         source_payment.save!
 
         target_donation = nonprofit.donations.create(dedication: "", amount: 100, supporter: supporter)
         target_donation.save!
-        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
         target_payment.save!
 
         etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -317,12 +317,12 @@ describe PaymentDupes, skip: true do # this was a one-off
       it "copies the comment" do
         source_donation = nonprofit.donations.create(comment: "A comment", amount: 100, supporter: supporter)
         source_donation.save!
-        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
         source_payment.save!
 
         target_donation = nonprofit.donations.create(comment: "", amount: 100, supporter: supporter)
         target_donation.save!
-        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
         target_payment.save!
 
         etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -335,12 +335,12 @@ describe PaymentDupes, skip: true do # this was a one-off
       it "copies the designation" do
         source_donation = nonprofit.donations.create(designation: "A designation", amount: 100, supporter: supporter)
         source_donation.save!
-        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+        source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
         source_payment.save!
 
         target_donation = nonprofit.donations.create(designation: "", amount: 100, supporter: supporter)
         target_donation.save!
-        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
         target_payment.save!
 
         etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -351,13 +351,13 @@ describe PaymentDupes, skip: true do # this was a one-off
       end
 
       it "deletes the related activities" do
-        donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.now.to_s, "amount" => 100})
+        donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.zone.now.to_s, "amount" => 100})
         source_payment = Payment.find(donation[:json]["payment"]["id"])
         activity = Activity.where(attachment_id: source_payment.id, attachment_type: "Payment").first
 
         target_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
         target_donation.save!
-        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
         target_payment.save!
 
         etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -368,13 +368,13 @@ describe PaymentDupes, skip: true do # this was a one-off
       end
 
       it "deletes the offsite_payment" do
-        donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.now.to_s, "amount" => 100})
+        donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.zone.now.to_s, "amount" => 100})
         source_payment = Payment.find(donation[:json]["payment"]["id"])
         offsite = source_payment.offsite_payment
 
         target_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
         target_donation.save!
-        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+        target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
         target_payment.save!
 
         etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -388,12 +388,12 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "copies the designation as a comment" do
           source_donation = nonprofit.donations.create(designation: "A designation that should become a comment", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
 
           target_donation = nonprofit.donations.create(designation: "", amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -408,12 +408,12 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "does not delete the offline donation" do
           source_donation = nonprofit.donations.create(dedication: "Some dedication", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
 
           target_donation = nonprofit.donations.create(dedication: "Some other dedication", amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -428,12 +428,12 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "does not delete the offline donation" do
           source_donation = nonprofit.donations.create(designation: "Some designation", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
 
           target_donation = nonprofit.donations.create(designation: "Some other designation", amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -448,12 +448,12 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "does not delete the offline donation" do
           source_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
 
           target_donation = nonprofit.donations.create(comment: "Some other comment", amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Donation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Donation", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -468,12 +468,12 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "deletes the offsite payment" do
           source_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Ticket", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Ticket", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -486,12 +486,12 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "creates a payment dupe status" do
           source_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Ticket", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Ticket", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -502,13 +502,13 @@ describe PaymentDupes, skip: true do # this was a one-off
         end
 
         it "deletes the related activities" do
-          donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.now.to_s, "amount" => 100})
+          donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.zone.now.to_s, "amount" => 100})
           source_payment = Payment.find(donation[:json]["payment"]["id"])
           activity = Activity.where(attachment_id: source_payment.id, attachment_type: "Payment").first
 
           target_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Ticket", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Ticket", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -519,13 +519,13 @@ describe PaymentDupes, skip: true do # this was a one-off
         end
 
         it "deletes the offsite_payment" do
-          donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.now.to_s, "amount" => 100})
+          donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.zone.now.to_s, "amount" => 100})
           source_payment = Payment.find(donation[:json]["payment"]["id"])
           offsite = source_payment.offsite_payment
 
           target_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "Ticket", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "Ticket", supporter: supporter, gross_amount: 100)
           target_payment.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -545,20 +545,20 @@ describe PaymentDupes, skip: true do # this was a one-off
           source_donation_3 = nonprofit.donations.create(amount: 100, supporter: supporter)
           source_donation_3.save!
 
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
-          source_payment_2 = source_donation_2.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "OffsitePayment", supporter: supporter, gross_amount: 100)
+          source_payment_2 = source_donation_2.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "OffsitePayment", supporter: supporter, gross_amount: 100)
           source_payment_2.save!
-          source_payment_3 = source_donation_3.payments.create(nonprofit: nonprofit, date: Time.now - 5.days, kind: "OffsitePayment", supporter: supporter, gross_amount: 100)
+          source_payment_3 = source_donation_3.payments.create(nonprofit: nonprofit, date: 5.days.ago, kind: "OffsitePayment", supporter: supporter, gross_amount: 100)
           source_payment_3.save!
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
           target_payment.save!
-          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
           target_payment_2.save!
-          target_payment_3 = target_donation.payments.create(nonprofit: nonprofit, date: Time.now - 5.days, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_payment_3 = target_donation.payments.create(nonprofit: nonprofit, date: 5.days.ago, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
           target_payment_3.save!
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
@@ -577,19 +577,19 @@ describe PaymentDupes, skip: true do # this was a one-off
         end
 
         it "deletes the offsite_payment" do
-          donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.now.to_s, "amount" => 100})
+          donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.zone.now.to_s, "amount" => 100})
           source_payment = Payment.find(donation[:json]["payment"]["id"])
           offsite = source_payment.offsite_payment
 
-          donation_2 = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => (Time.now - 2.days).to_s, "amount" => 100})
+          donation_2 = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => 2.days.ago.to_s, "amount" => 100})
           source_payment_2 = Payment.find(donation_2[:json]["payment"]["id"])
           offsite_2 = source_payment_2.offsite_payment
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
-          target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
 
           target_donation_2 = nonprofit.donations.create(amount: 100, supporter: supporter)
-          target_donation_2.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_donation_2.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
           etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
@@ -603,19 +603,19 @@ describe PaymentDupes, skip: true do # this was a one-off
         end
 
         it "deletes the activities" do
-          donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.now.to_s, "amount" => 100})
+          donation = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => Time.zone.now.to_s, "amount" => 100})
           source_payment = Payment.find(donation[:json]["payment"]["id"])
           activity = Activity.where(attachment_id: source_payment.id, attachment_type: "Payment").first
 
-          donation_2 = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => (Time.now - 2.days).to_s, "amount" => 100})
+          donation_2 = InsertDonation.offsite({:supporter_id => supporter.id, :nonprofit_id => nonprofit.id, "supporter_id" => supporter.id, "nonprofit_id" => nonprofit.id, "date" => 2.days.ago.to_s, "amount" => 100})
           source_payment_2 = Payment.find(donation_2[:json]["payment"]["id"])
           activity_2 = Activity.where(attachment_id: source_payment_2.id, attachment_type: "Payment").first
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
-          target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
 
           target_donation_2 = nonprofit.donations.create(amount: 100, supporter: supporter)
-          target_donation_2.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_donation_2.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
           etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
@@ -631,15 +631,15 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "creates a payment dupe status" do
           source_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
-          source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "OffsitePayment", supporter: supporter, gross_amount: 200)
+          source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "OffsitePayment", supporter: supporter, gross_amount: 200)
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
           target_payment.save!
-          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "RecurringDonation", supporter: supporter, gross_amount: 200)
+          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "RecurringDonation", supporter: supporter, gross_amount: 200)
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
           etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
@@ -655,15 +655,15 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "copies the dedication" do
           source_donation = nonprofit.donations.create(dedication: "Some dedication", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
-          source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "OffsitePayment", supporter: supporter, gross_amount: 200)
+          source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "OffsitePayment", supporter: supporter, gross_amount: 200)
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
           target_payment.save!
-          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "RecurringDonation", supporter: supporter, gross_amount: 200)
+          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "RecurringDonation", supporter: supporter, gross_amount: 200)
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
           etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
@@ -679,15 +679,15 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "copies the comment" do
           source_donation = nonprofit.donations.create(comment: "Some comment", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
-          source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "OffsitePayment", supporter: supporter, gross_amount: 200)
+          source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "OffsitePayment", supporter: supporter, gross_amount: 200)
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
           target_payment.save!
-          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "RecurringDonation", supporter: supporter, gross_amount: 200)
+          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "RecurringDonation", supporter: supporter, gross_amount: 200)
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
           etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
@@ -703,15 +703,15 @@ describe PaymentDupes, skip: true do # this was a one-off
         it "copies the designation" do
           source_donation = nonprofit.donations.create(designation: "Some designation", amount: 100, supporter: supporter)
           source_donation.save!
-          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+          source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
           source_payment.save!
-          source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "OffsitePayment", supporter: supporter, gross_amount: 200)
+          source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "OffsitePayment", supporter: supporter, gross_amount: 200)
 
           target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
           target_donation.save!
-          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+          target_payment = target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
           target_payment.save!
-          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: Time.now - 2.days, kind: "RecurringDonation", supporter: supporter, gross_amount: 200)
+          target_payment_2 = target_donation.payments.create(nonprofit: nonprofit, date: 2.days.ago, kind: "RecurringDonation", supporter: supporter, gross_amount: 200)
 
           etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
           etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!
@@ -728,13 +728,13 @@ describe PaymentDupes, skip: true do # this was a one-off
           it "doesnt delete the payments" do
             source_donation = nonprofit.donations.create(dedication: "Some dedication", amount: 100, supporter: supporter)
             source_donation.save!
-            source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.now, supporter: supporter, gross_amount: 100)
+            source_payment = source_donation.payments.create(nonprofit: nonprofit, kind: "OffsitePayment", date: Time.zone.now, supporter: supporter, gross_amount: 100)
             source_payment.save!
-            source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "OffsitePayment", supporter: supporter, gross_amount: 100)
+            source_payment_2 = source_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "OffsitePayment", supporter: supporter, gross_amount: 100)
 
             target_donation = nonprofit.donations.create(amount: 100, supporter: supporter)
             target_donation.save!
-            target_donation.payments.create(nonprofit: nonprofit, date: Time.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
+            target_donation.payments.create(nonprofit: nonprofit, date: Time.zone.now, kind: "RecurringDonation", supporter: supporter, gross_amount: 100)
 
             etap_import.e_tap_import_journal_entries.create(row: {"Account Number" => "123"})
             etap_import.e_tap_import_journal_entries.first.journal_entries_to_items.create(item: source_payment).save!

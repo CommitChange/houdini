@@ -1,7 +1,7 @@
 module Migrate
   class MigrateCoverFees
     def self.for_nonprofits
-      MiscellaneousNpInfo.all.each do |mni|
+      MiscellaneousNpInfo.all.find_each do |mni|
         mni.fee_coverage_option_config = if mni.hide_cover_fees
           "none"
         end
@@ -10,7 +10,7 @@ module Migrate
     end
 
     def self.for_campaigns
-      MiscCampaignInfo.all.each do |mci|
+      MiscCampaignInfo.all.find_each do |mci|
         mci.fee_coverage_option_config = if mci.campaign.nonprofit.hide_cover_fees?
           nil
         elsif mci.hide_cover_fees_option?

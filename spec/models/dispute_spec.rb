@@ -46,10 +46,10 @@ RSpec.describe Dispute, type: :model do
       include_context :dispute_created_context
 
       let(:obj) { StripeDispute.create(object: json) }
-      let(:activity) { dispute.activities.build("DisputeCreated", Time.at(event_json.created)) }
+      let(:activity) { dispute.activities.build("DisputeCreated", Time.zone.at(event_json.created)) }
 
       specify { expect(activity.kind).to eq "DisputeCreated" }
-      specify { expect(activity.date).to eq Time.at(event_json.created) }
+      specify { expect(activity.date).to eq Time.zone.at(event_json.created) }
     end
 
     describe "dispute.won" do
@@ -57,10 +57,10 @@ RSpec.describe Dispute, type: :model do
       include_context :dispute_won_context
 
       let(:obj) { StripeDispute.create(object: json) }
-      let(:activity) { dispute.activities.build("DisputeWon", Time.at(event_json.created)) }
+      let(:activity) { dispute.activities.build("DisputeWon", Time.zone.at(event_json.created)) }
 
       specify { expect(activity.kind).to eq "DisputeWon" }
-      specify { expect(activity.date).to eq Time.at(event_json.created) }
+      specify { expect(activity.date).to eq Time.zone.at(event_json.created) }
     end
 
     describe "dispute.lost" do
@@ -68,11 +68,11 @@ RSpec.describe Dispute, type: :model do
       include_context :dispute_lost_context
 
       let(:obj) { StripeDispute.create(object: json) }
-      let(:activity) { obj.dispute.activities.build("DisputeLost", Time.at(event_json.created)) }
+      let(:activity) { obj.dispute.activities.build("DisputeLost", Time.zone.at(event_json.created)) }
 
       specify { expect(activity.kind).to eq "DisputeLost" }
       specify { expect(activity_json["gross_amount"]).to eq dispute.gross_amount }
-      specify { expect(activity.date).to eq Time.at(event_json.created) }
+      specify { expect(activity.date).to eq Time.zone.at(event_json.created) }
     end
   end
 end

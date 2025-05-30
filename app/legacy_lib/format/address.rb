@@ -16,7 +16,7 @@ module Format
 
     def self.with_supporter(s)
       return "" if s.nil?
-      [[s.address, s.city, s.state_code].reject(&:blank?).join(", "), s.zip_code].reject(&:blank?).join(" ")
+      [[s.address, s.city, s.state_code].compact_blank.join(", "), s.zip_code].compact_blank.join(" ")
     end
   end
 end

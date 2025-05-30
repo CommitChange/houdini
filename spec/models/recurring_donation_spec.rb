@@ -68,18 +68,18 @@ RSpec.describe RecurringDonation, type: :model do
       supporter = create(:supporter_base, :with_1_active_mailing_list)
       nonprofit = supporter.nonprofit
       donation = create(:donation_base, nonprofit: nonprofit, supporter_id: supporter.id, amount: 999)
-      create(:recurring_donation_base, :nonprofit => nonprofit, :supporter_id => supporter.id, :donation => donation, :active => false, "cancelled_at" => Time.new(2020, 5, 4),
+      create(:recurring_donation_base, :nonprofit => nonprofit, :supporter_id => supporter.id, :donation => donation, :active => false, "cancelled_at" => Time.zone.local(2020, 5, 4),
         "cancelled_by" => "penelope@rebecca.schultz")
     end
 
     it "cancels an rd properly" do
       expect(RecurringDonationCreatedJob).to_not have_been_enqueued
       recurring_donation = uncancelled_recurring_donation
-      Timecop.freeze Time.new(2020, 5, 4) do
+      Timecop.freeze Time.zone.local(2020, 5, 4) do
         recurring_donation.cancel!("penelope@rebecca.schultz")
         expect(recurring_donation).to have_attributes(
           "active" => false,
-          "cancelled_at" => Time.new(2020, 5, 4),
+          "cancelled_at" => Time.zone.local(2020, 5, 4),
           "cancelled_by" => "penelope@rebecca.schultz"
         )
 
@@ -94,12 +94,12 @@ RSpec.describe RecurringDonation, type: :model do
       expect(RecurringDonationCreatedJob).to_not have_been_enqueued
       expect(RecurringDonationCancelledJob).to_not have_been_enqueued
       recurring_donation = cancelled_recurring_donation
-      Timecop.freeze Time.new(2020, 5, 4) do
+      Timecop.freeze Time.zone.local(2020, 5, 4) do
         expect(RecurringDonationCancelledJob).to_not have_been_enqueued
         recurring_donation.cancel!("eric@david.schultz")
         expect(recurring_donation).to have_attributes(
           "active" => false,
-          "cancelled_at" => Time.new(2020, 5, 4),
+          "cancelled_at" => Time.zone.local(2020, 5, 4),
           "cancelled_by" => "penelope@rebecca.schultz"
         )
 

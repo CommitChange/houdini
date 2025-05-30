@@ -195,7 +195,7 @@ describe UpdateRecurringDonations do
       expectations = {
 
         donation: orig_donation.merge(card_id: card.id, fts: ""),
-        recurring_donation: orig_rd.merge(n_failures: 0, start_date: Time.now.to_date)
+        recurring_donation: orig_rd.merge(n_failures: 0, start_date: Time.zone.now.to_date)
       }
 
       expectations[:result] = expectations[:recurring_donation].merge(nonprofit_name: nonprofit.name, card_name: card.name)
@@ -217,7 +217,7 @@ describe UpdateRecurringDonations do
   end
 
   def error_when_rd_cancelled
-    recurring_donation.cancelled_at = Time.now
+    recurring_donation.cancelled_at = Time.zone.now
     recurring_donation.save!
 
     expect { yield() }.to raise_error { |e|

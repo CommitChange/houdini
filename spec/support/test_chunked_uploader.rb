@@ -21,13 +21,12 @@ class TestChunkedUploader
   end
 
   def self.upload(path, chunk_enum, options = {})
+    raise TEST_ERROR_MESSAGE if @@raise_error
+
     @@options = options
     io = StringIO.new("", "w")
     chunk_enum.each do |chunk|
       io.write(chunk)
-    end
-    if @@raise_error
-      raise TEST_ERROR_MESSAGE
     end
     @@output = io.string
     "http://fake.url/" + path

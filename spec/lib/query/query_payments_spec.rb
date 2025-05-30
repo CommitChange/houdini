@@ -146,14 +146,14 @@ describe QueryPayments do
 
     describe "general donations" do
       let(:offsite_donation) {
-        generate_offsite_donation(amount: charge_amount_small, date: (Time.now - 1.day).to_s)
+        generate_offsite_donation(amount: charge_amount_small, date: 1.day.ago.to_s)
       }
 
       let(:donation_result_yesterday) {
         generate_donation(amount: charge_amount_small,
 
           token: source_tokens[0].token,
-          date: (Time.now - 1.day).to_s)
+          date: 1.day.ago.to_s)
       }
 
       let(:donation_result_today) {
@@ -161,7 +161,7 @@ describe QueryPayments do
 
           token: source_tokens[1].token,
 
-          date: Time.now.to_s,
+          date: Time.zone.now.to_s,
           fee_covered: true)
       }
 
@@ -169,7 +169,7 @@ describe QueryPayments do
         generate_donation(amount: charge_amount_large,
 
           token: source_tokens[2].token,
-          date: (Time.now + 1.day).to_s,
+          date: 1.day.from_now.to_s,
           fee_covered: false)
       }
       let(:charge_result_yesterday) {
@@ -223,12 +223,12 @@ describe QueryPayments do
         it "when the nonprofit does not have a timezone it considers UTC as default" do
           donation_result_tomorrow
           result = QueryPayments.full_search(nonprofit.id, {})
-          expect(result[:data].first["date"]).to eq Time.now.to_s
+          expect(result[:data].first["date"]).to eq Time.zone.now.to_s
         end
 
         context "when the nonprofit has a timezone" do
           before do
-            nonprofit.update_attributes(timezone: "America/New_York")
+            nonprofit.update(timezone: "America/New_York")
             allow(QuerySourceToken)
               .to receive(:get_and_increment_source_token)
               .and_return(source_tokens[0])
@@ -237,18 +237,18 @@ describe QueryPayments do
           it "shows the corresponding time" do
             donation_result_tomorrow
             result = QueryPayments.full_search(nonprofit.id, {})
-            expect(result[:data].first["date"]).to eq (Time.now - 4.hours).to_s
+            expect(result[:data].first["date"]).to eq 4.hours.ago.to_s
           end
 
           it "finds the payments on dates after the specified dates" do
             donation_result_tomorrow
-            result = QueryPayments.full_search(nonprofit.id, {after_date: Time.now - 4.hours})
+            result = QueryPayments.full_search(nonprofit.id, {after_date: 4.hours.ago})
             expect(result[:data].count).to eq 5
           end
 
           it "finds the payments on dates before the specified dates" do
             donation_result_tomorrow
-            result = QueryPayments.full_search(nonprofit.id, {before_date: Time.now})
+            result = QueryPayments.full_search(nonprofit.id, {before_date: Time.zone.now})
             expect(result[:data].count).to eq 5
           end
 
@@ -259,7 +259,7 @@ describe QueryPayments do
             generate_donation(
               amount: charge_amount_large,
               token: source_tokens[2].token,
-              date: Time.now.to_s
+              date: Time.zone.now.to_s
             )
             result_for_2020 = QueryPayments.full_search(nonprofit.id, {year: "2020"})
             result_for_2019 = QueryPayments.full_search(nonprofit.id, {year: "2019"})
@@ -276,7 +276,7 @@ describe QueryPayments do
             nonprofit_id: nonprofit.id,
             supporter_id: supporter.id,
             token: source_tokens[4].token,
-            date: (Time.now - 1.day).to_s,
+            date: 1.day.ago.to_s,
             comment: "donation comment",
             dedication: "dedication",
             designation: "designation"
@@ -309,7 +309,7 @@ describe QueryPayments do
             nonprofit_id: nonprofit.id,
             supporter_id: supporter.id,
             token: source_tokens[4].token,
-            date: (Time.now - 1.day).to_s,
+            date: 1.day.ago.to_s,
             comment: "donation comment",
             dedication: "dedication",
             designation: "designation"
@@ -333,7 +333,7 @@ describe QueryPayments do
             nonprofit_id: nonprofit.id,
             supporter_id: supporter.id,
             token: source_tokens[4].token,
-            date: (Time.now - 1.day).to_s,
+            date: 1.day.ago.to_s,
             comment: "2020",
             dedication: "dedication",
             designation: "designation"
@@ -484,7 +484,7 @@ describe QueryPayments do
               nonprofit_id: nonprofit.id,
               supporter_id: supporter.id,
               token: source_tokens[4].token,
-              date: (Time.now - 1.day).to_s,
+              date: 1.day.ago.to_s,
               comment: "donation comment",
               designation: "designation",
               anonymous: true
@@ -533,7 +533,7 @@ describe QueryPayments do
               nonprofit_id: nonprofit.id,
               supporter_id: supporter.id,
               token: source_tokens[4].token,
-              date: (Time.now - 1.day).to_s,
+              date: 1.day.ago.to_s,
               comment: "donation comment",
               designation: "designation",
               anonymous: true
@@ -651,7 +651,7 @@ describe QueryPayments do
         generate_donation(amount: charge_amount_small,
           event_id: event.id,
           token: source_tokens[0].token,
-          date: (Time.now - 1.day).to_s)
+          date: 1.day.ago.to_s)
       }
 
       let(:donation_result_today) {
@@ -659,14 +659,14 @@ describe QueryPayments do
           event_id: event.id,
           token: source_tokens[1].token,
 
-          date: Time.now.to_s)
+          date: Time.zone.now.to_s)
       }
 
       let(:donation_result_tomorrow) {
         generate_donation(amount: charge_amount_large,
 
           token: source_tokens[2].token,
-          date: (Time.now - 1.day).to_s)
+          date: 1.day.ago.to_s)
       }
 
       let(:charge_result_yesterday) {
@@ -716,7 +716,7 @@ describe QueryPayments do
         generate_donation(amount: charge_amount_small,
           campaign_id: campaign.id,
           token: source_tokens[0].token,
-          date: (Time.now - 1.day).to_s)
+          date: 1.day.ago.to_s)
       }
 
       let(:charge_result_yesterday) {
@@ -728,7 +728,7 @@ describe QueryPayments do
           campaign_id: campaign.id,
           token: source_tokens[1].token,
 
-          date: Time.now.to_s)
+          date: Time.zone.now.to_s)
       }
 
       let(:charge_result_today) {
@@ -739,7 +739,7 @@ describe QueryPayments do
         generate_donation(amount: charge_amount_large,
 
           token: source_tokens[2].token,
-          date: (Time.now - 1.day).to_s)
+          date: 1.day.ago.to_s)
       }
 
       let(:charge_result_tomorrow) {

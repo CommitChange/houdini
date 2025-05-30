@@ -4,7 +4,7 @@ RSpec.describe ObjectEvent, type: :model do
   it_behaves_like "an houidable entity", :evt
 
   around(:each) { |ex|
-    Timecop.freeze(Time.new(2020, 5, 4)) do
+    Timecop.freeze(Time.zone.local(2020, 5, 4)) do
       ex.run
     end
   }
@@ -25,7 +25,7 @@ RSpec.describe ObjectEvent, type: :model do
         houid: match_houid("evt"),
         event_type: "simple_object.created",
         event_entity: simple_object_with_parent,
-        created: Time.new(2020, 5, 4)
+        created: Time.zone.local(2020, 5, 4)
       )
     }
 

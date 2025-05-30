@@ -6,13 +6,13 @@ module ExportRecurringDonations
       npo_id: {required: true, is_integer: true},
       params: {required: true, is_hash: true},
       user_ids: {required: true, is_array: true})
-    npo = Nonprofit.where("id = ?", npo_id).first
+    npo = Nonprofit.where(id: npo_id).first
     unless npo
       raise ParamValidation::ValidationError.new("Nonprofit #{npo_id} doesn't exist!", key: :npo_id)
     end
 
     user_ids.each do |user_id|
-      user = User.where("id = ?", user_id).first
+      user = User.where(id: user_id).first
       unless user
         raise ParamValidation::ValidationError.new("User #{user_id} doesn't exist!", key: :user_id)
       end
@@ -44,18 +44,18 @@ module ExportRecurringDonations
     unless Nonprofit.exists?(npo_id)
       raise ParamValidation::ValidationError.new("Nonprofit #{npo_id} doesn't exist!", key: :npo_id)
     end
-    user = User.where("id = ?", user_id).first
+    user = User.where(id: user_id).first
     unless user
       raise ParamValidation::ValidationError.new("User #{user_id} doesn't exist!", key: :user_id)
     end
 
-    file_date = Time.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
+    file_date = Time.zone.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
     filename = "tmp/csv-exports/recurring_donations-#{export.id}-#{file_date}.csv"
 
     url = CHUNKED_UPLOADER.upload(filename, QueryRecurringDonations.for_export_enumerable(npo_id, params, 15000).map { |i| i.to_csv }, content_type: "text/csv", content_disposition: "attachment")
     export.url = url
     export.status = :completed
-    export.ended = Time.now
+    export.ended = Time.zone.now
     export.save!
 
     notify_about_export_completion(export, export_type)
@@ -63,7 +63,7 @@ module ExportRecurringDonations
     if export
       export.status = :failed
       export.exception = e.to_s
-      export.ended = Time.now
+      export.ended = Time.zone.now
       export.save!
       if user
         notify_about_export_failure(export, export_type)
@@ -75,7 +75,7 @@ module ExportRecurringDonations
 
   def self.run_export_for_active_recurring_donations_to_csv(nonprofit_s3_key, filename, export)
     if filename.blank?
-      file_date = Time.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
+      file_date = Time.zone.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
       filename = "tmp/json-exports/recurring_donations-#{export.id}-#{file_date}.csv"
     end
 
@@ -90,7 +90,7 @@ module ExportRecurringDonations
 
   def self.run_export_for_started_recurring_donations_to_csv(nonprofit_s3_key, filename, export)
     if filename.blank?
-      file_date = Time.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
+      file_date = Time.zone.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
       filename = "tmp/json-exports/recurring_donations-#{export.id}-#{file_date}.csv"
     end
 
@@ -112,7 +112,7 @@ module ExportRecurringDonations
     end
   end
 
-  private
+  private_class_method
 
   def self.notify_about_export_completion(export, export_type)
     case export_type

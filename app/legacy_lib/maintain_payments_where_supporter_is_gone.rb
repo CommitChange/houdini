@@ -21,7 +21,7 @@ module MaintainPaymentsWhereSupporterIsGone
   def self.nonprofit_by_kind(urgency)
     nonprofit_by_kind = urgency.map { |k, v| [k, v.group_by { |i| i.kind }.sort_by { |i, x| x.count }.reverse.map { |i, x| [i, x.count] }] }
     nonprofit_by_kind.each { |id, group|
-      puts id
+      Rails.logger.debug id
       group.each { |kind, num| puts "  #{kind}: #{num}" }
     }
     nonprofit_by_kind
@@ -31,15 +31,15 @@ module MaintainPaymentsWhereSupporterIsGone
     Qx.transaction do
       manual_payments = []
 
-      recurring_donations_from_stripe = sorted_by_kind[1][1].select { |i| i.charge && i.charge.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
-      donations_from_stripe = sorted_by_kind[2][1].select { |i| i.charge && i.charge.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
-      ticket_from_stripe = sorted_by_kind[3][1].select { |i| i.charge && i.charge.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
+      recurring_donations_from_stripe = sorted_by_kind[1][1].select { |i| i.charge&.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
+      donations_from_stripe = sorted_by_kind[2][1].select { |i| i.charge&.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
+      ticket_from_stripe = sorted_by_kind[3][1].select { |i| i.charge&.stripe_charge_id && !i.charge.stripe_charge_id.start_with?("legacy") }
 
       payments = recurring_donations_from_stripe.concat(donations_from_stripe).concat(ticket_from_stripe)
 
       payments.each do |i|
         if Supporter.exists?(i.supporter_id) || i.nonprofit_id == 4500
-          puts "#{i.supporter_id} was already saved"
+          Rails.logger.debug { "#{i.supporter_id} was already saved" }
         else
           ch = Stripe::Charge.retrieve(i.charge.stripe_charge_id, {api_key: api_key})
           billing_name = ch.billing_details["name"]
@@ -49,17 +49,17 @@ module MaintainPaymentsWhereSupporterIsGone
           # where we save the Supporter
           s = Supporter.create(id: i.supporter_id, name: billing_name, email: email, created_at: i.created_at, nonprofit_id: i.nonprofit_id)
           s.save!
-          puts "#{i.supporter_id} is saved"
+          Rails.logger.debug { "#{i.supporter_id} is saved" }
         end
       rescue => e
-        puts e
+        Rails.logger.debug e
 
-        puts "we failed on #{i.id}"
+        Rails.logger.debug { "we failed on #{i.id}" }
         manual_payments.push(i)
       end
 
       manual_refunds = [] # we have to manually track down these refunds on the connected accounts
-      refunds = sorted_by_kind[4][1].select { |i| i.refund && i.refund.stripe_refund_id }
+      refunds = sorted_by_kind[4][1].select { |i| i.refund&.stripe_refund_id }
 
       refunds.each do |i|
         unless Supporter.exists?(i.supporter_id)
@@ -75,7 +75,7 @@ module MaintainPaymentsWhereSupporterIsGone
         manual_refunds.push(i)
       end
 
-      disputes = sorted_by_kind[5][1].select { |i| i.dispute && i.dispute.stripe_dispute_id }
+      disputes = sorted_by_kind[5][1].select { |i| i.dispute&.stripe_dispute_id }
       manual_disputes = [] # ditto
 
       disputes.each do |i|

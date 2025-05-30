@@ -24,7 +24,7 @@ module DeleteCustomFieldJoins
   def self.copy_and_delete(ids_to_delete)
     if ids_to_delete.any?
       Qx.insert_into(:custom_field_joins_backup, @columns).select(@columns).from(:custom_field_joins).where("id IN ($ids)", ids: ids_to_delete).execute
-      CustomFieldJoin.where("id IN (?)", ids_to_delete).delete_all
+      CustomFieldJoin.where(id: ids_to_delete).delete_all
     end
   end
 

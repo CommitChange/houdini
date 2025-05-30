@@ -11,6 +11,4 @@ class Import < ApplicationRecord
   has_many :supporters
   belongs_to :nonprofit
   belongs_to :user
-
-  validates :user, presence: true
 end

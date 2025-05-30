@@ -1,4 +1,5 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
+
 class User < ApplicationRecord
   include Model::CalculatedNames
 
@@ -40,14 +41,14 @@ class User < ApplicationRecord
   validates :email,
     presence: true,
     uniqueness: {case_sensitive: false},
-    format: {with: Email::Regex}
+    format: {with: Email::REGEX}
 
   has_many :donations, through: :profile
   has_many :roles, dependent: :destroy
   has_one :profile, dependent: :destroy
   has_many :imports
   has_many :email_settings
-  has_and_belongs_to_many :periodic_reports
+  has_and_belongs_to_many :periodic_reports # rubocop:disable Rails/HasAndBelongsToMany
 
   accepts_nested_attributes_for :profile
 
@@ -78,7 +79,7 @@ class User < ApplicationRecord
   # https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview
   def self.new_with_session(params, session)
     super.tap do |user|
-      if data = session["devise.facebook_data"] && session["devise.facebook_data"]["extra"]["raw_info"]
+      if (data = session["devise.facebook_data"]) && session["devise.facebook_data"]["extra"]["raw_info"]
         user.email = data["email"] if user.email.blank?
       end
     end
@@ -111,7 +112,7 @@ class User < ApplicationRecord
   def make_confirmation_token!
     raw, db = Devise.token_generator.generate(User, :confirmation_token)
     self.confirmation_token = db
-    self.confirmation_sent_at = Time.now
+    self.confirmation_sent_at = Time.zone.now
     save!
     raw
   end
@@ -125,7 +126,7 @@ class User < ApplicationRecord
   def self.send_reset_password_instructions(attributes = {})
     recoverable = find_or_initialize_with_errors(reset_password_keys, attributes, :not_found)
     if recoverable.persisted?
-      if recoverable.reset_password_sent_at.nil? || Time.now > recoverable.reset_password_sent_at + 5.minutes
+      if recoverable.reset_password_sent_at.nil? || Time.zone.now > recoverable.reset_password_sent_at + 5.minutes
         recoverable.send_reset_password_instructions
         return recoverable
       else

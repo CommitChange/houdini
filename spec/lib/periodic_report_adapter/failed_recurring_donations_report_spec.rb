@@ -17,8 +17,8 @@ describe PeriodicReportAdapter::FailedRecurringDonationsReport do
     {
       failed: true,
       include_last_failed_charge: true,
-      from_date: Time.new(2021, 9, 1),
-      before_date: Time.new(2021, 10, 1)
+      from_date: Time.zone.local(2021, 9, 1),
+      before_date: Time.zone.local(2021, 10, 1)
     }
   end
 

@@ -8,7 +8,6 @@ class ExportFormat < ApplicationRecord
   belongs_to :nonprofit
 
   validates :name, presence: true
-  validates :nonprofit_id, presence: true
 
   validates_with PostgresqlDateFormatValidator, {attribute_name: :date_format}
 

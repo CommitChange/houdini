@@ -81,7 +81,7 @@ module QueryRecurringDonations
     end
 
     if failed_or_active_clauses.any?
-      expr = expr.where("#{failed_or_active_clauses.join(" OR ")}")
+      expr = expr.where(failed_or_active_clauses.join(" OR ").to_s)
     end
 
     if query.key?(:end_date_gt_or_equal)
@@ -210,14 +210,14 @@ module QueryRecurringDonations
   end
 
   def self.recurring_donations_without_cards
-    RecurringDonation.active.includes(:card).includes(:charges).includes(:donation).includes(:nonprofit).includes(:supporter).where("cards.id IS NULL").order("recurring_donations.created_at DESC")
+    RecurringDonation.active.includes(:card).includes(:charges).includes(:donation).includes(:nonprofit).includes(:supporter).where(cards: {id: nil}).order("recurring_donations.created_at DESC")
   end
 
   # @param [Supporter] supporter
   def self.find_recurring_donation_with_a_card(supporter)
-    supporter.recurring_donations.select { |rd|
+    supporter.recurring_donations.find { |rd|
       !rd.donation.nil? && !rd.donation.card.nil?
-    }.first
+    }
   end
 
   # Check if a single recdon is due -- used in PayRecurringDonation.with_stripe
@@ -348,7 +348,7 @@ module QueryRecurringDonations
   end
 
   def self.export_for_transfer(nonprofit_id)
-    items = RecurringDonation.where("nonprofit_id = ?", nonprofit_id).active.includes("supporter").includes("card").to_a
+    items = RecurringDonation.where(nonprofit_id: nonprofit_id).active.includes("supporter").includes("card").to_a
     output = items.map { |i|
       {supporter: i.supporter.id,
        supporter_name: i.supporter.name,

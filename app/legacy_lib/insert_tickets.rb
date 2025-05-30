@@ -24,7 +24,7 @@ module InsertTickets
       event_id: {required: true, is_reference: true},
       event_discount_id: {is_reference: true},
       kind: {included_in: ["free", "charge", "offsite"]},
-      token: {format: UUID::Regex},
+      token: {format: UUID::REGEX},
       offsite_payment: {is_hash: true},
       amount: {required: true, is_integer: true}
     })
@@ -154,7 +154,7 @@ module InsertTickets
     InsertActivities.for_tickets(result["tickets"].map { |t| t.id })
 
     ticket_ids = result["tickets"].map { |t| t.id }
-    charge_id = result["charge"] ? result["charge"].id : nil
+    charge_id = result["charge"]&.id
 
     unless skip_notifications
       JobQueue.queue(JobTypes::TicketMailerReceiptAdminJob, ticket_ids)

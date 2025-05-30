@@ -14,7 +14,7 @@ module UpdateRecurringDonations
     ParamValidation.new({rd: rd, token: token},
       {
         rd: {is_hash: true, required: true},
-        token: {format: UUID::Regex, required: true}
+        token: {format: UUID::REGEX, required: true}
       })
 
     ParamValidation.new(rd,
@@ -46,7 +46,7 @@ module UpdateRecurringDonations
 
   # Update the paydate for a given recurring donation (provide rd['id'])
   def self.update_paydate(rd, paydate)
-    return ValidationError.new(["Invalid paydate"]) unless (1..28).include?(paydate.to_i)
+    return ValidationError.new(["Invalid paydate"]) unless (1..28).cover?(paydate.to_i)
     Psql.execute(Qexpr.new.update(:recurring_donations, paydate: paydate).where("id=$id", id: rd["id"]))
     rd["paydate"] = paydate
     rd
@@ -60,7 +60,7 @@ module UpdateRecurringDonations
     ParamValidation.new({amount: amount, rd: rd, token: token},
       {amount: {is_integer: true, min: 50, required: true},
        rd: {required: true, is_a: RecurringDonation},
-       token: {required: true, format: UUID::Regex}})
+       token: {required: true, format: UUID::REGEX}})
     source_token = QuerySourceToken.get_and_increment_source_token(token, nil)
     tokenizable = source_token.tokenizable
 
@@ -87,11 +87,11 @@ module UpdateRecurringDonations
   end
 
   def self.update_from_start_dates
-    RecurringDonation.inactive.where("start_date >= ?", Date.today).update_all(active: true)
+    RecurringDonation.inactive.where("start_date >= ?", Time.zone.today).update_all(active: true)
   end
 
   def self.update_from_end_dates
-    RecurringDonation.active.where("end_date < ?", Date.today).update_all(active: false)
+    RecurringDonation.active.where("end_date < ?", Time.zone.today).update_all(active: false)
   end
 
   # Cancel a recurring donation (set active='f') and record the supporter/user email who did it
@@ -120,7 +120,7 @@ module UpdateRecurringDonations
 
     params = set_defaults(params)
     if params[:donation]
-      rd.donation.update_attributes(params[:donation])
+      rd.donation.update(params[:donation])
       return rd.donation unless rd.donation.valid?
       params = params.except(:donation)
     end
@@ -131,7 +131,7 @@ module UpdateRecurringDonations
     misc.save!
 
     params = params.except(:fee_covered)
-    rd.update_attributes(params)
+    rd.update(params)
     rd
   end
 

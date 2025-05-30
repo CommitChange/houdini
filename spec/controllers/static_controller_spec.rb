@@ -2,45 +2,39 @@
 require "rails_helper"
 
 RSpec.describe StaticController, type: :controller do
-  describe ".ccs" do
-    around(:each) do |example|
-      example.run
-      Settings.reload!
-    end
+  describe "#ccs" do
+    describe "#ccs_method" do
+      context "when local_tar_gz" do
+        before do
+          Settings.add_source!({ccs: {ccs_method: "local_tar_gz"}})
+          Settings.reload!
+        end
 
-    describe "local_tar_gz" do
-      before(:each) do
-        Settings.merge!(
-          {
-            ccs: {
-              ccs_method: "local_tar_gz"
-            }
-          }
-        )
+        it "fails on git archive" do
+          expect(Kernel).to receive(:system).and_return(false)
+          get("ccs")
+          expect(response.status).to eq 500
+        end
       end
 
-      it "fails on git archive" do
-        expect(Kernel).to receive(:system).and_return(false)
-        get("ccs")
-        expect(response.status).to eq 500
-      end
-    end
-
-    it "setup github" do
-      Settings.merge!(
-        {
-          ccs: {
+      context "when github" do
+        before do
+          Settings.add_source!({ccs: {
             ccs_method: "github",
             options: {
               account: "account",
               repo: "repo"
             }
-          }
-        }
-      )
-      expect(File).to receive(:read).with("#{Rails.root.join("CCS_HASH")}").and_return("hash\n")
-      get("ccs")
-      expect(response).to redirect_to "https://github.com/account/repo/tree/hash"
+          }})
+          Settings.reload!
+        end
+
+        it "setup github" do
+          expect(File).to receive(:read).with(Rails.root.join("CCS_HASH").to_s).and_return("hash\n")
+          get("ccs")
+          expect(response).to redirect_to "https://github.com/account/repo/tree/hash"
+        end
+      end
     end
   end
 end

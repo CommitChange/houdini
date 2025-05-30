@@ -15,7 +15,7 @@ RSpec.describe StripeEvent, type: :model do
       include_context :dispute_created_specs
       let(:obj) {
         StripeEvent.process_dispute(event_json)
-        StripeDispute.where("stripe_dispute_id = ?", json["id"]).first
+        StripeDispute.where(stripe_dispute_id: json["id"]).first
       }
     end
 
@@ -24,7 +24,7 @@ RSpec.describe StripeEvent, type: :model do
 
       let(:obj) do
         StripeEvent.process_dispute(event_json)
-        StripeDispute.where("stripe_dispute_id = ?", json["id"]).first
+        StripeDispute.where(stripe_dispute_id: json["id"]).first
       end
     end
 
@@ -34,7 +34,7 @@ RSpec.describe StripeEvent, type: :model do
         event_json_funds_withdrawn
         StripeEvent.process_dispute(event_json_created)
         StripeEvent.process_dispute(event_json_funds_withdrawn)
-        StripeDispute.where("stripe_dispute_id = ?", json_funds_withdrawn["id"]).first
+        StripeDispute.where(stripe_dispute_id: json_funds_withdrawn["id"]).first
       end
     end
 
@@ -51,7 +51,7 @@ RSpec.describe StripeEvent, type: :model do
       include_context :dispute_funds_reinstated_specs
       let(:obj) do
         StripeEvent.process_dispute(event_json)
-        StripeDispute.where("stripe_dispute_id = ?", json["id"]).first
+        StripeDispute.where(stripe_dispute_id: json["id"]).first
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe StripeEvent, type: :model do
 
       let(:obj) do
         StripeEvent.process_dispute(event_json)
-        StripeDispute.where("stripe_dispute_id = ?", json["id"]).first
+        StripeDispute.where(stripe_dispute_id: json["id"]).first
       end
     end
 
@@ -71,7 +71,7 @@ RSpec.describe StripeEvent, type: :model do
         StripeEvent.process_dispute(event_json_created)
         StripeEvent.process_dispute(event_json_funds_withdrawn)
         StripeEvent.process_dispute(event_json_lost)
-        StripeDispute.where("stripe_dispute_id = ?", json_lost["id"]).first
+        StripeDispute.where(stripe_dispute_id: json_lost["id"]).first
       end
     end
 
@@ -82,7 +82,7 @@ RSpec.describe StripeEvent, type: :model do
         StripeEvent.process_dispute(event_json_created)
         StripeEvent.process_dispute(event_json_funds_withdrawn)
         StripeEvent.process_dispute(event_json_lost)
-        StripeDispute.where("stripe_dispute_id = ?", json_lost["id"]).first
+        StripeDispute.where(stripe_dispute_id: json_lost["id"]).first
       end
     end
 
@@ -93,7 +93,7 @@ RSpec.describe StripeEvent, type: :model do
         StripeEvent.process_dispute(event_json_lost)
         StripeEvent.process_dispute(event_json_created)
         StripeEvent.process_dispute(event_json_funds_withdrawn)
-        StripeDispute.where("stripe_dispute_id = ?", json_lost["id"]).first
+        StripeDispute.where(stripe_dispute_id: json_lost["id"]).first
       end
     end
 
@@ -101,7 +101,7 @@ RSpec.describe StripeEvent, type: :model do
       include_context :dispute_won_specs
       let(:obj) do
         StripeEvent.process_dispute(event_json)
-        StripeDispute.where("stripe_dispute_id = ?", json["id"]).first
+        StripeDispute.where(stripe_dispute_id: json["id"]).first
       end
     end
 
@@ -129,7 +129,7 @@ RSpec.describe StripeEvent, type: :model do
       include_context :legacy_dispute_specs
       let(:obj) do
         StripeEvent.process_dispute(event_json)
-        StripeDispute.where("stripe_dispute_id = ?", json["id"]).first
+        StripeDispute.where(stripe_dispute_id: json["id"]).first
       end
     end
   end

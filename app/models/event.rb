@@ -40,9 +40,11 @@ class Event < ApplicationRecord
   validates :address, presence: true
   validates :city, presence: true
   validates :state_code, presence: true
-  validates :slug, presence: true, uniqueness: {scope: :nonprofit_id, message: "You already have an event with that URL"}
-  validates :nonprofit_id, presence: true
-  validates :profile_id, presence: true
+
+  # rubocop:disable Rails/UniqueValidationWithoutIndex
+  validates :slug, presence: true,
+    uniqueness: {scope: :nonprofit_id, message: "You already have an event with that URL"}
+  # rubocop:enable Rails/UniqueValidationWithoutIndex
 
   belongs_to :nonprofit
   belongs_to :profile
@@ -69,11 +71,9 @@ class Event < ApplicationRecord
   scope :not_deleted, -> { where(deleted: [nil, false]) }
   scope :deleted, -> { where(deleted: true) }
   scope :published, -> { where(published: true) }
-  scope :upcoming, -> { where("start_datetime >= ?", Date.today).published }
-  scope :past, -> { where("end_datetime < ?", Date.today).published }
+  scope :upcoming, -> { where("start_datetime >= ?", Time.zone.today).published }
+  scope :past, -> { where("end_datetime < ?", Time.zone.today).published }
   scope :unpublished, -> { where.not(published: true) }
-
-  validates :slug, uniqueness: {scope: :nonprofit_id, message: "You already have a campaign with that name."}
 
   before_validation(on: :create) do
     unless slug

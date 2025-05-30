@@ -9,7 +9,7 @@ module InsertDonation
     data = data.to_deprecated_h.with_indifferent_access
 
     ParamValidation.new(data, common_param_validations
-                                  .merge(token: {required: true, format: UUID::Regex}))
+                                  .merge(token: {required: true, format: UUID::REGEX}))
 
     source_token = QuerySourceToken.get_and_increment_source_token(data[:token], current_user)
     tokenizable = source_token.tokenizable
@@ -30,7 +30,7 @@ module InsertDonation
 
     result = {}
 
-    data[:date] = Time.now
+    data[:date] = Time.zone.now
     data = amount_from_data(data)
     data = data.except(:old_donation).except("old_donation")
     result = result.merge(insert_charge(data))
@@ -142,7 +142,7 @@ module InsertDonation
 
     result = {}
 
-    data[:date] = Time.now
+    data[:date] = Time.zone.now
     result = result.merge(insert_charge(data))
     result["donation"] = insert_donation(data, entities)
     update_donation_keys(result)
@@ -154,7 +154,7 @@ module InsertDonation
     result
   end
 
-  private
+  private_class_method
 
   def self.get_nonprofit_data(nonprofit_id)
     Nonprofit.find(nonprofit_id)
@@ -278,11 +278,11 @@ module InsertDonation
       raise ParamValidation::ValidationError.new("Supporter #{entities[:supporter_id].id} is deleted", key: :supporter_id)
     end
 
-    if entities[:event_id] && entities[:event_id].deleted
+    if entities[:event_id]&.deleted
       raise ParamValidation::ValidationError.new("Event #{entities[:event_id].id} is deleted", key: :event_id)
     end
 
-    if entities[:campaign_id] && entities[:campaign_id].deleted
+    if entities[:campaign_id]&.deleted
       raise ParamValidation::ValidationError.new("Campaign #{entities[:campaign_id].id} is deleted", key: :campaign_id)
     end
 

@@ -2,7 +2,7 @@
 
 module UpdateManualBalanceAdjustments
   def self.disburse_all_with_payments(payment_ids)
-    ManualBalanceAdjustment.where("payment_id IN (?)", payment_ids).update_all(
+    ManualBalanceAdjustment.where(payment_id: payment_ids).update_all(
       disbursed: true,
       updated_at: Time.current
     )

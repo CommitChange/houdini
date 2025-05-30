@@ -38,19 +38,19 @@ module InsertCharge
       }
     })
 
-    np = Nonprofit.where("id = ?", data[:nonprofit_id]).first
+    np = Nonprofit.where(id: data[:nonprofit_id]).first
 
     unless np
       raise ParamValidation::ValidationError.new("#{data[:nonprofit_id]} is not a valid Nonprofit", {key: :nonprofit_id})
     end
 
-    supporter = Supporter.where("id = ?", data[:supporter_id]).first
+    supporter = Supporter.where(id: data[:supporter_id]).first
 
     unless supporter
       raise ParamValidation::ValidationError.new("#{data[:supporter_id]} is not a valid Supporter", {key: :supporter_id})
     end
 
-    card = Card.where("id = ?", data[:card_id]).first
+    card = Card.where(id: data[:card_id]).first
 
     unless card
       raise ParamValidation::ValidationError.new("#{data[:card_id]} is not a valid card", {key: :card_id})
@@ -134,7 +134,7 @@ module InsertCharge
     charge.failure_message = failure_message
     charge.status = stripe_charge&.paid ? "pending" : "failed"
     charge.card = card
-    charge.donation = Donation.where("id = ?", data[:donation_id]).first
+    charge.donation = Donation.where(id: data[:donation_id]).first
     charge.supporter = supporter
     charge.nonprofit = np
     charge.save!
@@ -147,7 +147,7 @@ module InsertCharge
       payment.net_amount = data[:amount] - fee
       payment.towards = data[:towards]
       payment.kind = data[:kind]
-      payment.donation = Donation.where("id = ?", data[:donation_id]).first
+      payment.donation = Donation.where(id: data[:donation_id]).first
       payment.nonprofit = np
       payment.supporter = supporter
       payment.refund_total = 0

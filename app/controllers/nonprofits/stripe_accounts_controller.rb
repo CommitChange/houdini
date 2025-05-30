@@ -29,7 +29,7 @@ module Nonprofits
       StripeAccountUtils.find_or_create(current_nonprofit.id)
       current_nonprofit.reload
 
-      status = NonprofitVerificationProcessStatus.where("stripe_account_id = ?", current_nonprofit.stripe_account_id).first
+      status = NonprofitVerificationProcessStatus.where(stripe_account_id: current_nonprofit.stripe_account_id).first
       status ||= NonprofitVerificationProcessStatus.new(stripe_account_id: current_nonprofit.stripe_account_id)
 
       unless status.started_at

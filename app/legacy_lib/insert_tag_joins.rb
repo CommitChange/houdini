@@ -38,13 +38,13 @@ module InsertTagJoins
 
       nonprofit = Nonprofit.find(np_id)
       # verify that the supporters belong to the nonprofit
-      supporter_ids = nonprofit.supporters.where("id IN (?)", supporter_ids).pluck(:id)
+      supporter_ids = nonprofit.supporters.where(id: supporter_ids).pluck(:id)
       unless supporter_ids.any?
         return {json: {inserted_count: 0, removed_count: 0}, status: :ok}
       end
 
       # filtering the tag_data to this nonprofit
-      valid_ids = nonprofit.tag_masters.where("id IN (?)", tag_data.to_tag_master_ids).pluck(:id).to_a
+      valid_ids = nonprofit.tag_masters.where(id: tag_data.to_tag_master_ids).pluck(:id).to_a
       filtered_tag_data = tag_data.for_given_tags(valid_ids)
 
       # first, delete the items which should be removed

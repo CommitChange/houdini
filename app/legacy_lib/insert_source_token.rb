@@ -14,7 +14,7 @@ module InsertSourceToken
     else
       max_uses = params[:max_uses] || Settings.source_tokens.max_uses
       expiration_diff = params[:expiration_time] || Settings.source_tokens.expiration_time
-      expiration = Time.now + expiration_diff.to_i
+      expiration = Time.zone.now + expiration_diff.to_i
     end
     c = SourceToken.new
     c.tokenizable = tokenizable

@@ -1,3 +1,4 @@
+# rubocop:disable Lint/ConstantDefinitionInBlock
 RSpec.shared_context "common fee scenarios" do
   include_context "Stripe::Source doubles"
   include_context :shared_donation_charge_context
@@ -914,20 +915,23 @@ RSpec.shared_context "common fee scenarios" do
       ]
     }]
 
-  SCENARIOS ||= [].concat(in_past).concat(now).concat(in_future)
+  SCENARIOS = [].concat(in_past).concat(now).concat(in_future)
 
+  # rubocop:disable Security/Eval
   def get_source(example_details)
     eval(example_details[:source].to_s)
   end
+  # rubocop:enable Security/Eval
 
   def at(example_details)
     case example_details[:at]
     when :now
       Time.current
     when :in_past
-      Time.new(2000, 1, 1)
+      Time.zone.local(2000, 1, 1)
     when :in_future
-      Time.new(2022, 1, 1)
+      Time.zone.local(2022, 1, 1)
     end
   end
 end
+# rubocop:enable Lint/ConstantDefinitionInBlock

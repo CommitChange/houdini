@@ -1,11 +1,12 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 require "rails_helper"
 
+GIFT_LEVEL_ONE_TIME = 1111
+GIFT_LEVEL_RECURRING = 5585
+GIFT_LEVEL_CHANGED_RECURRING = 5512
+CAMPAIGN_GIFT_OPTION_NAME = "theowthoinv"
+
 describe QueryCampaignGifts do
-  GIFT_LEVEL_ONE_TIME = 1111
-  GIFT_LEVEL_RECURRING = 5585
-  GIFT_LEVEL_CHANGED_RECURRING = 5512
-  CAMPAIGN_GIFT_OPTION_NAME = "theowthoinv"
   let(:np) { force_create(:nonprofit) }
   let(:supporter1) { force_create(:supporter, nonprofit: np) }
   let(:supporter2) { force_create(:supporter, nonprofit: np) }

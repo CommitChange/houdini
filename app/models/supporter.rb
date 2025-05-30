@@ -59,19 +59,19 @@ class Supporter < ApplicationRecord
     end
 
     def donation_payments
-      where("kind IN (?)", ["Donation", "RecurringDonation"])
+      where(kind: ["Donation", "RecurringDonation"])
     end
 
     def refund_payments
-      where("kind IN (?)", ["Refund"])
+      where(kind: ["Refund"])
     end
 
     def dispute_payments
-      where("kind IN (?)", ["Dispute"])
+      where(kind: ["Dispute"])
     end
 
     def dispute_reversal_payments
-      where("kind IN (?)", ["DisputeReversed"])
+      where(kind: ["DisputeReversed"])
     end
   end
   has_many :offsite_payments
@@ -142,11 +142,10 @@ class Supporter < ApplicationRecord
   has_many :addresses, class_name: "SupporterAddress", after_add: :set_address_to_primary_if_needed
   belongs_to :primary_address, class_name: "SupporterAddress"
 
-  validates :nonprofit, presence: true
   scope :not_deleted, -> { where(deleted: false) }
   scope :deleted, -> { where(deleted: true) }
   scope :merged, -> { where.not(merged_at: nil) }
-  scope :not_merged, -> { where("merged_at IS NULL") }
+  scope :not_merged, -> { where(merged_at: nil) }
 
   geocoded_by :full_address
   reverse_geocoded_by :latitude, :longitude do |obj, results|
@@ -165,6 +164,7 @@ class Supporter < ApplicationRecord
     profile.get_profile_picture(size)
   end
 
+  # rubocop:disable Lint/ConstantDefinitionInBlock
   concerning :Path do
     class_methods do
       ModernParams = Struct.new(:to_param)
@@ -179,6 +179,7 @@ class Supporter < ApplicationRecord
       end
     end
   end
+  # rubocop:enable Lint/ConstantDefinitionInBlock
 
   # Supporters can be merged many times. This finds the last
   # supporter after following merged_into until it gets a nil
@@ -215,7 +216,7 @@ class Supporter < ApplicationRecord
 
   def cleanup_name
     if first_name.present? || last_name.present?
-      assign_attributes(name: [first_name&.strip, last_name&.strip].select { |i| i.present? }.join(" "))
+      assign_attributes(name: [first_name&.strip, last_name&.strip].compact_blank.join(" "))
       assign_attributes(first_name: nil, last_name: nil)
     end
   end

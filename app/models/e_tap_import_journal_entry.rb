@@ -73,7 +73,7 @@ class ETapImportJournalEntry < ApplicationRecord
 
         if corresponding_payment && corresponding_matches?
           unless corresponding_payment.tickets.any?
-            byebug unless corresponding_payment.donation
+            # byebug unless corresponding_payment.donation
             UpdateDonation.update_payment(corresponding_payment.donation.id, {
               designation: designation,
               campaign_id: "",

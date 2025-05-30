@@ -6,7 +6,7 @@ module InsertRecurringDonation
     data = data.to_deprecated_h.with_indifferent_access
 
     ParamValidation.new(data, InsertDonation.common_param_validations
-                                  .merge(token: {required: true, format: UUID::Regex}))
+                                  .merge(token: {required: true, format: UUID::REGEX}))
 
     if data[:recurring_donation].nil?
       data[:recurring_donation] = {}
@@ -46,7 +46,7 @@ module InsertRecurringDonation
     data["card_id"] = tokenizable.id
 
     result = {}
-    data[:date] = Time.now
+    data[:date] = Time.zone.now
     data = data.merge(payment_provider: payment_provider(data))
     data = data.except(:old_donation).except("old_donation")
     # if start date is today, make initial charge first
@@ -144,13 +144,13 @@ module InsertRecurringDonation
     data["card_id"] = card.id
 
     result = {}
-    data[:date] = Time.now
+    data[:date] = Time.zone.now
     data = data.merge(payment_provider: payment_provider(data))
     data = data.except(:old_donation).except("old_donation")
     # if start date is today, make initial charge first
     test_start_date = get_test_start_date(data)
     if test_start_date.nil? || Time.current >= test_start_date
-      puts "we would have charged on #{data}"
+      Rails.logger.debug { "we would have charged on #{data}" }
 
       # result = result.merge(InsertDonation.insert_charge(data))
       # if result['charge']['status'] == 'failed'

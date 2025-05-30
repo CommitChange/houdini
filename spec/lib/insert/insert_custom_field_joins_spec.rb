@@ -181,13 +181,13 @@ describe InsertCustomFieldJoins do
 
         expect(CustomFieldJoin.where("supporter_id = ? ", @supporters[:np_supporter_with_some_of_both][:entity].id).count).to eq 2
 
-        expect(CustomFieldJoin.where("supporter_id = ?", @supporters[:np_supporter_with_add][:entity].id).count).to eq 5
+        expect(CustomFieldJoin.where(supporter_id: @supporters[:np_supporter_with_add][:entity].id).count).to eq 5
 
-        expect(CustomFieldJoin.where("supporter_id = ?", @supporters[:np_supporter_with_cfms_to_delete][:entity].id).count).to eq 4
+        expect(CustomFieldJoin.where(supporter_id: @supporters[:np_supporter_with_cfms_to_delete][:entity].id).count).to eq 4
 
-        expect(CustomFieldJoin.where("supporter_id = ?", @supporters[:supporter_from_other_np][:entity].id).count).to eq 3
+        expect(CustomFieldJoin.where(supporter_id: @supporters[:supporter_from_other_np][:entity].id).count).to eq 3
 
-        expect(CustomFieldJoin.where("supporter_id = ?", @supporters[:np_supporter_with_no_changes][:entity].id).count).to eq 2
+        expect(CustomFieldJoin.where(supporter_id: @supporters[:np_supporter_with_no_changes][:entity].id).count).to eq 2
 
         expect(CustomFieldJoin.count).to eq 16
       end
@@ -197,14 +197,14 @@ describe InsertCustomFieldJoins do
         Timecop.freeze(2020, 9, 1, 12, 0, 0) {
           results = InsertCustomFieldJoins.in_bulk(@nonprofit.id,
             [@supporters[:np_supporter_with_add][:entity].id],
-            [{custom_field_master_id: 25, value: "CFM value 25", id: invalid_id, created_at: Time.now.ago(3000), updated_at: Time.now.ago(2999)}])
-          expected = {custom_field_master_id: 25, value: "CFM value 25", created_at: Time.now, updated_at: Time.now, supporter_id: @supporters[:np_supporter_with_add][:entity].id}.with_indifferent_access
+            [{custom_field_master_id: 25, value: "CFM value 25", id: invalid_id, created_at: Time.zone.now.ago(3000), updated_at: Time.zone.now.ago(2999)}])
+          expected = {custom_field_master_id: 25, value: "CFM value 25", created_at: Time.zone.now, updated_at: Time.zone.now, supporter_id: @supporters[:np_supporter_with_add][:entity].id}.with_indifferent_access
 
           expect(results).to eq(successful_json(1, 0))
 
-          result_tag = @supporters[:np_supporter_with_add][:entity].custom_field_joins.where("custom_field_master_id = ?", 25).first
+          result_tag = @supporters[:np_supporter_with_add][:entity].custom_field_joins.where(custom_field_master_id: 25).first
 
-          expect(result_tag.attributes.with_indifferent_access.reject { |k, _| k == "id" }).to eq(expected)
+          expect(result_tag.attributes.with_indifferent_access.except("id")).to eq(expected)
 
           expect(result_tag.attributes[:id]).to_not eq invalid_id
         }
@@ -241,7 +241,7 @@ describe InsertCustomFieldJoins do
             expect(db.attributes).to eq(orig.attributes)
           }
 
-          expect(CustomFieldJoin.where("supporter_id = ?", @supporters[:np_supporter_with_some_of_both][:entity].id).count).to eq 2
+          expect(CustomFieldJoin.where(supporter_id: @supporters[:np_supporter_with_some_of_both][:entity].id).count).to eq 2
 
           original_db_pairs = get_original_and_db(np_supporter_with_some_of_both_cfms, CustomFieldJoin.where("supporter_id = ? and custom_field_master_id in (?)",
             @supporters[:np_supporter_with_some_of_both][:entity].id,
@@ -249,7 +249,7 @@ describe InsertCustomFieldJoins do
           skip_attribs = ["updated_at", "value"]
           original_db_pairs.each { |orig, db|
             expect(db.attributes.length).to eq(orig.attributes.length)
-            expect(db.attributes.select { |key, value| !skip_attribs.include?(key) }).to eq(orig.attributes.select { |key, value| !skip_attribs.include?(key) })
+            expect(db.attributes.except(*skip_attribs)).to eq(orig.attributes.except(*skip_attribs))
             expect(db.attributes["updated_at"]).to be > orig.attributes["updated_at"]
             expect(db.attributes["value"]).to eq "CFM value 35"
           }

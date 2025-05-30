@@ -134,13 +134,13 @@ describe "InsertTagJoins.in_bulk" do
 
       expect(TagJoin.where("supporter_id = ? ", @supporters[:np_supporter_with_some_of_both][:entity].id).count).to eq 2
 
-      expect(TagJoin.where("supporter_id = ?", @supporters[:np_supporter_with_add][:entity].id).count).to eq 5
+      expect(TagJoin.where(supporter_id: @supporters[:np_supporter_with_add][:entity].id).count).to eq 5
 
-      expect(TagJoin.where("supporter_id = ?", @supporters[:np_supporter_with_tags_to_delete][:entity].id).count).to eq 4
+      expect(TagJoin.where(supporter_id: @supporters[:np_supporter_with_tags_to_delete][:entity].id).count).to eq 4
 
-      expect(TagJoin.where("supporter_id = ?", @supporters[:supporter_from_other_np][:entity].id).count).to eq 3
+      expect(TagJoin.where(supporter_id: @supporters[:supporter_from_other_np][:entity].id).count).to eq 3
 
-      expect(TagJoin.where("supporter_id = ?", @supporters[:np_supporter_with_no_changes][:entity].id).count).to eq 2
+      expect(TagJoin.where(supporter_id: @supporters[:np_supporter_with_no_changes][:entity].id).count).to eq 2
 
       expect(TagJoin.count).to eq 16
     end
@@ -176,14 +176,14 @@ describe "InsertTagJoins.in_bulk" do
           expect(orig.attributes).to eq(db.attributes)
         }
 
-        expect(TagJoin.where("supporter_id = ?", @supporters[:np_supporter_with_some_of_both][:entity].id).count).to eq 2
+        expect(TagJoin.where(supporter_id: @supporters[:np_supporter_with_some_of_both][:entity].id).count).to eq 2
 
         original_db_pairs = get_original_and_db(np_supporter_with_some_of_both_tags, TagJoin.where("supporter_id = ? and tag_master_id in (?)",
           @supporters[:np_supporter_with_some_of_both][:entity].id,
           [35]).pluck(:id))
         original_db_pairs.each { |orig, db|
           expect(orig.attributes.length).to eq(db.attributes.length)
-          expect(orig.attributes.select { |key, value| key != "updated_at" }).to eq(db.attributes.select { |key, value| key != "updated_at" })
+          expect(orig.attributes.except("updated_at")).to eq(db.attributes.except("updated_at"))
           expect(orig.attributes["updated_at"]).to be < db.attributes["updated_at"]
         }
 

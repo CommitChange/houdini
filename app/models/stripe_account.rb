@@ -81,7 +81,7 @@ class StripeAccount < ApplicationRecord
     when Stripe::Account
       self[:object] = input.to_hash
       object_json = object
-      puts object
+      Rails.logger.debug object
     when String
       self[:object] = input
       object_json = object
@@ -110,7 +110,7 @@ class StripeAccount < ApplicationRecord
 
     def current_deadline
       if @requirements["current_deadline"] && @requirements["current_deadline"].to_i != 0
-        Time.at(@requirements["current_deadline"].to_i)
+        Time.zone.at(@requirements["current_deadline"].to_i)
       end
     end
 

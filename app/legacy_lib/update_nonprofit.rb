@@ -25,7 +25,7 @@ module UpdateNonprofit
         remaining_balance -= payment["net_amount"]
         true
       end
-    end.map { |h| h["charge_id"] }
+    end.pluck("charge_id")
 
     Qx.update(:charges).set(status: "available").where("id IN ($ids)", ids: charge_ids).execute if charge_ids.any?
   end

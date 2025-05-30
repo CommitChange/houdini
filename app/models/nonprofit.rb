@@ -3,7 +3,7 @@ class Nonprofit < ApplicationRecord
   include Model::Houidable
   setup_houid :np, :houid
 
-  Categories = ["Public Benefit", "Human Services", "Education", "Civic Duty", "Human Rights", "Animals", "Environment", "Health", "Arts, Culture, Humanities", "International", "Children", "Religion", "LGBTQ", "Women's Rights", "Disaster Relief", "Veterans"]
+  CATEGORIES = ["Public Benefit", "Human Services", "Education", "Civic Duty", "Human Rights", "Animals", "Environment", "Health", "Arts, Culture, Humanities", "International", "Children", "Religion", "LGBTQ", "Women's Rights", "Disaster Relief", "Veterans"]
 
   attr_accessible \
     :name, # str
@@ -60,11 +60,11 @@ class Nonprofit < ApplicationRecord
   has_many :recurring_donations
   has_many :payments do
     def pending
-      joins(:charges).where("charges.status = ?", "pending")
+      joins(:charges).where(charges: {status: "pending"})
     end
 
     def pending_totals
-      net, gross = pending.pluck(Arel.sql('SUM("payments"."net_amount") AS net, SUM("payments"."gross_amount") AS gross')).first
+      net, gross = pending.pick(Arel.sql('SUM("payments"."net_amount") AS net, SUM("payments"."gross_amount") AS gross'))
       {"net" => net, "gross" => gross}
     end
 
@@ -166,9 +166,9 @@ class Nonprofit < ApplicationRecord
   validates :name, presence: true
   validates :city, presence: true
   validates :state_code, presence: true
-  validates :email, format: {with: Email::Regex}, allow_blank: true
+  validates :email, format: {with: Email::REGEX}, allow_blank: true
   validate :timezone_is_valid
-  validates :slug, uniqueness: {scope: [:city_slug, :state_code_slug]}
+  validates :slug, uniqueness: {scope: [:city_slug, :state_code_slug]} # rubocop:disable Rails/UniqueValidationWithoutIndex
   validates :slug, presence: true
 
   scope :vetted, -> { where(vetted: true) }
@@ -185,6 +185,7 @@ class Nonprofit < ApplicationRecord
     self
   end
 
+  # rubocop:disable Lint/ConstantDefinitionInBlock
   concerning :Path do
     class_methods do
       ModernParams = Struct.new(:to_param)
@@ -199,6 +200,7 @@ class Nonprofit < ApplicationRecord
       end
     end
   end
+  # rubocop:enable Lint/ConstantDefinitionInBlock
 
   # Register (create) a nonprofit with an initial admin
   def self.register(user, params)
@@ -275,13 +277,14 @@ class Nonprofit < ApplicationRecord
 
   # @param [Card] card the new active_card
   def active_card=(card)
-    unless card.class == Card
+    unless card.instance_of?(Card)
       raise ArgumentError.new "Pass a card to active_card or else"
     end
     Card.transaction do
       active_cards.update_all inactive: true
-      return cards << card
+      cards << card
     end
+    cards
   end
 
   def active_card
@@ -310,7 +313,7 @@ class Nonprofit < ApplicationRecord
 
     pending_bank_account = bank_account&.pending_verification
 
-    bank_account && bank_account.pending_verification
+    bank_account&.pending_verification
 
     bank_status = if no_bank_account
       :no_bank_account

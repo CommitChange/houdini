@@ -36,17 +36,14 @@ class Campaign < ApplicationRecord
     :default_reason_for_supporting
 
   validate :end_datetime_cannot_be_in_past, on: :create
-  validates :profile, presence: true
-  validates :nonprofit, presence: true
-  validates :goal_amount,
-    presence: true, numericality: {
-      only_integer: true
-    }
+  validates :goal_amount, presence: true, numericality: {only_integer: true}
   validate :validate_goal_amount
-  validates :name,
-    presence: true,
-    length: {maximum: 60}
-  validates :slug, uniqueness: {scope: :nonprofit_id, message: "You already have a campaign with that URL."}, presence: true
+  validates :name, presence: true, length: {maximum: 60}
+
+  # rubocop:disable Rails/UniqueValidationWithoutIndex
+  validates :slug, presence: true,
+    uniqueness: {scope: :nonprofit_id, message: "You already have a campaign with that URL."}
+  # rubocop:enable Rails/UniqueValidationWithoutIndex
 
   validates :starting_point, presence: true,
     numericality: {only_integer: true, greater_than_or_equal_to: 0}
@@ -80,8 +77,8 @@ class Campaign < ApplicationRecord
   has_many :children_campaigns, class_name: "Campaign", foreign_key: "parent_campaign_id"
 
   scope :published, -> { where(published: true) }
-  scope :active, -> { where(published: true).where("end_datetime IS NULL OR end_datetime >= ?", Date.today) }
-  scope :past, -> { where(published: true).where("end_datetime < ?", Date.today) }
+  scope :active, -> { where(published: true).where("end_datetime IS NULL OR end_datetime >= ?", Time.zone.today) }
+  scope :past, -> { where(published: true).where("end_datetime < ?", Time.zone.today) }
   scope :unpublished, -> { where(published: [nil, false]) }
   scope :not_deleted, -> { where(deleted: [nil, false]) }
   scope :deleted, -> { where(deleted: true) }
@@ -165,7 +162,7 @@ class Campaign < ApplicationRecord
   # Validations
 
   def end_datetime_cannot_be_in_past
-    if end_datetime.present? && end_datetime < Time.now
+    if end_datetime.present? && end_datetime < Time.zone.now
       errors.add(:end_datetime, "can't be in the past")
     end
   end
@@ -180,11 +177,11 @@ class Campaign < ApplicationRecord
 
   def days_left
     return 0 if end_datetime.nil?
-    (end_datetime.to_date - Date.today).to_i
+    (end_datetime.to_date - Time.zone.today).to_i
   end
 
   def finished?
-    end_datetime && end_datetime < Time.now
+    end_datetime && end_datetime < Time.zone.now
   end
 
   def validate_goal_amount

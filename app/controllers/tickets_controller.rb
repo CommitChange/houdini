@@ -30,7 +30,7 @@ class TicketsController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        file_date = Date.today.strftime("%m-%d-%Y")
+        file_date = Time.zone.today.strftime("%m-%d-%Y")
         filename = "tickets-#{file_date}"
         @tickets = QueryTickets.for_export(@event.id, params)
         send_data(Format::Csv.from_vectors(@tickets), filename: "#{filename}.csv")
@@ -44,7 +44,7 @@ class TicketsController < ApplicationController
 
   # PUT nonprofits/:nonprofit_id/events/:event_id/tickets/:id/add_note
   def add_note
-    current_nonprofit.tickets.find(params[:id]).update_attributes(note: params[:ticket][:note])
+    current_nonprofit.tickets.find(params[:id]).update(note: params[:ticket][:note])
     render json: {}
   end
 

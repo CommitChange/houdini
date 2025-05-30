@@ -32,7 +32,7 @@ module InsertCustomFieldJoins
 
     # make sure the supporters_ids exist
     supporter_ids.each { |id|
-      unless np.supporters.where("id = ?", id).exists?
+      unless np.supporters.where(id: id).exists?
         raise ParamValidation::ValidationError.new("#{id} is not a valid supporter for nonprofit #{np_id}", {key: :supporter_ids})
       end
     }
@@ -86,7 +86,7 @@ module InsertCustomFieldJoins
       end
 
       # filtering the tag_data to this nonprofit
-      valid_ids = CustomFieldMaster.where("nonprofit_id = ? and id IN (?)", np_id, field_data.map { |fd| fd[:custom_field_master_id] }).pluck(:id).to_a
+      valid_ids = CustomFieldMaster.where("nonprofit_id = ? and id IN (?)", np_id, field_data.pluck(:custom_field_master_id)).pluck(:id).to_a
       filtered_field_data = field_data.select { |i| valid_ids.include? i[:custom_field_master_id].to_i }
 
       # first, delete the items which should be removed
@@ -97,7 +97,7 @@ module InsertCustomFieldJoins
       if to_remove.any?
         deleted = Qx.delete_from(:custom_field_joins)
           .where("supporter_id IN ($ids)", ids: supporter_ids)
-          .and_where("custom_field_master_id in ($fields)", fields: to_remove.map { |t| t[:custom_field_master_id] })
+          .and_where("custom_field_master_id in ($fields)", fields: to_remove.pluck(:custom_field_master_id))
           .returning("*")
           .execute
       end

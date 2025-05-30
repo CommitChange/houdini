@@ -238,7 +238,7 @@ module QuerySupporters
       expr = expr.and_where("payments.count = 0 OR payments.max_date <= timezone(COALESCE(nonprofits.timezone, 'UTC'), timezone('UTC', $d))", d: d)
     end
     if query[:MAX_payment_before].present?
-      date_ago = Timespan::TimeUnits[query[:MAX_payment_before]].utc
+      date_ago = Timespan::TIME_UNITS[query[:MAX_payment_before]].utc
       expr = expr.and_where("payments.max_date < timezone(COALESCE(nonprofits.timezone, 'UTC'), timezone('UTC', $date)) OR payments.count = 0", date: date_ago)
     end
     if query[:search].present?
@@ -310,19 +310,19 @@ module QuerySupporters
     if query[:event_id].present?
       select_tickets_supporters = Qx.select("event_ticket_supporters.supporter_id")
         .from(
-          "#{Qx.select("MAX(tickets.event_id) AS event_id", "tickets.supporter_id")
+          Qx.select("MAX(tickets.event_id) AS event_id", "tickets.supporter_id")
                                              .from(:tickets)
                                              .where("event_id = $event_id", event_id: query[:event_id])
-                                             .group_by(:supporter_id).as("event_ticket_supporters").parse}"
+                                             .group_by(:supporter_id).as("event_ticket_supporters").parse.to_s
         )
 
       select_donation_supporters =
         Qx.select("event_donation_supporters.supporter_id")
           .from(
-            "#{Qx.select("MAX(donations.event_id) AS event_id", "donations.supporter_id")
+            Qx.select("MAX(donations.event_id) AS event_id", "donations.supporter_id")
                       .from(:donations)
                       .where("event_id = $event_id", event_id: query[:event_id])
-                      .group_by(:supporter_id).as("event_donation_supporters").parse}"
+                      .group_by(:supporter_id).as("event_donation_supporters").parse.to_s
           )
 
       union_expr = "(
@@ -522,7 +522,7 @@ UNION DISTINCT
       .and_where("email IS NOT NULL")
       .and_where("email != ''")
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -532,7 +532,7 @@ UNION DISTINCT
     dupes_expr(np_id)
       .and_where("name IS NOT NULL")
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -543,7 +543,7 @@ UNION DISTINCT
     dupes_expr(np_id)
       .and_where("name IS NOT NULL AND name != '' AND email IS NOT NULL AND email != ''")
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -557,7 +557,7 @@ UNION DISTINCT
          AND phone_index != ''"
       )
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -573,7 +573,7 @@ UNION DISTINCT
          AND address != ''"
       )
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -589,7 +589,7 @@ UNION DISTINCT
          AND address != ''"
       )
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -601,7 +601,7 @@ UNION DISTINCT
          AND address != ''"
       )
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -615,7 +615,7 @@ UNION DISTINCT
          AND address != ''"
       )
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -628,7 +628,7 @@ UNION DISTINCT
          AND address != ''"
       )
       .group_by(calculated_last_name + " || '_____' || address")
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -641,7 +641,7 @@ UNION DISTINCT
          AND address != ''"
       )
       .group_by(calculated_last_name + " || '_____' || address || '_____' || COALESCE(email, '')")
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -655,7 +655,7 @@ UNION DISTINCT
          AND email != ''"
       )
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -667,7 +667,7 @@ UNION DISTINCT
          AND address != ''"
       )
       .group_by(group_by_clause)
-      .execute(format: "csv")[1..-1]
+      .execute(format: "csv")[1..]
       .map { |arr_group| arr_group.flatten.sort }
   end
 
@@ -898,14 +898,14 @@ UNION DISTINCT
 
   # this is inefficient, don't use in live code
   def self.find_supporters_with_multiple_recurring_donations_evil_way(npo_id)
-    supporters = Supporter.where("supporters.nonprofit_id = ?", npo_id).includes(:recurring_donations)
+    supporters = Supporter.where(supporters: {nonprofit_id: npo_id}).includes(:recurring_donations)
     supporters.select { |s| s.recurring_donations.length > 1 }
   end
 
   # this is inefficient, don't use in live code
   def self.find_supporters_with_multiple_active_recurring_donations_evil_way(npo_id)
-    supporters = Supporter.where("supporters.nonprofit_id = ?", npo_id).includes(:recurring_donations)
-    supporters.select { |s| s.recurring_donations.select { |rd| rd.active }.length > 1 }
+    supporters = Supporter.where(supporters: {nonprofit_id: npo_id}).includes(:recurring_donations)
+    supporters.select { |s| s.recurring_donations.count { |rd| rd.active } > 1 }
   end
 
   def self.parse_convert_datetime(date)

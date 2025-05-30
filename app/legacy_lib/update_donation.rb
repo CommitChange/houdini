@@ -15,7 +15,7 @@ module UpdateDonation
         id: {required: true, is_reference: true},
         data: {required: true, is_hash: true}
       })
-    existing_payment = Payment.where("donation_id = ?", donation_id).last
+    existing_payment = Payment.where(donation_id: donation_id).last
 
     unless existing_payment
       raise ParamValidation::ValidationError.new("#{donation_id} is does not correspond to a valid donation",
@@ -48,7 +48,7 @@ module UpdateDonation
     if set_to_nil[:campaign]
       campaign = nil
     else
-      campaign = Campaign.where("id = ?", data[:campaign_id]).first
+      campaign = Campaign.where(id: data[:campaign_id]).first
       unless campaign
         raise ParamValidation::ValidationError.new("#{data[:campaign_id]} is not a valid campaign", {key: :campaign_id})
       end
@@ -60,7 +60,7 @@ module UpdateDonation
     if set_to_nil[:event]
       event = nil
     else
-      event = Event.where("id = ?", data[:event_id]).first
+      event = Event.where(id: data[:event_id]).first
       unless event
         raise ParamValidation::ValidationError.new("#{data[:event_id]} is not a valid event", {key: :event_id})
       end
@@ -100,7 +100,7 @@ module UpdateDonation
           existing_payment.save!
         end
       elsif donation.designation
-        Payment.where("donation_id = ?", donation.id).update_all(towards: donation.designation, updated_at: Time.now)
+        Payment.where(donation_id: donation.id).update_all(towards: donation.designation, updated_at: Time.zone.now)
       end
 
       # if offsite, set check_number, date, gross_amount
@@ -158,7 +158,7 @@ module UpdateDonation
       donation.date = donation.created_at
       donation.save!
 
-      payments = Payment.where("donation_id = ?", id).includes(:charge)
+      payments = Payment.where(donation_id: id).includes(:charge)
 
       payments.each { |p|
         @payments_corrected.push(p.id)

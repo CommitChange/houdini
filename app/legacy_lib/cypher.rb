@@ -28,7 +28,7 @@ module Cypher
     decipher.update(encrypted) + decipher.final
   end
 
-  private
+  private_class_method
 
   def self.create_cipher
     OpenSSL::Cipher.new("aes-256-cbc")

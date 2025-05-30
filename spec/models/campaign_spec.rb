@@ -92,7 +92,7 @@ RSpec.describe Campaign, type: :model do
     end
 
     let(:html_body) do
-      ActionMailer::Base.deliveries.last.parts.select { |i| i.content_type.starts_with? "text/html" }.first.body
+      ActionMailer::Base.deliveries.last.parts.find { |i| i.content_type.starts_with? "text/html" }.body
     end
 
     it "parent campaign sends out general campaign email" do

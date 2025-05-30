@@ -38,7 +38,7 @@ RSpec.shared_context :shared_donation_charge_context do
   let(:other_ticket_level) { force_create(:ticket_level, event: other_event, name: "3") }
 
   let(:donation_for_rd) { force_create(:donation, recurring: true, nonprofit: nonprofit, supporter: supporter, card: card_with_valid_stripe_id, amount: 500) }
-  let(:recurring_donation) { force_create(:recurring_donation, donation: donation_for_rd, nonprofit: nonprofit, supporter: supporter, start_date: Time.now, interval: 1, time_unit: "month") }
+  let(:recurring_donation) { force_create(:recurring_donation, donation: donation_for_rd, nonprofit: nonprofit, supporter: supporter, start_date: Time.zone.now, interval: 1, time_unit: "month") }
 
   let!(:current_fee_era) { create(:fee_era_with_structures) }
   let!(:previous_fee_era) { create(:fee_era_with_no_start) }

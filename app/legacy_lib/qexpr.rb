@@ -37,7 +37,7 @@ class Qexpr
     query_based_expression = @tree[:update] || @tree[:delete_from] || @tree[:select]
     # Query-based expessions
 
-    if query_based_expression.nil? || query_based_expression.empty?
+    if query_based_expression.blank?
       raise ArgumentError.new("Must have a select, update, or delete clause")
     end
 
@@ -103,7 +103,7 @@ class Qexpr
       else
         "\n  #{cols.join("\n, ")}"
       end
-      Qexpr.new @tree.put(:select, "\nSELECT".bold.light_blue + "#{cols}".blue)
+      Qexpr.new @tree.put(:select, "\nSELECT".bold.light_blue + cols.to_s.blue)
     end
   end
 
@@ -266,7 +266,7 @@ class Qexpr
     end
   end
 
-  private
+  private_class_method
 
   # Given some kind of expr object (might be just a string or another whole Qexpr expr), and an 'as' value
   # then give back either a hash for the sub-Qexpr expression, or just a string.

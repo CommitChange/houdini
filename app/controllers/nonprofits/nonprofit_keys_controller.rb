@@ -27,7 +27,7 @@ module Nonprofits
       session.delete(:current_mailchimp_nonprofit_id)
       begin
         session[:mailchimp_access_token] = InsertNonprofitKeys.insert_mailchimp_access_token(@nonprofit.id, params[:code])
-      rescue Exception => e
+      rescue => e
         flash[:notice] = "Unable to connect to your Mailchimp account, please try again. (Error: #{e})"
         redirect_to "/settings"
         return

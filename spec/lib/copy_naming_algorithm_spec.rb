@@ -89,7 +89,7 @@ describe CopyNamingAlgorithm do
     it "adds one digit for copy number if under 10" do
       algo = TestCopyNamingAlgorithm.new(max_copies: 9)
       (0..9).each { |i|
-        expect(algo.generate_copy_number(i)).to eq "#{i}"
+        expect(algo.generate_copy_number(i)).to eq i.to_s
       }
     end
     it "adds 2 digits for copy number if under 100" do
@@ -98,7 +98,7 @@ describe CopyNamingAlgorithm do
         if i < 10
           expect(algo.generate_copy_number(i)).to eq "0#{i}"
         else
-          expect(algo.generate_copy_number(i)).to eq "#{i}"
+          expect(algo.generate_copy_number(i)).to eq i.to_s
         end
       }
     end
@@ -111,12 +111,13 @@ describe CopyNamingAlgorithm do
         elsif i >= 10 && i < 100
           expect(algo.generate_copy_number(i)).to eq "0#{i}"
         else
-          expect(algo.generate_copy_number(i)).to eq "#{i}"
+          expect(algo.generate_copy_number(i)).to eq i.to_s
         end
       }
     end
   end
 
+  # rubocop:disable Lint/ConstantDefinitionInBlock
   class TestCopyNamingAlgorithm < CopyNamingAlgorithm
     attr_accessor :name_entities, :max_copies, :max_length
 
@@ -142,4 +143,5 @@ describe CopyNamingAlgorithm do
 
     attr_reader :max_copies
   end
+  # rubocop:enable Lint/ConstantDefinitionInBlock
 end

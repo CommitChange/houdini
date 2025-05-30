@@ -19,15 +19,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # rubocop:disable Style/UnlessLogicalOperators
   def redirect_to_maintenance
     if Settings&.maintenance&.maintenance_mode && !current_user
-      unless self.class == Users::SessionsController &&
+      unless instance_of?(Users::SessionsController) &&
           ((Settings.maintenance.maintenance_token && params[:maintenance_token] == Settings.maintenance.maintenance_token) || params[:format] == "json")
         redirect_to Settings.maintenance.maintenance_page,
           allow_other_host: true
       end
     end
   end
+  # rubocop:enable Style/UnlessLogicalOperators
 
   protected
 
@@ -62,7 +64,7 @@ class ApplicationController < ActionController::Base
     rescue ExpiredTokenError => e
       logger.info "422: #{e}".red.bold
       result = {status: 422, json: {error: e.message}}
-    rescue Exception => e # a non-validation related exception
+    rescue => e # a non-validation related exception
       logger.error "500: #{e}".red.bold
       logger.error e.backtrace.take(5).map { |l| ">>".red.bold + " #{l}" }.join("\n").red
       result = {status: 500, json: {error: e.message, backtrace: e.backtrace}}
@@ -147,7 +149,7 @@ class ApplicationController < ActionController::Base
   private
 
   def current_user_id
-    current_user && current_user.id
+    current_user&.id
   end
 
   # Overload handle_unverified_request to ensure that

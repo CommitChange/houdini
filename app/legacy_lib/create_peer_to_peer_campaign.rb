@@ -18,24 +18,23 @@ module CreatePeerToPeerCampaign
     # child campaigns are always in dollars, not supporters
     p2p_params[:goal_is_in_supporters] = false
 
-    campaign = Campaign.create(p2p_params)
-
+    campaign = Campaign.new(p2p_params)
     campaign.published = true
     campaign.profile = profile
     campaign.save
 
     begin
-      campaign.update_attribute(:main_image, parent_campaign.main_image) unless !parent_campaign.main_image
+      campaign.update_attribute(:main_image, parent_campaign.main_image) if parent_campaign.main_image.present?
     rescue
       Aws::S3::Errors::NoSuchKey
     end
     begin
-      campaign.update_attribute(:background_image, parent_campaign.background_image) unless !parent_campaign.background_image
+      campaign.update_attribute(:background_image, parent_campaign.background_image) if parent_campaign.background_image.present?
     rescue
       Aws::S3::Errors::NoSuchKey
     end
     begin
-      campaign.update_attribute(:banner_image, parent_campaign.banner_image) unless !parent_campaign.banner_image
+      campaign.update_attribute(:banner_image, parent_campaign.banner_image) if parent_campaign.banner_image.present?
     rescue
       Aws::S3::Errors::NoSuchKey
     end

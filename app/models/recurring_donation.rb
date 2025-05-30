@@ -42,7 +42,7 @@ class RecurringDonation < ApplicationRecord
 
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: [false, nil]) }
-  scope :cancelled, -> { where(active: [false, nil]) }
+  scope :cancelled, -> { inactive }
   scope :monthly, -> { where(time_unit: "month", interval: 1) }
   scope :annual, -> { where(time_unit: "year", interval: 1) }
   scope :failed, -> { where("n_failures >= 3") }
@@ -62,29 +62,21 @@ class RecurringDonation < ApplicationRecord
   has_many :activities, as: :attachment
 
   validates :paydate, numericality: {less_than: 29}, allow_blank: true
-  validates :donation_id, presence: true
-  validates :nonprofit_id, presence: true
   validates :start_date, presence: true
   validates :interval, presence: true, numericality: {greater_than: 0}
-  validates :time_unit, presence: true, inclusion: {in: Timespan::Units}
+  validates :time_unit, presence: true, inclusion: {in: Timespan::UNITS}
   validates_associated :donation
 
   def most_recent_charge
-    if charges
-      charges.sort_by { |c| c.created_at }.last
-    end
+    charges&.max_by { |c| c.created_at }
   end
 
   def most_recent_paid_charge
-    if charges
-      charges.find_all { |c| c.paid? }.sort_by { |c| c.created_at }.last
-    end
+    charges&.find_all { |c| c.paid? }&.max_by { |c| c.created_at }
   end
 
   def total_given
-    if charges
-      charges.find_all(&:paid?).sum(&:amount)
-    end
+    charges&.find_all(&:paid?)&.sum(&:amount)
   end
 
   def failed?
@@ -129,7 +121,7 @@ class RecurringDonation < ApplicationRecord
   private
 
   def set_anonymous
-    update_attributes(anonymous: false) if anonymous.nil?
+    update(anonymous: false) if anonymous.nil?
   end
 
   def fire_recurring_donation_created

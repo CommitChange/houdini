@@ -6,11 +6,11 @@ module ExportPayments
       npo_id: {required: true, is_integer: true},
       params: {required: true, is_hash: true},
       user_id: {required: true, is_integer: true})
-    npo = Nonprofit.where("id = ?", npo_id).first
+    npo = Nonprofit.where(id: npo_id).first
     unless npo
       raise ParamValidation::ValidationError.new("Nonprofit #{npo_id} doesn't exist!", key: :npo_id)
     end
-    user = User.where("id = ?", user_id).first
+    user = User.where(id: user_id).first
     unless user
       raise ParamValidation::ValidationError.new("User #{user_id} doesn't exist!", key: :user_id)
     end
@@ -43,18 +43,21 @@ module ExportPayments
     unless Nonprofit.exists?(npo_id)
       raise ParamValidation::ValidationError.new("Nonprofit #{npo_id} doesn't exist!", key: :npo_id)
     end
-    user = User.where("id = ?", user_id).first
+    user = User.where(id: user_id).first
     unless user
       raise ParamValidation::ValidationError.new("User #{user_id} doesn't exist!", key: :user_id)
     end
 
-    file_date = Time.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
+    file_date = Time.zone.now.getutc.strftime("%m-%d-%Y--%H-%M-%S")
     filename = "tmp/csv-exports/payments-#{export.id}-#{file_date}.csv"
 
-    url = CHUNKED_UPLOADER.upload(filename, for_export_enumerable(npo_id, params, 15000).map { |i| i.to_csv }, content_type: "text/csv", content_disposition: "attachment")
+    url = CHUNKED_UPLOADER.upload(filename,
+      for_export_enumerable(npo_id, params, 15000).map { |i| i.to_csv },
+      content_type: "text/csv",
+      content_disposition: "attachment")
     export.url = url
     export.status = :completed
-    export.ended = Time.now
+    export.ended = Time.zone.now
     export.save!
 
     ExportMailer.delay.export_payments_completed_notification(export)
@@ -62,11 +65,11 @@ module ExportPayments
     if export
       export.status = :failed
       export.exception = e.to_s
-      export.ended = Time.now
+      export.ended = Time.zone.now
       export.save!
 
       begin
-        user ||= User.where("id = ?", user_id).first
+        user ||= User.where(id: user_id).first
         if user
           ExportMailer.delay.export_payments_failed_notification(export)
         end
@@ -77,7 +80,7 @@ module ExportPayments
     raise e
   end
 
-  private
+  private_class_method
 
   def self.for_export_enumerable(npo_id, query, chunk_limit = 15000)
     ParamValidation.new({npo_id: npo_id, query: query}, {npo_id: {required: true, is_int: true},
@@ -197,7 +200,7 @@ module ExportPayments
   end
 
   def self.build_custom_value_clause(column_name, custom_columns_and_values, custom_column_name, column_treatment = column_name)
-    custom_values = custom_columns_and_values&.dig(column_name)&.dig("custom_values")
+    custom_values = custom_columns_and_values&.dig(column_name, "custom_values")
     if custom_values.present?
       return build_custom_values_switch_case(custom_values, column_treatment, custom_column_name)
     end
@@ -214,32 +217,32 @@ module ExportPayments
 
   def self.build_custom_names_for_payments(custom_names)
     {
-      "payments.date" => custom_names&.dig("payments.date")&.dig("custom_name") || "date",
-      "payments.gross_amount" => custom_names&.dig("payments.gross_amount")&.dig("custom_name") || "gross_amount",
-      "payments.fee_total" => custom_names&.dig("payments.fee_total")&.dig("custom_name") || "fee_total",
-      "payments.net_amount" => custom_names&.dig("payments.net_amount")&.dig("custom_name") || "net_amount",
-      "payments.kind" => custom_names&.dig("payments.kind")&.dig("custom_name") || "type"
+      "payments.date" => custom_names&.dig("payments.date", "custom_name") || "date",
+      "payments.gross_amount" => custom_names&.dig("payments.gross_amount", "custom_name") || "gross_amount",
+      "payments.fee_total" => custom_names&.dig("payments.fee_total", "custom_name") || "fee_total",
+      "payments.net_amount" => custom_names&.dig("payments.net_amount", "custom_name") || "net_amount",
+      "payments.kind" => custom_names&.dig("payments.kind", "custom_name") || "type"
     }
   end
 
   def self.build_custom_names_for_donations_and_campaigns(custom_names)
     {
-      "donations.designation" => custom_names&.dig("donations.designation")&.dig("custom_name") || "designation",
+      "donations.designation" => custom_names&.dig("donations.designation", "custom_name") || "designation",
       "donations.anonymous OR supporters.anonymous" => (
         custom_names&.dig("donations.anonymous OR supporters.anonymous") ||
         custom_names&.dig("donations.anonymous") ||
         custom_names&.dig("supporters.anonymous")
       )&.dig("custom_name") || '"Anonymous?"',
-      "campaigns_for_export.name" => custom_names&.dig("campaigns_for_export.name")&.dig("custom_name") || "campaign",
-      "campaigns_for_export.id" => custom_names&.dig("campaigns_for_export.id")&.dig("custom_name") || '"Campaign Id"',
-      "campaigns_for_export.creator_email" => custom_names&.dig("campaigns_for_export.creator_email")&.dig("custom_name") || "campaign_creator_email",
-      "campaign_gift_options.name" => custom_names&.dig("campaign_gift_options.name")&.dig("custom_name") || "campaign_gift_level",
-      "events_for_export.name" => custom_names&.dig("events_for_export.name")&.dig("custom_name") || "event_name",
-      "payments.id" => custom_names&.dig("payments.id")&.dig("custom_name") || "payment_id",
-      "offsite_payments.check_number" => custom_names&.dig("offsite_payments.check_number")&.dig("custom_name") || "check_number",
-      "donations.comment" => custom_names&.dig("donations.comment")&.dig("custom_name") || "donation_note",
-      "donations.created_at" => custom_names&.dig("donations.created_at")&.dig("custom_name") || '"Recurring Donation Started At"',
-      "misc_payment_infos.fee_covered" => custom_names&.dig("misc_payment_infos.fee_covered")&.dig("custom_name") || '"Fee Covered by Supporter"'
+      "campaigns_for_export.name" => custom_names&.dig("campaigns_for_export.name", "custom_name") || "campaign",
+      "campaigns_for_export.id" => custom_names&.dig("campaigns_for_export.id", "custom_name") || '"Campaign Id"',
+      "campaigns_for_export.creator_email" => custom_names&.dig("campaigns_for_export.creator_email", "custom_name") || "campaign_creator_email",
+      "campaign_gift_options.name" => custom_names&.dig("campaign_gift_options.name", "custom_name") || "campaign_gift_level",
+      "events_for_export.name" => custom_names&.dig("events_for_export.name", "custom_name") || "event_name",
+      "payments.id" => custom_names&.dig("payments.id", "custom_name") || "payment_id",
+      "offsite_payments.check_number" => custom_names&.dig("offsite_payments.check_number", "custom_name") || "check_number",
+      "donations.comment" => custom_names&.dig("donations.comment", "custom_name") || "donation_note",
+      "donations.created_at" => custom_names&.dig("donations.created_at", "custom_name") || '"Recurring Donation Started At"',
+      "misc_payment_infos.fee_covered" => custom_names&.dig("misc_payment_infos.fee_covered", "custom_name") || '"Fee Covered by Supporter"'
     }
   end
 

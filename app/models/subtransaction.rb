@@ -24,6 +24,5 @@ class Subtransaction < ApplicationRecord
   delegate :to_houid, :process_refund, :publish_updated, to: :subtransactable
 
   as_money :amount
-
-  validates :subtransactable, presence: true
+  validates :subtransactable, presence: true # rubocop:disable Rails/RedundantPresenceValidationOnBelongsTo
 end

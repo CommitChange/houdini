@@ -68,7 +68,7 @@ class Payment < ApplicationRecord
     elsif kind == "Dispute" || kind == "DisputeReversal"
       !!dispute_transaction&.from_donation?
     elsif kind == "OffsitePayment"
-      !!donation.present?
+      !donation.blank?
     else
       kind == "Donation" || kind == "RecurringDonation"
     end

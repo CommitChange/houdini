@@ -18,7 +18,7 @@ class AddModernAchievements < ActiveRecord::Migration
         Nonprofit.find_each do |np|
           np.achievements_json = np.achievements
           unless np.save
-            puts "NP ##{np.id} could not be saved"
+            Rails.logger.debug { "NP ##{np.id} could not be saved" }
             np.save(validate: false)
           end
           np.reload

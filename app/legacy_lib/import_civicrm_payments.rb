@@ -20,7 +20,7 @@ module ImportCivicrmPayments
       supporters_with_fields = Supporter.includes(:custom_field_joins).where("supporters.nonprofit_id = ? AND custom_field_joins.custom_field_master_id = ?", nonprofit.id, supporter_id_custom_field.id)
       questionable_records = []
       contrib_records.each { |r|
-        our_supporter = supporters_with_fields.where("custom_field_joins.value = ?", r[field_of_supporter_id].to_s).first
+        our_supporter = supporters_with_fields.where(custom_field_joins: {value: r[field_of_supporter_id].to_s}).first
         unless our_supporter
           questionable_records.push(r)
           next
@@ -38,12 +38,12 @@ module ImportCivicrmPayments
           offsite = {kind: "check", check_number: r["Check Number"]}
         end
 
-        puts r["Date Received"]
+        Rails.logger.debug r["Date Received"]
         date_received = nil
 
         Time.use_zone("Pacific Time (US & Canada)") do
           date_received = Time.zone.parse(r["Date Received"])
-          puts date_received
+          Rails.logger.debug date_received
         end
 
         d = InsertDonation.offsite(
@@ -56,7 +56,7 @@ module ImportCivicrmPayments
             offsite_payment: offsite
           }.with_indifferent_access
         )
-        puts d
+        Rails.logger.debug d
         pay_imp.donations.push(Donation.find(d[:json]["donation"]["id"]))
       }
       questionable_records
@@ -70,9 +70,7 @@ module ImportCivicrmPayments
         d.payments.each { |p|
           p.destroy
         }
-        if d.offsite_payment
-          d.offsite_payment.destroy
-        end
+        d.offsite_payment&.destroy
 
         d.destroy
       }

@@ -20,7 +20,7 @@ module Nonprofits
       end
 
       supporter_ids = if params[:selecting_all]
-        QuerySupporters.full_filter_expr(current_nonprofit.id, params[:query]).select("supporters.id").execute.map { |h| h["id"] }
+        QuerySupporters.full_filter_expr(current_nonprofit.id, params[:query]).select("supporters.id").execute.pluck("id")
       else
         params[:supporter_ids].map(&:to_i)
       end

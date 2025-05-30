@@ -10,9 +10,6 @@ class BillingSubscription < ApplicationRecord
   belongs_to :nonprofit
   belongs_to :billing_plan
 
-  validates :nonprofit, presence: true
-  validates :billing_plan, presence: true
-
   def as_json(options = {})
     h = super
     h[:plan_name] = billing_plan.name

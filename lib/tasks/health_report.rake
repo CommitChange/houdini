@@ -5,6 +5,6 @@ desc "For sending an activity report email of what has been happening on the sys
 task send_health_report: :environment do
   GenericMailer.admin_notice({
     body: HealthReport.format_data(HealthReport.query_data),
-    subject: "CommitChange activity report #{Format::Date.to_readable(Time.now)}"
+    subject: "CommitChange activity report #{Format::Date.to_readable(Time.zone.now)}"
   }).deliver
 end

@@ -5,6 +5,4 @@ class Export < ApplicationRecord
 
   belongs_to :nonprofit
   belongs_to :user
-
-  validates :user, presence: true
 end

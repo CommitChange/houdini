@@ -39,7 +39,7 @@ default_bp:
   id: 1
 
 devise:
-  mailer_sender: 'fake@fake.fake'
+  mailer_sender: 'fake@example.com'
 
 page_editor:
   editor: 'quill'

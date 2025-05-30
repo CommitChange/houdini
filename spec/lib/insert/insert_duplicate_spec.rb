@@ -47,7 +47,7 @@ describe InsertDuplicate do
         background_image: nil,
         widget_description_id: nil,
         body: nil,
-        created_at: Time.now,
+        created_at: Time.zone.now,
         deleted: false,
         goal_amount: 20000,
         hide_activity_feed: nil,
@@ -65,7 +65,7 @@ describe InsertDuplicate do
         tagline: nil,
         total_raised: nil,
         total_supporters: 1,
-        updated_at: Time.now,
+        updated_at: Time.zone.now,
         url: nil,
         video_url: nil,
         vimeo_video_id: nil,
@@ -211,7 +211,7 @@ describe InsertDuplicate do
         profile_id: profile.id,
         background_image: nil,
         body: nil,
-        created_at: Time.now,
+        created_at: Time.zone.now,
         deleted: false,
         hide_activity_feed: nil,
         hide_title: nil,
@@ -221,7 +221,7 @@ describe InsertDuplicate do
         summary: nil,
         tagline: nil,
         total_raised: 0,
-        updated_at: Time.now,
+        updated_at: Time.zone.now,
         name: copy_name,
         slug: copy_slug,
         address: "100 N Appleton St",
@@ -294,9 +294,9 @@ describe InsertDuplicate do
       result = InsertDuplicate.event(event.id, profile.id)
       expect(Event.count).to eq 2
 
-      result.attributes["start_datetime"] = result.attributes["start_datetime"]
-
+      result.attributes["start_datetime"] = result.attributes["start_datetime"].to_datetime
       result.attributes["end_datetime"] = result.attributes["end_datetime"].to_datetime
+
       expect(result.attributes.with_indifferent_access).to eq(common_result_attributes.merge(
         {
           id: result.id,

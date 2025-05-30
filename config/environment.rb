@@ -4,6 +4,10 @@ require_relative "application"
 
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
+
+# Initialize the Rails application.
+Rails.application.initialize!
+
 @ignore_dotenv = ENV["IGNORE_DOTENV"]
 @env = Rails.env || "development"
 unless @ignore_dotenv
@@ -18,7 +22,7 @@ unless @ignore_dotenv
 end
 
 @org_name = ENV["ORG_NAME"] || "default_organization"
-puts "config files .env .env.#{@env} ./config/settings.#{@env}.yml#{(@env != "test") ? " ./config/#{@org_name}.yml" : " "}  #{(@env != "test") ? " ./config/#{@org_name}.#{@env}.yml" : " "} #{(@env == "test") ? "./config/settings.test.yml" : ""}"
+Rails.logger.debug { "config files .env .env.#{@env} ./config/settings.#{@env}.yml#{(@env != "test") ? " ./config/#{@org_name}.yml" : " "}  #{(@env != "test") ? " ./config/#{@org_name}.#{@env}.yml" : " "} #{(@env == "test") ? "./config/settings.test.yml" : ""}" }
 if Rails.env.test?
   Settings.add_source!("./config/settings.test.yml")
 else
@@ -282,6 +286,3 @@ Config.setup do |config|
 end
 
 Settings.reload!
-
-# Initialize the Rails application.
-Rails.application.initialize!

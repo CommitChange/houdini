@@ -3,7 +3,6 @@
 # License: AGPL-3.0-or-later WITH WTO-AP-3.0-or-later
 # Full license explanation at https://github.com/houdiniproject/houdini/blob/main/LICENSE
 require "rails_helper"
-# rubocop:disable RSpec/VerifiedDoubles, RSpec/MessageSpies regular doubles work fine in this use-case
 
 RSpec.shared_examples "a model with a calculated first and last name" do
   let(:instance) { subject }

@@ -12,9 +12,9 @@ module QuerySourceToken
   #           or we're past the expiration date
   def self.get_and_increment_source_token(token, user = nil)
     ParamValidation.new({token: token}, {
-      token: {required: true, format: UUID::Regex}
+      token: {required: true, format: UUID::REGEX}
     })
-    source_token = SourceToken.where("token = ?", token).first
+    source_token = SourceToken.where(token: token).first
     if source_token
       source_token.with_lock {
         unless source_token_unexpired?(source_token)
@@ -44,7 +44,7 @@ module QuerySourceToken
     if source_token.max_uses <= source_token.total_uses
       return false
     end
-    if source_token.expiration < Time.now
+    if source_token.expiration < Time.zone.now
       return false
     end
     true

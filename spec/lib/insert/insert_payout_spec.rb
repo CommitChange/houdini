@@ -122,16 +122,16 @@ describe InsertPayout do
 
         it "works without a date provided" do
           stripe_transfer_id = nil
-          expect(Stripe::Payout).to receive(:create).with({amount: expected_totals[:net_amount],
-                                                             currency: "usd"}, {
-                                                               stripe_account: nonprofit.stripe_account_id
-                                                             })
-            .and_wrap_original { |m, *args|
+          expect(Stripe::Payout).to receive(:create).with(
+            {amount: expected_totals[:net_amount], currency: "usd"},
+            {stripe_account: nonprofit.stripe_account_id}
+          ).and_wrap_original { |m, *args|
             args[0]["status"] = "pending"
             i = m.call(*args)
             stripe_transfer_id = i["id"]
             i
           }
+
           entities_yesterday
           result = InsertPayout.with_stripe(nonprofit.id, {stripe_account_id: nonprofit.stripe_account_id,
                                                     email: user_email,
@@ -150,8 +150,8 @@ describe InsertPayout do
             user_ip: user_ip,
             ach_fee: 0,
             bank_name: bank_name,
-            updated_at: Time.now,
-            created_at: Time.now
+            updated_at: Time.zone.now,
+            created_at: Time.zone.now
           }.with_indifferent_access
           expect(Payout.count).to eq 1
           resulted_payout = Payout.first
@@ -187,8 +187,8 @@ describe InsertPayout do
             user_ip: user_ip,
             ach_fee: 0,
             bank_name: bank_name,
-            updated_at: Time.now,
-            created_at: Time.now
+            updated_at: Time.zone.now,
+            created_at: Time.zone.now
           }.with_indifferent_access
 
           expect(Payout.count).to eq 1
@@ -230,20 +230,20 @@ describe InsertPayout do
 
         it "works with date provided" do
           stripe_transfer_id = nil
-          expect(Stripe::Payout).to receive(:create).with({amount: expected_totals[:net_amount],
-                                                             currency: "usd"}, {
-                                                               stripe_account: nonprofit.stripe_account_id
-                                                             })
-            .and_wrap_original { |m, *args|
+          expect(Stripe::Payout).to receive(:create).with(
+            {amount: expected_totals[:net_amount], currency: "usd"},
+            {stripe_account: nonprofit.stripe_account_id}
+          ).and_wrap_original { |m, *args|
             args[0]["status"] = "pending"
             i = m.call(*args)
             stripe_transfer_id = i["id"]
             i
           }
           result = InsertPayout.with_stripe(nonprofit.id, {stripe_account_id: nonprofit.stripe_account_id,
-                                                    email: user_email,
-                                                    user_ip: user_ip,
-                                                    bank_name: bank_name}, {date: Time.now - 1.day})
+                                                           email: user_email,
+                                                           user_ip: user_ip,
+                                                           bank_name: bank_name},
+            {date: 1.day.ago})
 
           expected_result = {
             net_amount: expected_totals[:net_amount],
@@ -257,8 +257,8 @@ describe InsertPayout do
             user_ip: user_ip,
             ach_fee: 0,
             bank_name: bank_name,
-            updated_at: Time.now,
-            created_at: Time.now
+            updated_at: Time.zone.now,
+            created_at: Time.zone.now
           }.with_indifferent_access
           expect(Payout.count).to eq 1
           resulted_payout = Payout.first
@@ -278,7 +278,7 @@ describe InsertPayout do
           result = InsertPayout.with_stripe(nonprofit.id, {stripe_account_id: nonprofit.stripe_account_id,
                                                     email: user_email,
                                                     user_ip: user_ip,
-                                                    bank_name: bank_name}, {date: Time.now - 1.day})
+                                                    bank_name: bank_name}, {date: 1.day.ago})
 
           expected_result = {
             net_amount: expected_totals[:net_amount],
@@ -292,8 +292,8 @@ describe InsertPayout do
             user_ip: user_ip,
             ach_fee: 0,
             bank_name: bank_name,
-            updated_at: Time.now,
-            created_at: Time.now
+            updated_at: Time.zone.now,
+            created_at: Time.zone.now
           }.with_indifferent_access
 
           expect(Payout.count).to eq 1
@@ -313,7 +313,7 @@ describe InsertPayout do
           result = InsertPayout.with_stripe(nonprofit.id, {stripe_account_id: nonprofit.stripe_account_id,
                                                     email: user_email,
                                                     user_ip: user_ip,
-                                                    bank_name: bank_name}, {date: Time.now - 1.day})
+                                                    bank_name: bank_name}, {date: 1.day.ago})
           resulting_payout = Payout.find(result["id"])
 
           expect(resulting_payout.object_events.last.event_type).to eq "payout.created"

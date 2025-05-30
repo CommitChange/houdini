@@ -8,7 +8,7 @@ class NameCopyNamingAlgorithm < CopyNamingAlgorithm
   end
 
   def copy_addition
-    " (#{Time.now.strftime("%F")} copy)"
+    " (#{Time.zone.now.strftime("%F")} copy)"
   end
 
   def separator_before_copy_number

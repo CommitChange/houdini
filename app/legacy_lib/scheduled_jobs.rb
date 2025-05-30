@@ -19,14 +19,14 @@ module ScheduledJobs
       ids: Qx.select("custom_field_joins.id")
         .from(:custom_field_joins)
         .left_join("supporters", "custom_field_joins.supporter_id=supporters.id")
-        .where("supporters.id IS NULL")
+        .where(supporters: {id: nil})
     })
     # Delete orphaned tag joins
     del_tags_orphaned = Qx.delete_from(:tag_joins).where("id IN ($ids)", {
       ids: Qx.select("tag_joins.id")
          .from(:tag_joins)
          .left_join(:supporters, "tag_joins.supporter_id=supporters.id")
-         .where("supporters.id IS NULL")
+         .where(supporters: {id: nil})
     })
 
     Enumerator.new do |yielder|
@@ -72,7 +72,7 @@ module ScheduledJobs
 
   def self.update_np_balances
     Enumerator.new do |yielder|
-      nps = Nonprofit.where("id IN (?)", Charge.pending.uniq.pluck(:nonprofit_id))
+      nps = Nonprofit.where(id: Charge.pending.uniq.select(:nonprofit_id))
       nps.each do |np|
         yielder << lambda do
           UpdateNonprofit.mark_available_charges(np.id)
@@ -84,7 +84,7 @@ module ScheduledJobs
 
   def self.update_pending_payouts
     Enumerator.new do |yielder|
-      Payout.pending.includes(:nonprofit).each do |p|
+      Payout.pending.includes(:nonprofit).find_each do |p|
         yielder << lambda do
           if p.transfer_type == :transfer
             p.status = Stripe::Transfer.retrieve(p.stripe_transfer_id, {

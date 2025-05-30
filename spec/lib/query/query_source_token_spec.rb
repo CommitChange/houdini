@@ -19,11 +19,11 @@ describe QuerySourceToken do
 
     let(:other_user) { force_create(:user) }
 
-    let(:our_source_token) { force_create(:source_token, token: our_uuid, total_uses: 0, expiration: Time.now + 1.day, max_uses: 1, event: event) }
-    let(:not_our_source_token) { force_create(:source_token, token: not_our_uuid, total_uses: 0, expiration: Time.now + 1.day, max_uses: 1) }
+    let(:our_source_token) { force_create(:source_token, token: our_uuid, total_uses: 0, expiration: 1.day.from_now, max_uses: 1, event: event) }
+    let(:not_our_source_token) { force_create(:source_token, token: not_our_uuid, total_uses: 0, expiration: 1.day.from_now, max_uses: 1) }
 
-    let(:expired_source_token) { force_create(:source_token, token: expired_uuid, total_uses: 0, expiration: Time.now - 1.day) }
-    let(:overused_source_token) { force_create(:source_token, token: overused_uuid, total_uses: 1, expiration: Time.now + 1.day, max_uses: 1) }
+    let(:expired_source_token) { force_create(:source_token, token: expired_uuid, total_uses: 0, expiration: 1.day.ago) }
+    let(:overused_source_token) { force_create(:source_token, token: overused_uuid, total_uses: 1, expiration: 1.day.from_now, max_uses: 1) }
 
     before(:each) {
       our_source_token
@@ -91,10 +91,10 @@ describe QuerySourceToken do
       expected = {
         total_uses: 1,
         max_uses: 1,
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         event_id: event.id,
-        expiration: Time.now + 1.day,
+        expiration: 1.day.from_now,
         token: our_uuid,
         tokenizable_id: nil,
         tokenizable_type: nil

@@ -67,7 +67,7 @@ class CampaignsController < ApplicationController
       json_saved campaign, "Campaign created! Well done."
     else
       profile_id = params[:campaign][:profile_id]
-      Profile.find(profile_id).update_attributes params[:profile]
+      Profile.find(profile_id).update params[:profile]
       render json: CreatePeerToPeerCampaign.create(params[:campaign], profile_id)
     end
   end
@@ -76,7 +76,7 @@ class CampaignsController < ApplicationController
     Time.use_zone(current_nonprofit.timezone || "UTC") do
       params[:campaign][:end_datetime] = Chronic.parse(params[:campaign][:end_datetime]) if params[:campaign][:end_datetime].present?
     end
-    current_campaign.update_attributes params[:campaign]
+    current_campaign.update params[:campaign]
 
     json_saved current_campaign, "Successfully updated!"
   end

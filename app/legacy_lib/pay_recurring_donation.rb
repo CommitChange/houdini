@@ -10,7 +10,7 @@ module PayRecurringDonation
     # Bulk insert the delayed jobs with a single expression
     ids = Psql.execute_vectors(
       QueryRecurringDonations._all_that_are_due
-    )[1..-1].flatten
+    )[1..].flatten
 
     jobs = ids.map do |id|
       {handler: DelayedJobHelper.create_handler(PayRecurringDonation, :with_stripe, [id])}
@@ -64,7 +64,7 @@ module PayRecurringDonation
       }
     })
 
-    rd = RecurringDonation.includes(:misc_recurring_donation_info).where("id = ?", rd_id).first
+    rd = RecurringDonation.includes(:misc_recurring_donation_info).where(id: rd_id).first
 
     unless rd
       raise ParamValidation::ValidationError.new("#{rd_id} is not a valid recurring donation", {key: :rd_id})
@@ -72,7 +72,7 @@ module PayRecurringDonation
 
     return false if !force_run && !QueryRecurringDonations.is_due?(rd_id)
 
-    donation = Donation.where("id = ?", rd["donation_id"]).first
+    donation = Donation.where(id: rd["donation_id"]).first
     unless donation
       raise ParamValidation::ValidationError.new("#{rd["donation_id"]} is not a valid donation", {})
     end

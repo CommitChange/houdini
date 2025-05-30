@@ -6,6 +6,5 @@ class NonprofitAccount < ApplicationRecord
 
   belongs_to :nonprofit
 
-  validates :nonprofit, presence: true
   validates :stripe_account_id, presence: true
 end
