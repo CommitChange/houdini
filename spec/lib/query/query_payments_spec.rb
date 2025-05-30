@@ -791,6 +791,18 @@ describe QueryPayments do
       end
 
       context 'filters and sorts' do 
+        let (:input) { 
+          {
+            amount: 300, 
+            nonprofit_id: nonprofit.id,
+            supporter_id: supporter.id,
+            token: source_tokens[3].token,
+            date: (Time.now - 1.day).to_s,
+            comment: "test comment",
+            dedication: "something here", 
+            designation: "something here"
+          }
+        }
         #when filtering by campaigns 
           #returns only donations and refunds and charges associated with that campaign
 
@@ -801,11 +813,10 @@ describe QueryPayments do
 
             result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id})
             expect(result[:data].count).to eq 2
-           #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["charge"]["id"] } }
           end 
           
           #when sorting by campaign donation amount
-            #returns asc order of amounts from the refunds and charges and donations associated with that campaign donation
+            #returns results ordered by campaign donation amount
           it 'returns results sorted by amount'do
             donation_result_today
             donation_result_yesterday
@@ -816,7 +827,7 @@ describe QueryPayments do
           end
 
         #when sorting by campaign donation date 
-          #returns asc order of date 
+          #returns results ordered of campaign donation date 
           it 'returns results sorted by date' do
             donation_result_today
             donation_result_yesterday
@@ -825,14 +836,23 @@ describe QueryPayments do
             result = QueryPayments.full_search(nonprofit.id, {date: "date"})
             expect(result[:data].count).to eq 3
           end 
+        
         #when sorting by campaign donation name 
           #returns asc order of name/s?
+          #create another donation that includes a supporter name? 
+        it 'returns results sorted by supporters name on campaign donation' do
+          InsertDonation.with_stripe(input) #calling test input here
+          donation_result_tomorrow
+          donation_result_yesterday
+
+          result = QueryPayments.full_search(nonprofit.id, {filter: "supporter name"})
+          expect(result[:data].count).to eq 3
+        end
+
         #when sorting by campaign donation type 
           #returns asc order of type
         #when sorting by campaign donation towards 
           #returns asc order of campaign donation towards
-        #when filtering and sorting
-         # sorts by amount, date, name, type, towards 
       end 
     end
   end
