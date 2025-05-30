@@ -822,7 +822,7 @@ describe QueryPayments do
             donation_result_yesterday
             donation_result_tomorrow
 
-            result = QueryPayments.full_search(nonprofit.id, {amount: "amount"})
+            result = QueryPayments.full_search(nonprofit.id, {sort_amount: "amount"})
             expect(result[:data].count).to eq 3
           end
 
@@ -833,7 +833,7 @@ describe QueryPayments do
             donation_result_yesterday
             donation_result_tomorrow
 
-            result = QueryPayments.full_search(nonprofit.id, {date: "date"})
+            result = QueryPayments.full_search(nonprofit.id, {sort_date: "date"})
             expect(result[:data].count).to eq 3
           end 
         
@@ -845,7 +845,7 @@ describe QueryPayments do
           donation_result_tomorrow
           donation_result_yesterday
 
-          result = QueryPayments.full_search(nonprofit.id, {filter: "supporter name"})
+          result = QueryPayments.full_search(nonprofit.id, {sort_name: "supporters.name"})
           expect(result[:data].count).to eq 3
         end
 
