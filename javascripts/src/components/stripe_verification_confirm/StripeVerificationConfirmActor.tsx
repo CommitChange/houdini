@@ -29,7 +29,7 @@ function ContextedStripeVerificationConfirmActor(props:StripeVerificationConfirm
 interface StripeVerificationConfirmActorState {
   verifying:boolean,
   lastStatus?:'completed'|'needmore'|'still_pending'|'unknown_error'
-  disabledReason?:string
+  disabledReason?:string |null
   needBankAccount?:boolean
   deadline?:number|null
 }
@@ -93,7 +93,7 @@ class StripeVerificationConfirmActor extends React.Component<FullStripeVerificat
 
   render() {
     const childProps = {...this.state, retry: () => this.verify()};
-    return React.cloneElement(React.Children.only(this.props.children), childProps);
+    return React.cloneElement(React.Children.only(this.props.children) as React.ReactElement, childProps);
   }
 }
 
