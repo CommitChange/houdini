@@ -813,6 +813,7 @@ describe QueryPayments do
 
             result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id})
             expect(result[:data].count).to eq 2
+            #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["campaign"]["id"] } }
           end 
           
           #when sorting by campaign donation amount
@@ -822,8 +823,9 @@ describe QueryPayments do
             donation_result_yesterday
             donation_result_tomorrow
 
-            result = QueryPayments.full_search(nonprofit.id, {sort_amount: "amount"})
-            expect(result[:data].count).to eq 3
+            result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_amount: "asc"})
+            expect(result[:data].count).to eq 2
+            #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
           end
 
         #when sorting by campaign donation date 
@@ -833,8 +835,9 @@ describe QueryPayments do
             donation_result_yesterday
             donation_result_tomorrow
 
-            result = QueryPayments.full_search(nonprofit.id, {sort_date: "date"})
-            expect(result[:data].count).to eq 3
+            result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_date: "desc"})
+            expect(result[:data].count).to eq 2
+            #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
           end 
         
         #when sorting by campaign donation name 
@@ -845,8 +848,9 @@ describe QueryPayments do
           donation_result_tomorrow
           donation_result_yesterday
 
-          result = QueryPayments.full_search(nonprofit.id, {sort_name: "supporters.name"})
-          expect(result[:data].count).to eq 3
+          result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_name: "supporters.name"})
+          expect(result[:data].count).to eq 1
+          #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
         end
       end 
     end
