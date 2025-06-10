@@ -117,7 +117,6 @@ group :test do
 end
 
 # Gems used for asset compilation
-# gem 'dartsass-sprockets'
 gem 'sassc'
 gem 'sassc-rails'
 gem 'uglifier'
