@@ -813,7 +813,7 @@ describe QueryPayments do
 
             result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id})
             expect(result[:data].count).to eq 2
-            #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["campaign"]["id"] } }
+            expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
           end 
           
           #when sorting by campaign donation amount
@@ -825,7 +825,7 @@ describe QueryPayments do
 
             result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_amount: "asc"})
             expect(result[:data].count).to eq 2
-            #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
+            expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
           end
 
         #when sorting by campaign donation date 
@@ -837,7 +837,7 @@ describe QueryPayments do
 
             result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_date: "desc"})
             expect(result[:data].count).to eq 2
-            #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
+            expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
           end 
         
         #when sorting by campaign donation name 
@@ -850,7 +850,7 @@ describe QueryPayments do
 
           result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_name: "supporters.name"})
           expect(result[:data].count).to eq 1
-          #expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
+          expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
         end
       end 
     end
