@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_12_221922) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_17_142915) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -408,6 +408,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_12_221922) do
     t.datetime "end_datetime", precision: nil
     t.index ["nonprofit_id", "deleted", "published", "end_datetime"], name: "events_nonprofit_id_not_deleted_and_published_endtime"
     t.index ["nonprofit_id", "deleted", "published"], name: "index_events_on_nonprofit_id_and_deleted_and_published"
+    t.index ["nonprofit_id", "end_datetime", "published", "deleted"], name: "idx_events_listings_query"
     t.index ["nonprofit_id"], name: "index_events_on_nonprofit_id"
   end
 
@@ -821,8 +822,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_12_221922) do
     t.integer "donation_id"
     t.datetime "date", precision: nil
     t.index ["date"], name: "payments_date"
+    t.index ["donation_id", "gross_amount"], name: "idx_payments_donations"
     t.index ["donation_id"], name: "payments_donation_id"
     t.index ["gross_amount"], name: "payments_gross_amount"
+    t.index ["id", "gross_amount"], name: "idx_payments_gross_amount"
     t.index ["kind"], name: "payments_kind"
     t.index ["nonprofit_id"], name: "payments_nonprofit_id"
     t.index ["supporter_id"], name: "payments_supporter_id"
@@ -1238,7 +1241,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_12_221922) do
     t.boolean "deleted", default: false
     t.uuid "source_token_id"
     t.integer "ticket_purchase_id"
+    t.index ["event_id", "quantity", "checked_in"], name: "idx_tickets_event_metrics"
     t.index ["event_id"], name: "index_tickets_on_event_id"
+    t.index ["payment_id", "event_id"], name: "idx_tickets_payments"
     t.index ["payment_id"], name: "index_tickets_on_payment_id"
     t.index ["supporter_id"], name: "index_tickets_on_supporter_id"
     t.index ["ticket_purchase_id"], name: "index_tickets_on_ticket_purchase_id"
