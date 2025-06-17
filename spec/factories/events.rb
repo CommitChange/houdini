@@ -7,9 +7,13 @@ FactoryBot.define do
     address { "100 N Appleton St" }
     city { "Appleton" }
     state_code { "WI" }
-    slug { "event-of-wonders" }
+    slug { SecureRandom.uuid }
     nonprofit
     profile
+
+    before(:create) do |event, context|
+      Event.any_instance.stub(:geocode).and_return([1, 1])
+    end
   end
 
   factory :event_base, class: "Event" do

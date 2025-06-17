@@ -25,8 +25,8 @@ module.exports = pathPrefix => {
   const listings = (key, state) => {
     const resp$ = state[key]
     const mixin = (content, count) =>
-      h('section.u-marginBottom--30', [
-        h('h5.u-centered.u-marginBottom--20', count + ' ' + key.charAt(0).toUpperCase() + key.slice(1) + ' Events')
+      h('section.u-marginBottom--20.u-marginTop--30', [
+        h('h4.u-marginBottom--0.u-paddingX--20', count + ' ' + key.charAt(0).toUpperCase() + key.slice(1) + ' Events')
       , h(`div`, content)
       ])
 
