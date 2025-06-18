@@ -1,8 +1,5 @@
 class AddIndexesEvents < ActiveRecord::Migration[7.1]
   def change
-    add_index :events, [:nonprofit_id, :end_datetime, :published, :deleted],
-              name: 'idx_events_listings_query'
-
     add_index :tickets, [:event_id, :quantity, :checked_in],
               name: 'idx_tickets_event_metrics'
 

@@ -408,7 +408,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_17_142915) do
     t.datetime "end_datetime", precision: nil
     t.index ["nonprofit_id", "deleted", "published", "end_datetime"], name: "events_nonprofit_id_not_deleted_and_published_endtime"
     t.index ["nonprofit_id", "deleted", "published"], name: "index_events_on_nonprofit_id_and_deleted_and_published"
-    t.index ["nonprofit_id", "end_datetime", "published", "deleted"], name: "idx_events_listings_query"
     t.index ["nonprofit_id"], name: "index_events_on_nonprofit_id"
   end
 
