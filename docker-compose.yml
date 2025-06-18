@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   db:
     image: postgres:16
@@ -8,6 +7,14 @@ services:
     volumes:
       - ./tmp/db:/var/lib/postgresql/data:delegated
       - ./tmp/shared:/tmp/shared:cached
+    command: >
+      postgres
+      -c shared_buffers=1GB
+      -c max_connections=100
+      -c max_parallel_workers=8
+      -c max_parallel_workers_per_gather=4
+      -c work_mem=64MB
+      -c maintenance_work_mem=512MB
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password

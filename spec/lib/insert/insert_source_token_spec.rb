@@ -58,9 +58,11 @@ describe InsertSourceToken do
       end
 
       it "with event" do
+
         Timecop.freeze(2020, 4, 5) do
           ouruuid = nil
 
+          event # to make sure SecureRandom.uuid from slug doesnt interfere with InsertSourceToken
           tokenizable = Card.create!
           expect(SecureRandom).to receive(:uuid).and_wrap_original { |m|
             ouruuid = m.call
@@ -119,6 +121,7 @@ describe InsertSourceToken do
         Timecop.freeze(2020, 4, 5) do
           ouruuid = nil
 
+          event # to make sure SecureRandom.uuid from slug doesnt interfere with InsertSourceToken
           tokenizable = Card.create!
           expect(SecureRandom).to receive(:uuid).and_wrap_original { |m|
             ouruuid = m.call
