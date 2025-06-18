@@ -9,19 +9,19 @@ describe QueryEventMetrics do
   let(:supporter2) { create(:supporter, nonprofit:, import: create(:import, nonprofit:)) }
 
   let!(:event_active1) do
-    event = create(:event, nonprofit:,
-                   name: Faker::FunnyName.four_word_name,
-                   organizer_email: Faker::Internet.email,
-                   end_datetime: 10.days.since.at_beginning_of_day, start_datetime: 10.days.ago.at_beginning_of_day, published: true, slug: SecureRandom.uuid,
-                   address: Faker::Address.street_address, city: Faker::Address.city, state_code: Faker::Address.state_abbr, zip_code: Faker::Address.zip)
+    create(:event, nonprofit:,
+      name: Faker::FunnyName.four_word_name,
+      organizer_email: Faker::Internet.email,
+      end_datetime: 10.days.since.at_beginning_of_day, start_datetime: 10.days.ago.at_beginning_of_day, published: true, slug: SecureRandom.uuid,
+      address: Faker::Address.street_address, city: Faker::Address.city, state_code: Faker::Address.state_abbr, zip_code: Faker::Address.zip)
   end
 
   let!(:event_active2) do
     create(:event, nonprofit:,
-                   name: Faker::FunnyName.four_word_name,
-                   organizer_email: Faker::Internet.email,
-                   end_datetime: 20.days.since.at_beginning_of_day, start_datetime: 10.days.ago.at_beginning_of_day, published: true, slug: SecureRandom.uuid,
-                   address: Faker::Address.street_address, city: Faker::Address.city, state_code: Faker::Address.state_abbr, zip_code: Faker::Address.zip)
+      name: Faker::FunnyName.four_word_name,
+      organizer_email: Faker::Internet.email,
+      end_datetime: 20.days.since.at_beginning_of_day, start_datetime: 10.days.ago.at_beginning_of_day, published: true, slug: SecureRandom.uuid,
+      address: Faker::Address.street_address, city: Faker::Address.city, state_code: Faker::Address.state_abbr, zip_code: Faker::Address.zip)
   end
 
   let!(:tl1) { create(:ticket_level, event: event_active2) }
@@ -50,7 +50,7 @@ describe QueryEventMetrics do
   describe ".for_listings" do
     describe "for nonprofit" do
       describe "active" do
-        subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"active" => true})}
+        subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"active" => true}) }
 
         it "query result has correct attributes" do
           expect(results.count).to eq 2
@@ -70,14 +70,14 @@ describe QueryEventMetrics do
           expect(results.first["total_attendees"]).to eq 7
           expect(results.first["tickets_total_paid"]).to eq 3_222
           expect(results.first["donations_total_paid"]).to eq 7_959
-          expect(results.first["total_paid"]).to eq (3_222 + 7_959)
+          expect(results.first["total_paid"]).to eq(3_222 + 7_959)
 
           expect(results.last["id"]).to eq event_active1.id
         end
       end
 
       describe "active" do
-        subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"past" => true})}
+        subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"past" => true}) }
         it "query result has correct element" do
           expect(results.count).to eq 1
           expect(results.first["id"]).to eq event_past.id
@@ -85,7 +85,7 @@ describe QueryEventMetrics do
       end
 
       describe "unpublished" do
-        subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"unpublished" => true})}
+        subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"unpublished" => true}) }
         it "query result has correct element" do
           expect(results.count).to eq 1
           expect(results.first["id"]).to eq event_unpublished.id
@@ -93,7 +93,7 @@ describe QueryEventMetrics do
       end
 
       describe "deleted" do
-        subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"deleted" => true})}
+        subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"deleted" => true}) }
         it "query result has correct element" do
           expect(results.count).to eq 1
           expect(results.first["id"]).to eq event_deleted.id
