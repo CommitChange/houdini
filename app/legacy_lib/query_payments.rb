@@ -160,8 +160,9 @@ module QueryPayments
     if query[:search].present?
       expr = SearchVector.query(query[:search], expr)
     end
-    unless query[:campaign_id].present? || query[:event_id].present? # if we need to add the reverse query, we can't add this here.
-      if ["asc", "desc"].include? query[:sort_amount]
+    # Fix for failed payment queries when filtering by campaign AND adding a sort
+    unless (query[:campaign_id].present? || query[:event_id].present?) # if we need to add the reverse query, we can't add this here.
+      if ['asc', 'desc'].include? query[:sort_amount]
         expr = expr.order_by("payments.gross_amount #{query[:sort_amount]}")
       end
       if ["asc", "desc"].include? query[:sort_date]
@@ -301,7 +302,7 @@ module QueryPayments
     if query[:search].present?
       expr = SearchVector.query(query[:search], expr)
     end
-
+    
     # This breaks so we need to scrap it
     # if ['asc', 'desc'].include? query[:sort_amount]
     #   expr = expr.order_by("payments.gross_amount #{query[:sort_amount]}")
@@ -318,6 +319,7 @@ module QueryPayments
     # if ['asc', 'desc'].include? query[:sort_towards]
     #   expr = expr.order_by("NULLIF(payments.towards, '') #{query[:sort_towards]}")
     # end
+
     if query[:after_date].present?
       expr = expr.where("payments.date >= $date", date: query[:after_date])
     end

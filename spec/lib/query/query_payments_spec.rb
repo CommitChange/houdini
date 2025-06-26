@@ -7,7 +7,6 @@ describe QueryPayments do
     @nonprofit = force_create(:nonprofit, name: "npo1")
     @supporters = [force_create(:supporter, name: "supporter-0", nonprofit: @nonprofit),
       force_create(:supporter, name: "supporter-1", nonprofit: @nonprofit)]
-
     @payments = [force_create(:payment, gross_amount: 1000, fee_total: 99, net_amount: 901, supporter: @supporters[0], nonprofit: @nonprofit),
       force_create(:payment, gross_amount: 2000, fee_total: 22, net_amount: 1978, supporter: @supporters[1], nonprofit: @nonprofit)]
     @bank_account = force_create(:bank_account, name: "baids_for_payoutnk1", nonprofit: @nonprofit)
@@ -711,7 +710,7 @@ describe QueryPayments do
       end
     end
 
-    describe "campaign donations" do
+    describe "campaign donations" do 
       let(:donation_result_yesterday) {
         generate_donation(amount: charge_amount_small,
           campaign_id: campaign.id,
@@ -739,7 +738,7 @@ describe QueryPayments do
         generate_donation(amount: charge_amount_large,
 
           token: source_tokens[2].token,
-          date: (Time.now - 1.day).to_s)
+          date: (Time.now + 1.day).to_s)
       }
 
       let(:charge_result_tomorrow) {
@@ -790,6 +789,70 @@ describe QueryPayments do
         expect(result[:data].count).to eq 4
         expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
       end
+
+      context 'filters and sorts' do 
+        let (:input) { 
+          {
+            amount: 300, 
+            nonprofit_id: nonprofit.id,
+            supporter_id: supporter.id,
+            token: source_tokens[3].token,
+            date: (Time.now - 1.day).to_s,
+            comment: "test comment",
+            dedication: "something here", 
+            designation: "something here"
+          }
+        }
+        #when filtering by campaigns 
+          #returns only donations and refunds and charges associated with that campaign
+
+          it 'returns only (donation)results associated with a campaign' do
+            donation_result_yesterday
+            donation_result_today
+            donation_result_tomorrow 
+
+            result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id})
+            expect(result[:data].count).to eq 2
+            expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
+          end 
+          
+          #when sorting by campaign donation amount
+            #returns results ordered by campaign donation amount
+          it 'returns results sorted by amount'do
+            donation_result_today
+            donation_result_yesterday
+            donation_result_tomorrow
+
+            result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_amount: "asc"})
+            expect(result[:data].count).to eq 2
+            expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
+          end
+
+        #when sorting by campaign donation date 
+          #returns results ordered of campaign donation date 
+          it 'returns results sorted by date' do
+            donation_result_today
+            donation_result_yesterday
+            donation_result_tomorrow
+
+            result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_date: "desc"})
+            expect(result[:data].count).to eq 2
+            expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
+          end 
+        
+        #when sorting by campaign donation name 
+          #returns asc order of name/s?
+          #create another donation that includes a supporter name? 
+        it 'returns results sorted by supporters name on campaign donation' do
+          InsertDonation.with_stripe(input) #calling test input here
+          donation_result_tomorrow
+          donation_result_yesterday
+
+          result = QueryPayments.full_search(nonprofit.id, {campaign_id: campaign.id, sort_name: "supporters.name"})
+          expect(result[:data].count).to eq 1
+          expect(result[:data]).to_not satisfy { |i| i.any? { |j| j["id"] == donation_result_tomorrow["payment"]["id"] } }
+        end
+      end 
     end
   end
 

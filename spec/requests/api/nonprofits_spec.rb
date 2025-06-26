@@ -115,6 +115,7 @@ describe Api::NonprofitsController, type: :request do
       })
     end
 
+
     it "succeeds" do
       ActiveJob::Base.queue_adapter = :test
       StripeMockHelper.start
@@ -133,6 +134,7 @@ describe Api::NonprofitsController, type: :request do
       expect(response.code).to eq "201"
       expect(MailchimpNonprofitUserAddJob).to have_been_enqueued
 
+    # code starting on this line is causing spec to fail in GH suite 5/29/25
       our_np = Nonprofit.all[1]
       expected_np = {
         name: "n",
