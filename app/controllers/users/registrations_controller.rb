@@ -39,7 +39,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       errs = current_user.errors.full_messages
     else
       success = false
-      errs = {password: :incorrect}
+      errs = {password: [:incorrect]}
     end
 
     if success
@@ -84,6 +84,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def handle_two_factor_changes
+    return if current_user.two_factor_required_by_nonprofit?
+
     otp_param = params[:user][:otp_required_for_login]
     return if otp_param.blank?
 
