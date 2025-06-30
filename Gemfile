@@ -22,6 +22,7 @@ gem "puma", "~> 5.6"
 gem "kaminari"
 
 gem "bootsnap", require: false
+# gem 'bootstrap', '~> 5.3.5'
 gem "rack-timeout"
 
 gem "test-unit"
@@ -117,8 +118,9 @@ group :test do
 end
 
 # Gems used for asset compilation
-gem "sassc"
-gem "sassc-rails"
+gem 'sassc'
+gem 'sassc-rails'
+gem 'uglifier'
 gem "terser"
 
 # make logging less terrible in rails
