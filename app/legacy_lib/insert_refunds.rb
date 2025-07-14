@@ -53,7 +53,7 @@ module InsertRefunds
         supporter_id: charge["supporter_id"]
       })
 
-      InsertActivities.for_refunds([payment.id])
+      InsertActivities.for_refunds(payment)
 
       # Update the refund to have the above payment_id
       refund.payment = payment

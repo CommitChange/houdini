@@ -82,10 +82,22 @@ module InsertActivities
       .add_join("events AS event", "event.id=tickets.event_id")
   end
 
-  def self.for_refunds(payment_ids)
-    insert_refunds_expr
-      .and_where("payments.id IN ($ids)", ids: payment_ids)
-      .execute
+  def self.for_refunds(*payments)
+    payments.map do |payment|
+      refund = payment.refund
+      Activity.create(
+        attachment: payment,
+        supporter: payment.supporter,
+        nonprofit: payment.nonprofit,
+        kind: "Refund",
+        json_data: {
+          gross_amount: payment.gross_amount,
+          reason: refund.reason,
+          email: refund.user&.email
+        },
+        user: refund.user
+      )
+    end
   end
 
   def self.insert_refunds_expr
