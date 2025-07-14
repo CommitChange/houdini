@@ -15,8 +15,8 @@ class Refund < ApplicationRecord
 
   attr_accessor :failure_message
 
-  belongs_to :charge
-  belongs_to :payment
+  belongs_to :charge, optional: false
+  belongs_to :payment, optional: false
   has_one :subtransaction_payment, through: :payment
   has_one :misc_refund_info
   has_one :nonprofit, through: :charge
