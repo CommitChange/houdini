@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG BASE_IMAGE=ruby
-ARG RUBY_VERSION=2.7.8
+ARG RUBY_VERSION=3.3.8
 ARG BASE_TAG=${RUBY_VERSION}-slim
 ARG BASE=${BASE_IMAGE}:${BASE_TAG}
 
@@ -81,4 +81,4 @@ ARG RAILS_ROOT=/app/
 WORKDIR $RAILS_ROOT
 RUN touch /home/app/.netrc
 RUN mkdir -p tmp/pids
-CMD bundle check || (bundle update --bundler && bundle install -j4 --retry 3) && foreman start
+CMD bundle check || (bundle update --bundler && bundle install -j4 --retry 3) && bin/dev start
