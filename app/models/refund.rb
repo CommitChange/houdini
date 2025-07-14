@@ -27,6 +27,8 @@ class Refund < ApplicationRecord
 
   has_many :manual_balance_adjustments, as: :entity
 
+  validates :amount, presence: true, numericality: {only_integer: true, greater_than: 0}
+
   def original_payment
     charge&.payment
   end
