@@ -2,14 +2,17 @@
 require "rails_helper"
 
 RSpec.describe Refund, type: :model do
-  it { is_expected.to belong_to(:charge) }
-  it { is_expected.to belong_to(:payment) }
+  it { is_expected.to belong_to(:charge).required(true) }
+  it { is_expected.to belong_to(:payment).required(true) }
   it { is_expected.to have_one(:subtransaction_payment).through(:payment) }
   it { is_expected.to have_one(:misc_refund_info) }
 
   it { is_expected.to have_one(:nonprofit).through(:charge) }
   it { is_expected.to have_one(:supporter).through(:charge) }
   it { is_expected.to have_many(:manual_balance_adjustments) }
+
+  it { is_expected.to validate_presence_of(:amount) }
+  it { is_expected.to validate_numericality_of(:amount).only_integer.is_greater_than(0) }
 
   describe "#from_donation?" do
     it "is true when refund is associated with a donation" do
