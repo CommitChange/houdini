@@ -4,6 +4,7 @@ require "rails_helper"
 RSpec.describe Refund, type: :model do
   it { is_expected.to belong_to(:charge).required(true) }
   it { is_expected.to belong_to(:payment).required(true) }
+  it { is_expected.to belong_to(:user).required(false) }
   it { is_expected.to have_one(:subtransaction_payment).through(:payment) }
   it { is_expected.to have_one(:misc_refund_info) }
 
