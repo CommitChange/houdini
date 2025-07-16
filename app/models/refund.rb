@@ -17,6 +17,7 @@ class Refund < ApplicationRecord
 
   belongs_to :charge, optional: false
   belongs_to :payment, optional: false
+  belongs_to :user, optional: true
   has_one :subtransaction_payment, through: :payment
   has_one :misc_refund_info
   has_one :nonprofit, through: :charge
