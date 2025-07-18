@@ -773,6 +773,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_18_232735) do
     t.index ["supporter_id"], name: "index_offsite_payments_on_supporter_id"
   end
 
+  create_table "payment_dupe_statuses", id: :serial, force: :cascade do |t|
+    t.integer "payment_id"
+    t.boolean "matched", default: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.integer "matched_with_offline", default: [], array: true
+    t.index ["payment_id"], name: "index_payment_dupe_statuses_on_payment_id"
+  end
+
   create_table "payment_imports", id: :serial, force: :cascade do |t|
     t.integer "user_id"
     t.integer "nonprofit_id"
