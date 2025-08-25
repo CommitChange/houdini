@@ -3,13 +3,13 @@ source "https://rubygems.org"
 ruby ENV["CUSTOM_RUBY_VERSION"] || "3.3.8" # heroku needs a specific ruby version in the Gemfile
 
 gem "rake"
-gem "rails", "~> 7.1.5.1"
-gem "sprockets", "~> 3.7" # Sprockets 4.0 stops allowing us to add a proc to the config.assets.precompile array, which we currently use
+gem "rails", "~> 8.0.2.1"
+gem "sprockets", "~> 4.2" # Sprockets 4.0 stops allowing us to add a proc to the config.assets.precompile array, which we currently use
 
-gem "rack", "~> 2.2.15"
+gem "rack", "~> 3.2.0"
 
 # https://stripe.com/docs/api
-gem "stripe", "~> 5.0"
+gem "stripe", "~> 13.5"
 
 # json serialization
 # https://github.com/nesquena/rabl
@@ -17,7 +17,7 @@ gem "rabl"
 
 gem "jbuilder"
 
-gem "puma", "~> 5.6"
+gem "puma", "~> 6.6"
 
 gem "kaminari"
 
@@ -81,7 +81,7 @@ gem "premailer-rails"
 gem "table_print"
 
 gem "rails-i18n" # For 4.0.x
-gem "i18n-js", "~> 3.8" # i18n-js 4 is very different and doesn't work without some big changes
+gem "i18n-js", "~> 4.2" # i18n-js 4 is very different and doesn't work without some big changes
 gem "countries"
 
 gem "rexml" # needed on Ruby 3
@@ -125,7 +125,7 @@ gem "terser"
 # make logging less terrible in rails
 gem "lograge"
 
-gem "config", "~> 2.0"
+gem "config", "~> 5.6"
 gem "dry-validation" # used only for config validation
 
 group :production do
