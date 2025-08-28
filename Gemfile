@@ -17,7 +17,7 @@ gem "rabl"
 
 gem "jbuilder"
 
-gem "puma", "~> 5.6"
+gem "puma", "~> 6.0"
 
 gem "kaminari"
 
@@ -86,6 +86,8 @@ gem "countries"
 
 gem "rexml" # needed on Ruby 3
 gem "csv" # needed on Ruby 3.4
+
+gem "maintenance_tasks" # for running useful maintenance scripts that aren't part of a migration
 
 group :development, :ci, :test do
   gem "dumpcar"
