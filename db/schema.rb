@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_15_004028) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_26_154514) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -382,6 +382,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_15_004028) do
     t.string "organizer_email", limit: 255
     t.datetime "start_datetime", precision: nil
     t.datetime "end_datetime", precision: nil
+    t.string "in_person_or_virtual", default: "in_person", comment: "whether or not this is a virtual event"
+    t.index ["in_person_or_virtual"], name: "index_events_on_in_person_or_virtual"
     t.index ["nonprofit_id", "deleted", "published", "end_datetime"], name: "events_nonprofit_id_not_deleted_and_published_endtime"
     t.index ["nonprofit_id", "deleted", "published"], name: "index_events_on_nonprofit_id_and_deleted_and_published"
     t.index ["nonprofit_id"], name: "index_events_on_nonprofit_id"
@@ -460,10 +462,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_15_004028) do
     t.index ["supporter_id"], name: "index_full_contact_infos_on_supporter_id"
   end
 
-  create_table "full_contact_jobs", force: :cascade do |t|
-    t.integer "supporter_id"
-  end
-
   create_table "full_contact_orgs", id: :serial, force: :cascade do |t|
     t.boolean "is_primary"
     t.string "name", limit: 255
@@ -526,6 +524,27 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_15_004028) do
     t.integer "imported_count"
     t.integer "nonprofit_id"
     t.integer "user_id"
+  end
+
+  create_table "maintenance_tasks_runs", force: :cascade do |t|
+    t.string "task_name", null: false
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
+    t.float "time_running", default: 0.0, null: false
+    t.bigint "tick_count", default: 0, null: false
+    t.bigint "tick_total"
+    t.string "job_id"
+    t.string "cursor"
+    t.string "status", default: "enqueued", null: false
+    t.string "error_class"
+    t.string "error_message"
+    t.text "backtrace"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "arguments"
+    t.integer "lock_version", default: 0, null: false
+    t.text "metadata"
+    t.index ["task_name", "status", "created_at"], name: "index_maintenance_tasks_runs", order: { created_at: :desc }
   end
 
   create_table "manual_balance_adjustments", id: :serial, force: :cascade do |t|
