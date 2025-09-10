@@ -4,11 +4,11 @@
 <%= content_for(:stylesheets) {stylesheet_link_tag 'events/show/page'} %>
 <% content_for(:fixed_position_cta_hidden) {'hidden'} %>
 
-<% @brand_color = @nonprofit.brand_color ? @nonprofit.brand_color : nil %>
+<% @brand_color = @nonprofit.brand_color %>
 
 <%= content_for :facebook_tags do %>
 	<meta property="og:title" content="<%= @event.name %>" />
-	<meta property="og:description" content="<%= @event.summary.present? ? @event.summary : @event.name %>" />
+	<meta property="og:description" content="<%= @event.summary || @event.name %>" />
 	<meta property="og:image" content="<%= @event.main_image_url(:normal) %>" />
 <% end %>
 
@@ -26,19 +26,19 @@
 	<script>
 		app.event_id = <%= @event.id %>
 		appl.def('event_id', <%= @event.id %>)
-		app.hide_activities = <%= @event.hide_activity_feed %>
+		app.hide_activities = <%= @event.hide_activity_feed? %>
 		app.header_image_url = '<%= @event_background_image %>'
 		app.current_event_editor = <%= current_event_editor? %>
 		app.event_url = '<%= nonprofit_event_path(@nonprofit, @event) %>'
-	appl.def('event_is_deleted', <%= @event.deleted || false %>)
+	appl.def('event_is_deleted', <%= @event.deleted? || false %>)
 	app.nonprofit = app.nonprofit || {}
 
 	app.nonprofit.feeStructure = <%= raw @nonprofit.fee_coverage_details_with_json_safe_keys.to_json %>
 	</script>
 
 	<%= render 'common/froala' if current_event_editor? %>
-  <%= 
-		render('schema', event: @event, url: @url) if @event.in_person?  #the ld-json schema only works for in person events https://developers.google.com/search/docs/appearance/structured-data/event#content-guidelines
+  <%= # the ld-json schema only works for in person events https://developers.google.com/search/docs/appearance/structured-data/event#content-guidelines
+		render('schema', event: @event, url: @url) if @event.in_person?
 	%>
 	<script>
 				var ticketPaymentCard = stripeV3.elements({
@@ -102,7 +102,7 @@
 <%= render 'components/fundraising_pages/header',
 	image_url: @event_background_image,
 	is_editor: current_event_editor?,
-	hide_title:  @event.hide_title,
+	hide_title:  @event.hide_title?,
 	header_content_partial: 'header_content',
   banner_image_url: nil %>
 
@@ -127,7 +127,7 @@
 
 		<%= render 'date_time' %>
 		<%= render 'location', event: @event %>
-		<%= render 'event_metrics' if (@event.show_total_raised || @event.show_total_count) %>
+		<%= render 'event_metrics' if (@event.show_total_raised? || @event.show_total_count?) %>
 
     <div class='u-marginBottom--15'>
       <button class='js-openDonationModal button--jumbo u-width--full' if-branded='background-color, dark' href='#donate'> <i class="fa fa-heart"></i> Donate </button>
@@ -141,7 +141,7 @@
 			</div>
 		</aside>
 
-		<% unless @event.hide_activity_feed %>
+		<% unless @event.hide_activity_feed? %>
 			<div class='hideWhenMobile'>
 				<%= render 'components/activity_feed' %>
 			</div>
@@ -154,7 +154,7 @@
 			<%= raw(@event.body) %>
 		</div>
 
-		<% unless @event.hide_activity_feed %>
+		<% unless @event.hide_activity_feed? %>
 			<div class='showWhenMobile'>
 				<%= render 'components/activity_feed' %>
 			</div>
