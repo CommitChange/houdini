@@ -6,7 +6,7 @@
         <%= Format::Date.full_range(@event.start_datetime, @event.end_datetime, @nonprofit.timezone) %>
 			</h5>
 
-      <% if Time.now > @event.end_datetime %>
+      <% if @event.past? %>
 				<p class='u-color--red u-marginTop--10 u-marginBottom--0'>
 					This event has ended
 				</p>

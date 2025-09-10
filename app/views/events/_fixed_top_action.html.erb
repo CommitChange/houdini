@@ -16,7 +16,7 @@
 					<a class='u-marginRight--10 fixedTopAction-promote' title='Promote' if-branded='color, darker'>
 						<!--= on 'click' (open_modal 'shareModal') -->
 						Promote</a>
-          <% if Time.now < @event.end_datetime %>
+          <% if !@event.past? %>
   					<button class='button' title='Contribute' if-branded='background, dark'>
   						<!--= on 'click' show_new_tickets -->
   						Register

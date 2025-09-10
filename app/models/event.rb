@@ -121,4 +121,8 @@ class Event < ApplicationRecord
   def get_tickets_button_label
     misc_event_info&.custom_get_tickets_button_label || "Get Tickets"
   end
+
+  def past?
+    end_datetime < Time.zone.now
+  end
 end
