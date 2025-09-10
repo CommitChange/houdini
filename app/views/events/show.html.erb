@@ -112,7 +112,7 @@
 
 	<section class='rightSide'>
 
-    <% if @event.past? %>
+    <% if !@event.past? %>
       <aside class='u-paddingBottom--15'>
         <a class='getTickets' if-branded='background-color, dark'>
           <!--= on 'click' show_new_tickets -->
