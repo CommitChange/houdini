@@ -122,6 +122,8 @@ class Event < ApplicationRecord
     misc_event_info&.custom_get_tickets_button_label || "Get Tickets"
   end
 
+  # TODO: refactor with Campaign#finished? into ActiveRecord::Concern around dealing
+  # with start_datetime and end_datetime
   def past?
     end_datetime < Time.zone.now
   end
