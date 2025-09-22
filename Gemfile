@@ -38,7 +38,7 @@ gem "yaaf" # form objects
 gem "rack-attack"
 
 # Database (postgres)
-gem "pg", "~> 1.5.9"
+gem "pg", "~> 1.6.2"
 gem "qx", path: "gems/ruby-qx"
 gem "dalli"
 
@@ -55,7 +55,7 @@ gem "chronic"
 
 # Images
 # https://github.com/carrierwaveuploader/carrierwave
-gem "carrierwave", "~> 3.0"
+gem "carrierwave", "~> 3.1"
 gem "carrierwave-aws" # for uploading images to amazon s3
 gem "mini_magick"
 
@@ -141,7 +141,7 @@ group :production, :staging do
   gem "redis-actionpack"
 end
 
-gem "recaptcha", "~> 5.19"
+gem "recaptcha", "~> 5.21"
 
 gem "hashie"
 
