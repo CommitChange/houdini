@@ -10,6 +10,9 @@ Rails.application.routes.draw do
   end
   get "onboard" => "onboard#index"
 
+  # Dynamic assets
+  get "/dynamic/javascripts/:name" => "dynamic_javascripts#show"
+
   defaults format: :json do # they're APIs, you have to use JSON
     namespace :api do
       resources :nonprofits, only: [:create]
