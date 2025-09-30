@@ -88,6 +88,8 @@ class Event < ApplicationRecord
     end
     self.published = false if published.nil?
     self.total_raised ||= 0
+    self.timezone = nonprofit_timezone || "UTC"
+
     self
   end
 
