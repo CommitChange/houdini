@@ -39,10 +39,10 @@
       </div>
     </fieldset>
 
-    <fieldset>
+    <fieldset class="timezone-select">
       <label>Timezone</label>
       <div>
-        <%= select(:event, :timezone, time_zone_options_with_iana(@event.timezone || @nonprofit.timezone || "UTC"), include_blank: 'Select Timezone') %>
+        <%= select(:event, :timezone, time_zone_options_with_iana(@event.timezone), include_blank: 'Select Timezone') %>
       </div>
     </fieldset>
   </section>
