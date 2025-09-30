@@ -42,12 +42,7 @@
     <fieldset>
       <label>Timezone</label>
       <div>
-        <!--<input class='u-width--200 u-bold u-inlineBlock' type='text' name='event[timezone]' required parsley-trigger='change' value='<%= @event.timezone || @nonprofit.timezone || "UTC" %>'>-->
-        <select name='event[timezone]'>
-          <% ActiveSupport::TimeZone.all.each do |tz| %>
-            <option value='<%= tz.name %>' <% 'selected' if tz == @event.timezone || @nonprofit.timezone || "UTC" %>><%= tz %></option>
-          <% end %>
-        </select>
+        <%= select(:event, :timezone, time_zone_options_with_iana(@event.timezone || @nonprofit.timezone || "UTC"), include_blank: 'Select Timezone') %>
       </div>
     </fieldset>
   </section>

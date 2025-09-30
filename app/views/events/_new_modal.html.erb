@@ -66,11 +66,7 @@
 					<fieldset class='group u-marginBottom--15 u-relative'>
 					  <label>Timezone</label>
 					  <div>
-					    <select class="u-bold" name='event[timezone]'>
-					      <% ActiveSupport::TimeZone.all.each do |tz| %>
-					        <option value='<%= tz.name %>' <%= "selected" if tz == @nonprofit.timezone %>><%= tz %></option>
-					      <% end %>
-					    </select>
+					  	<%= select(:event, :timezone, time_zone_options_with_iana(@nonprofit.timezone || "UTC"), include_blank: 'Select Timezone', class: 'u-bold') %>
 					  </div>
 					</fieldset>
 
