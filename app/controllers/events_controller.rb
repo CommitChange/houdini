@@ -43,7 +43,7 @@ class EventsController < ApplicationController
   end
 
   def update
-    Time.use_zone(event.timezone) do
+    Time.use_zone(current_event.timezone) do
       params[:event][:start_datetime] = Chronic.parse(params[:event][:start_datetime]) if params[:event][:start_datetime].present?
       params[:event][:end_datetime] = Chronic.parse(params[:event][:end_datetime]) if params[:event][:end_datetime].present?
     end
