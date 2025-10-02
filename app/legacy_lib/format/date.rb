@@ -41,5 +41,9 @@ module Format
       datetime = datetime.in_time_zone(timezone) if timezone
       datetime.strftime("%l:%M%P")
     end
+
+    def self.timezone(timezone)
+      Time.now.in_time_zone(timezone).strftime('%Z')
+    end
   end
 end

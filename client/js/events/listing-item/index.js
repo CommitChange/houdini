@@ -4,8 +4,8 @@ const h = require('snabbdom/h')
 const moment = require('moment-timezone')
 const {commaJoin} = require('./common');
 
-const dateTime = (startTime, endTime) => {
-  const tz = ENV.nonprofitTimezone || 'America/Los_Angeles'
+const dateTime = (startTime, endTime, timeZone) => {
+  const tz = timeZone || ENV.nonprofitTimezone || 'America/Los_Angeles'
   startTime = moment(startTime).tz(tz)
   endTime = moment(endTime).tz(tz)
   const sameDate = startTime.format("YYYY-MM-DD") === endTime.format("YYYY-MM-DD")
@@ -14,7 +14,7 @@ const dateTime = (startTime, endTime) => {
   const endTimeFormatted = sameDate ? endTime.format("h:mma") : endTime.format(format)
 
   return [
-    h('strong', startTime.format(format) + ' - ' + endTimeFormatted)
+    h('strong', startTime.format(format) + ' - ' + endTimeFormatted + ' ' + moment.tz(tz).zoneAbbr())
   , h('span.u-color--grey', ended)
   ]
 }
@@ -67,7 +67,7 @@ module.exports = e => {
   return h('div.u-paddingTop--10.u-marginBottom--20', [
     h('h5.u-paddingX--20', e.name)
   , h('table.table--striped.u-margin--0', [
-      row('fa-clock-o', dateTime(e.start_datetime, e.end_datetime))
+      row('fa-clock-o', dateTime(e.start_datetime, e.end_datetime, e.timezone))
     , row('fa-map-marker', location)
     , row('fa-users', attendeesMetrics)
     , row('fa-dollar', moneyMetrics)
