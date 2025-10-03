@@ -77,6 +77,6 @@ class EventsController < ApplicationController
   end
 
   def name_and_id
-    @events = current_nonprofit.events.not_deleted.order("events.name ASC")
+    @events = current_nonprofit.events.not_deleted.order("events.name ASC").select(:name, :id)
   end
 end
