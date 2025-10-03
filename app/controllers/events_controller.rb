@@ -29,14 +29,14 @@ class EventsController < ApplicationController
   end
 
   def create
-    Time.use_zone(event.timezone) do
+    Time.use_zone(params[:event][:timezone] || current_nonprofit.timezone) do
       params[:event][:start_datetime] = Chronic.parse(params[:event][:start_datetime]) if params[:event][:start_datetime].present?
       params[:event][:end_datetime] = Chronic.parse(params[:event][:end_datetime]) if params[:event][:end_datetime].present?
     end
     event = current_nonprofit.events.create(params[:event])
 
     render_json do
-      flash[:notice] = "Your draft event has been created! Well done."
+      flash[:notice] = "Your draft event has been created! Well done." if event.persisted?
 
       { url: "/events/#{event.slug}", event: }
     end

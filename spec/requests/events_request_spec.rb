@@ -17,6 +17,56 @@ describe EventsController, type: :request do
     sign_in user
   end
 
+  describe "POST /nonprofit/:nonprofit_id/events" do
+    before do
+      expect_any_instance_of(Event).to receive(:geocode).and_return([1, 1]) # otherwise the geocode call fails
+    end
+
+    context "with valid params" do
+      let(:params) { { event: attributes_for(:event_base, nonprofit_id: nonprofit.id, profile_id: profile.id) } }
+
+      it "creates a new event" do
+        expect { post(nonprofit_events_path(nonprofit), params:) }.to change(Event, :count).by(1)
+      end
+
+      it "returns a success status" do
+        post(nonprofit_events_path(nonprofit), params:)
+        expect(response).to have_http_status(:success)
+      end
+
+      it "sets the flash" do
+        post(nonprofit_events_path(nonprofit), params:)
+        expect(flash[:notice]).to eq("Your draft event has been created! Well done.")
+      end
+
+      it "returns the response" do
+        post(nonprofit_events_path(nonprofit), params:)
+        json = JSON.parse(response.body)
+        expect(json.dig('event', 'name')).to eq(params[:event][:name])
+        expect(json['url']).to eq("/events/#{params[:event][:slug]}")
+      end
+    end
+
+    context "with invalid params" do
+      let(:params) { { event: attributes_for(:event_base).merge(name: nil) } }
+
+      it "does not create a new event" do
+        expect { post(nonprofit_events_path(nonprofit), params:) }.not_to change(Event, :count)
+      end
+
+      it "returns a success status" do
+        post(nonprofit_events_path(nonprofit), params:)
+        expect(response).to have_http_status(:success)
+      end
+
+      it "returns the response" do
+        post(nonprofit_events_path(nonprofit), params:)
+        json = JSON.parse(response.body)
+        expect(json.dig('event', 'id')).to be_nil
+        expect(json.dig('event', 'name')).to be_nil
+      end
+    end
+  end
 
 
 
