@@ -301,8 +301,8 @@ GEM
     jmespath (1.6.2)
     job-iteration (1.11.0)
       activejob (>= 6.1)
-    js-routes (2.3.5)
-      railties (>= 5)
+    js-routes (2.2.10)
+      railties (>= 4)
       sorbet-runtime
     json (2.15.2)
     judoscale-rails (1.12.1)
@@ -696,7 +696,7 @@ DEPENDENCIES
   i18n-js (~> 3.8)
   immutable-ruby
   jbuilder
-  js-routes
+  js-routes (~> 2.2.7)
   json (>= 2.3.0)
   kaminari
   letter_opener
