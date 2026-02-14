@@ -86,7 +86,7 @@ describe InsertRefunds do
                       "reason" => reason
                     }, charge_date: charge.created_at
                   ).and_return(perform_stripe_refund_result)
-                  expect(InsertActivities).to receive(:for_refunds)
+                  expect(InsertActivities).to receive(:for_refunds).with(an_instance_of(Payment))
                 end
 
                 let!(:modern_refund_call) do

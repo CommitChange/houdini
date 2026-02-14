@@ -56,7 +56,8 @@ module InsertRefunds
 
       refund.create_misc_refund_info(is_modern: true, stripe_application_fee_refund_id: results[:stripe_app_fee_refund]&.id)
 
-      InsertActivities.for_refunds([payment.id])
+      InsertActivities.for_refunds(payment)
+
       # Update original payment to increment its refund_total for any future refund attempts
       original_payment.refund_total += h["amount"].to_i
       original_payment.save!

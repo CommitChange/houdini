@@ -184,7 +184,7 @@ describe QueryPayments do
             "charge" => charge.stripe_charge_id
           }, charge_date: charge.created_at
         ).and_return(perform_stripe_refund_result)
-        expect(InsertActivities).to receive(:for_refunds)
+        expect(InsertActivities).to receive(:for_refunds).with(an_instance_of(Payment))
         InsertRefunds.with_stripe(charge.attributes, {amount: 100}.with_indifferent_access)
       }
 
@@ -196,7 +196,7 @@ describe QueryPayments do
             "charge" => charge.stripe_charge_id
           }, charge_date: charge.created_at
         ).and_return(perform_stripe_refund_result)
-        expect(InsertActivities).to receive(:for_refunds)
+        expect(InsertActivities).to receive(:for_refunds).with(an_instance_of(Payment))
         InsertRefunds.with_stripe(charge.attributes, {amount: 50}.with_indifferent_access)
       }
 
@@ -681,7 +681,7 @@ describe QueryPayments do
             "charge" => charge.stripe_charge_id
           }, charge_date: charge.created_at
         ).and_return(perform_stripe_refund_result)
-        expect(InsertActivities).to receive(:for_refunds)
+        expect(InsertActivities).to receive(:for_refunds).with(an_instance_of(Payment))
         InsertRefunds.with_stripe(charge.attributes, {amount: 100}.with_indifferent_access)
       }
 
@@ -693,7 +693,7 @@ describe QueryPayments do
             "charge" => charge.stripe_charge_id
           }, charge_date: charge.created_at
         ).and_return(perform_stripe_refund_result)
-        expect(InsertActivities).to receive(:for_refunds)
+        expect(InsertActivities).to receive(:for_refunds).with(an_instance_of(Payment))
         InsertRefunds.with_stripe(charge.attributes, {amount: 50}.with_indifferent_access)
       }
 
@@ -774,7 +774,7 @@ describe QueryPayments do
             "charge" => charge.stripe_charge_id
           }, charge_date: charge.created_at
         ).and_return(perform_stripe_refund_result)
-        expect(InsertActivities).to receive(:for_refunds)
+        expect(InsertActivities).to receive(:for_refunds).with(an_instance_of(Payment))
         InsertRefunds.with_stripe(charge.attributes, {amount: 50}.with_indifferent_access)
       }
 
