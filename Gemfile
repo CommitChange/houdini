@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby ENV["CUSTOM_RUBY_VERSION"] || "3.3.8" # heroku needs a specific ruby version in the Gemfile
 
 gem "rake"
-gem "rails", "~> 7.1.5.1"
+gem "rails", "~> 8.1.2"
 gem "sprockets", "~> 3.7" # Sprockets 4.0 stops allowing us to add a proc to the config.assets.precompile array, which we currently use
 
 gem "rack", "~> 2.2.22"
@@ -38,7 +38,7 @@ gem "yaaf" # form objects
 gem "rack-attack"
 
 # Database (postgres)
-gem "pg", "~> 1.5.9"
+gem "pg", "~> 1.6.3"
 gem "qx", path: "gems/ruby-qx"
 gem "dalli"
 
@@ -55,7 +55,7 @@ gem "chronic"
 
 # Images
 # https://github.com/carrierwaveuploader/carrierwave
-gem "carrierwave", "~> 3.0"
+gem "carrierwave", "~> 3.1"
 gem "carrierwave-aws" # for uploading images to amazon s3
 gem "mini_magick"
 
@@ -142,7 +142,7 @@ group :production, :staging do
   gem "lograge"
 end
 
-gem "recaptcha", "~> 5.19"
+gem "recaptcha", "~> 5.21"
 
 gem "hashie"
 
