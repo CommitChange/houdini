@@ -108,6 +108,68 @@ screen), use the iframe method with `skipFinish=t`. If a Finish-button step is
 acceptable, the donate button (`data-redirect`) is simpler and adds `offsite=t`
 for you.
 
+## ⚠️ A hand-written iframe cannot redirect on its own — the host page needs the loader script
+
+This is the single most common reason a redirect "doesn't work."
+
+When the form runs inside an iframe, it **cannot navigate the parent page
+directly** (the iframe is on `*.commitchange.com`, the host page is the
+nonprofit's own domain — cross-origin navigation is blocked by the browser).
+So instead, on completion the form **posts a message** to the parent window:
+
+```
+commitchange:redirect:{url}
+```
+
+(`handleWizardFinished.ts` → `WidgetWindowWrapper.notifyParentOfRedirect`.)
+
+Something on the host page has to **listen** for that message and perform the
+navigation. The only thing that does this is the **CommitChange loader script**
+(`donate-button.v2.js`), which installs:
+
+```js
+window.addEventListener('message', (e) => {
+  if (typeof e.data === 'string' && e.data.startsWith('commitchange:redirect')) {
+    const m = e.data.match(/^commitchange:redirect:(.+)$/)
+    if (m.length === 2) window.location.href = m[1]
+  }
+})
+```
+
+If the host page has only a bare `<iframe>` and **not** the loader script, the
+redirect message is posted into the void and nothing happens. The donate button
+method doesn't hit this because the loader script is required for it anyway.
+
+**Fix for a hand-written iframe:** add the loader script to the host page (it
+installs the listener; with no `.commitchange-donate` element it builds no
+buttons):
+
+```html
+<script id='commitchange-donation-script' data-npo-id='{NPO_ID}'
+        src='https://commitchange.com/js/donate-button.v2.js'></script>
+```
+
+### Side effect: the loader injects a stylesheet that resizes the embed
+
+On load, the loader also appends
+`<link href="https://us.commitchange.com/css/donate-button.v2.css">` to the
+host page `<head>`. All of its rules are scoped to `.commitchange-*` classes
+(no global/element selectors), so it won't affect the rest of the page — **but**
+it includes:
+
+```css
+.commitchange-iframe-embedded { width: 390px; height: 450px; max-width: 100%; border: 0; }
+```
+
+Because CSS overrides HTML `width`/`height` attributes, a hand-written
+`<iframe class="commitchange-iframe-embedded" width="100%" height="600">` will
+be resized to 390×450 once the script loads. To keep a custom size, override it
+after the script:
+
+```html
+<style>.commitchange-iframe-embedded { width: 100% !important; height: 600px !important; }</style>
+```
+
 ## URL construction rules (hand-written iframe)
 
 1. **One `?` only.** It goes after `/donate`. Everything after is joined with
@@ -131,7 +193,7 @@ for you.
 
 ## Key source files
 
-- `client/js/widget/donate-button.v2.js` — button loader; reads `data-*`, builds the URL, renders modal/inline iframe.
+- `client/js/widget/donate-button.v2.js` — button loader; reads `data-*`, builds the URL, renders modal/inline iframe, injects the widget stylesheet, **and installs the parent-window `message` listener that performs iframe redirects** (lines ~190-201).
 - `client/js/nonprofits/donate/wizard/utils/parseDonateParams.ts` — query-string parsing.
 - `client/js/nonprofits/donate/wizard/utils/handleWizardFinished.ts` — redirect + close behavior, `mode=embedded` handling.
 - `client/js/nonprofits/donate/wizard.js` — `skipFinish` trigger, close-button visibility.

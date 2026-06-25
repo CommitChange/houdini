@@ -27,12 +27,31 @@ With this method, the donor completes their gift, clicks **Finish**, and is then
 
 ## Option 2 — Custom iframe embed
 
-If you embed the donation form with an iframe, add `redirect` and `skipFinish` as query parameters in the iframe's `src`.
+If you embed the donation form with an iframe, you need **two** things on the page: a small CommitChange helper script, and the iframe itself.
+
+### Step 1 — Add the helper script (required for the redirect to work)
+
+This is the step that's easy to miss. When a donation finishes inside an iframe, the form sends a "go to the thank-you page now" signal out to your website. Your page needs the CommitChange helper script to catch that signal and actually make the jump. **Without it, the donation completes but nothing redirects.**
+
+Add this line to the page, just above the iframe (replace `3728` with your nonprofit ID):
+
+```html
+<script id='commitchange-donation-script' data-npo-id='3728' src='https://commitchange.com/js/donate-button.v2.js'></script>
+```
+
+### Step 2 — Add the iframe
+
+Add `redirect` and `skipFinish` as query parameters in the iframe's `src`.
 
 ```html
 <iframe frameborder="0" class="commitchange-iframe-embedded" width="100%" height="600"
   src="https://us.commitchange.com/nonprofits/3728/donate?campaign_id=6090&amp;mode=embedded&amp;redirect=https://www.example.org/thank-you&amp;skipFinish=t"></iframe>
 ```
+
+> **Heads-up — the form may resize.** The helper script loads CommitChange's styling, which sets the embedded form to about 390px wide by 450px tall. If you want a different size, add this *after* the script:
+> ```html
+> <style>.commitchange-iframe-embedded { width: 100% !important; height: 600px !important; }</style>
+> ```
 
 ### The rules (this is where most mistakes happen)
 
@@ -69,6 +88,7 @@ You can use any free "URL encoder" tool online to do this conversion. Keep UTM v
 
 ## Troubleshooting
 
+- **The redirect doesn't happen (iframe method).** The most common cause is the missing helper script — confirm the `<script ... donate-button.v2.js>` line from Step 1 is on the page, above the iframe. Without it, the donation completes but nothing redirects.
 - **The redirect doesn't happen.** Check that there's only one `?` in your URL and that everything else uses `&` (or `&amp;` in an iframe).
 - **You land on a blank or error page.** Open your thank-you page address directly in a browser first to confirm it loads. If the page itself is broken or blocked, fix that on your website before adding it to the redirect.
 - **Tracking isn't showing up.** Confirm Google Analytics is installed on the thank-you page, and that you URL-encoded the redirect once you added UTM tags.
