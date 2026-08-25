@@ -39,7 +39,7 @@ Rails.application.configure do
   config.action_controller.allow_forgery_protection = false
 
   # Store uploaded files on the local file system in a temporary directory.
-  config.active_storage.service = :test
+  # config.active_storage.service = :test
 
   config.action_mailer.perform_caching = false
 
@@ -77,7 +77,7 @@ Rails.application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 
-  config.log_level = :debug
+  config.log_level = :warn
 
   config.action_controller.allow_forgery_protection = false
   config.cache_store = :memory_store
@@ -85,11 +85,6 @@ Rails.application.configure do
   ENV["THROTTLE_SUPPORTER_LIMIT"] = "10"
   ENV["THROTTLE_SUPPORTER_PERIOD"] = "60"
 
-  config.after_initialize do
-    # ActiveRecord::Base.logger = nil
-    # ActionController::Base.logger =  nil
-    # ActionMailer::Base.logger = nil
-  end
   config.middleware.use Rack::Attack
 
   NONPROFIT_VERIFICATION_SEND_EMAIL_DELAY = 2.hours
