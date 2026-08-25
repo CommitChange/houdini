@@ -241,7 +241,7 @@ GEM
       dry-initializer (~> 3.2)
       dry-schema (~> 1.14)
       zeitwerk (~> 2.6)
-    dumpcar (0.3.1)
+    dumpcar (1.0.1)
       rails (>= 6)
       terrapin (>= 1)
     erb (6.0.1.1)
@@ -798,7 +798,7 @@ CHECKSUMS
   dry-schema (1.14.1) sha256=2fcd7539a7099cacae6a22f6a3a2c1846fe5afeb1c841cde432c89c6cb9b9ff1
   dry-types (1.9.1) sha256=baebeecdb9f8395d6c9d227b62011279440943e3ef2468fe8ccc1ba11467f178
   dry-validation (1.11.1) sha256=70900bb5a2d911c8aab566d3e360c6bff389b8bf92ea8e04885ce51c41ff8085
-  dumpcar (0.3.1) sha256=9d3c9cab51337e706062f38d2744fd2a28cbdb67c6b900adc12c2e9a29e82a8f
+  dumpcar (1.0.1) sha256=43800bf191e80a84dab52a706b547028dc725273653db37d4d2d781e2584388b
   erb (6.0.1.1) sha256=ce5357460652a9a94667c5769eaffc551eea2b14a8531ac7c7b1d77b860758b9
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   execjs (2.10.0) sha256=6bcb8be8f0052ff9d370b65d1c080f2406656e150452a0abdb185a133048450d
