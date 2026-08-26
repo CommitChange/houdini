@@ -42,6 +42,7 @@ class Nonprofit < ApplicationRecord
     :brand_font, # string (lowercase key eg. 'helvetica')
     :brand_color, # string (hex color value)
     :hide_activity_feed, # bool
+    :hide_main_image, # bool
     :tracking_script,
     :facebook, # string (url)
     :twitter, # string (url)
@@ -50,7 +51,8 @@ class Nonprofit < ApplicationRecord
     :blog, # string (url)
     :card_failure_message_top, # text
     :card_failure_message_bottom, # text
-    :autocomplete_supporter_address # boolean
+    :autocomplete_supporter_address, # boolean
+    :require_two_factor # boolean
 
   has_many :payouts
   has_many :charges
@@ -198,13 +200,6 @@ class Nonprofit < ApplicationRecord
         ModernParams.new(houid)
       end
     end
-  end
-
-  # Register (create) a nonprofit with an initial admin
-  def self.register(user, params)
-    np = create ConstructNonprofit.construct(user, params)
-    Role.create(user: user, name: "nonprofit_admin", host: np) if np.valid?
-    np
   end
 
   def nonprofit_personnel_emails
@@ -522,6 +517,18 @@ class Nonprofit < ApplicationRecord
       payments_during_year = payments.during_np_year(year)
       payments_during_year.group("supporter_id").select("supporter_id, COUNT(id)").each.map(&:supporter)
     end
+  end
+
+  def all_socials
+    [facebook, twitter, youtube, instagram, blog]
+  end
+
+  def has_any_social?
+    all_socials.compact_blank.any?
+  end
+
+  def stripe_account_formatted_deadline
+    stripe_account&.deadline && stripe_account.deadline.in_time_zone(timezone).to_fs(:full_long)
   end
 
   private

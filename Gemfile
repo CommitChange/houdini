@@ -1,12 +1,12 @@
 source "https://rubygems.org"
 
-ruby ENV["CUSTOM_RUBY_VERSION"] || "3.3.8" # heroku needs a specific ruby version in the Gemfile
+ruby ENV["CUSTOM_RUBY_VERSION"] || "3.3.12" # heroku needs a specific ruby version in the Gemfile
 
 gem "rake"
-gem "rails", "~> 7.1.5.1"
+gem "rails", "~> 7.1.6"
 gem "sprockets", "~> 3.7" # Sprockets 4.0 stops allowing us to add a proc to the config.assets.precompile array, which we currently use
 
-gem "rack", "~> 2.2.15"
+gem "rack", "~> 2.2.23"
 
 # https://stripe.com/docs/api
 gem "stripe", "~> 5.0"
@@ -17,7 +17,7 @@ gem "rabl"
 
 gem "jbuilder"
 
-gem "puma", "~> 5.6"
+gem "puma", "~> 7.2"
 
 gem "kaminari"
 
@@ -55,7 +55,7 @@ gem "chronic"
 
 # Images
 # https://github.com/carrierwaveuploader/carrierwave
-gem "carrierwave", "~> 3.0"
+gem "carrierwave", "~> 3.1"
 gem "carrierwave-aws" # for uploading images to amazon s3
 gem "mini_magick"
 
@@ -65,6 +65,7 @@ gem "httparty"
 # User authentication
 # https://github.com/plataformatec/devise
 gem "devise", "~> 4.1"
+gem "devise-two-factor"
 
 # https://github.com/airbrake/airbrake
 gem "airbrake"
@@ -86,7 +87,12 @@ gem "countries"
 gem "rexml" # needed on Ruby 3
 gem "csv" # needed on Ruby 3.4
 
+gem "maintenance_tasks" # for running useful maintenance scripts that aren't part of a migration
+
+gem "minitest", "< 6" # minitest 6 has some incompatibilities with Rails especially old ones. Let's lock to under 6
+
 group :development, :ci, :test do
+  gem "dumpcar"
   gem "standard"
   gem "standard-rails"
   gem "listen"
@@ -104,6 +110,7 @@ group :development, :ci, :test do
   gem "factory_bot_rails"
   gem "action_mailer_matchers", "~> 1.2.0"
   gem "simplecov", "~> 0.22.0", require: false
+  gem "simplecov-tailwindcss", require: false
   gem "byebug"
   gem "shoulda-matchers"
   gem "rspec-json_expectations"
@@ -120,24 +127,19 @@ gem "sassc"
 gem "sassc-rails"
 gem "terser"
 
-# make logging less terrible in rails
-gem "lograge"
-
 gem "config", "~> 2.0"
 gem "dry-validation" # used only for config validation
-
-group :production do
-  gem "rails-autoscale-web"
-  gem "tunemygc"
-end
 
 group :production, :staging do
   gem "hiredis", "~> 0.6.0"
   gem "redis", ">= 3.2.0"
   gem "redis-actionpack"
+
+  # structured logging for deployed environments
+  gem "lograge"
 end
 
-gem "recaptcha", "~> 5.8.1"
+gem "recaptcha", "~> 5.19"
 
 gem "hashie"
 

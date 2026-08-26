@@ -28,7 +28,7 @@
 	</tr>
 	<tr>
 		<td><strong>Date & Time</strong></td>
-    <td><%= Format::Date.full_range(@event.start_datetime, @event.end_datetime, @event.nonprofit.timezone) %></td>
+    <td><%= Format::Date.full_range(@event.start_datetime, @event.end_datetime, @event.nonprofit_timezone) %></td>
 	</tr>
   <% if @event.organizer_email %>
     <tr>
@@ -47,9 +47,13 @@
 	<tr>
 		<td><strong>Event Location</strong></td>
 		<td>
-			<p><%= @event.address %></p>
-			<p><%= @event.city %>, <%= @event.state_code %> <%= @event.zip_code %></p>
-      <p><a href='https://maps.google.com/?q=<%= Format::Address.full_address(@event.address, @event.city, @event.state_code) %>'>Map link</a></p>
+      <% if @event.in_person? %>
+        <p><%= @event.address %></p>
+        <p><%= @event.city %>, <%= @event.state_code %> <%= @event.zip_code %></p>
+        <p><a href='<%= google_maps_url(@event) %>'>Map link</a></p>
+      <% else %>
+        <p>Virtual</p>
+      <% end %>
 		</td>
 	</tr>
   <% if !@event.directions.blank? %>

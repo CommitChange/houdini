@@ -13,10 +13,10 @@ All backend code and React components should be well-tested
 
 Houdini is designed and tested to run with the following:
 
-* Ruby 3.0
+* Ruby 3.3
 * Node 16
 * PostgreSQL 16
-* run on Heroku-20
+* run on Heroku-24
 
 ## Dev Setup
 
@@ -41,18 +41,18 @@ One-time setup:
 ```bash
 touch ~/.netrc #prevents docker compose from creating it as a directory if you don't have it yet
 
-docker-compose run web bin/rails db:setup
+docker compose run web bin/rails db:setup
 ```
 
 Running:
 ```bash
-docker-compose up
+docker compose up
 ```
 
 Restoring the DB from Prod (Linux):
 ```bash
 # Enter `password` when prompted for a password after the download step.
-docker-compose exec web script/restore_from_heroku.sh
+docker compose exec web script/restore_from_heroku.sh
 ```
 
 Restoring the DB from Prod (Mac). The above command will work on Mac, but will take an hour or more due to differences in how docker handles storage. Use the below to reduce how long it takes (will still take a long time).
@@ -60,8 +60,48 @@ Restoring the DB from Prod (Mac). The above command will work on Mac, but will t
 curl -o ./tmp/shared/latest.dump `heroku pg:backups:url -a commitchange`
 
 # Enter `password` when prompted for a password.
-docker-compose exec db -e CC_PROD_DUMP_PATH="/tmp/shared/latest.dump" script/pg_restore_local_from_production.sh
+docker compose exec db -e CC_PROD_DUMP_PATH="/tmp/shared/latest.dump" script/pg_restore_local_from_production.sh
 ```
+
+#### Docker Development Commands
+Use bin/cc-run for streamlined Docker commands:
+
+```bash
+# Generic commands - run any Rails/Bundle/Yarn command
+bin/cc-run rails db:migrate
+bin/cc-run rails db:setup
+bin/cc-run rails generate model User
+bin/cc-run rails routes | grep users
+bin/cc-run bundle install
+bin/cc-run bundle update
+bin/cc-run yarn install
+bin/cc-run yarn add react
+
+# Convenient shortcuts
+bin/cc-run console     # Rails console
+bin/cc-run test        # Run tests
+bin/cc-run bash        # Bash shell in web container
+bin/cc-run worker      # Bash shell in worker container
+```
+
+##### Optional: Create a Shell Alias
+For even faster commands, you can optionally create a shell alias:
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+alias ccr='bin/cc-run'
+
+# Then reload your shell
+source ~/.bashrc  # or source ~/.zshrc
+```
+
+Usage with alias:
+```bash
+ccr rails db:migrate
+ccr console
+ccr test
+ccr bash
+```
+
 
 #### One-time setup (Ubuntu)
 
@@ -130,11 +170,11 @@ Set your Ruby version with `rbenv`.
 ```bash
 brew install rbenv
 rbenv versions # see which ruby versions are already installed
-rbenv install  # the app currently uses version 3.3.8
+rbenv install  # the app currently uses version 3.3.12
 rbenv local # rbenv local --unset reverses the action
 
 # To switch between rbenv versions installed locally, use the following command:
-rbenv shell 3.3.8
+rbenv shell 3.3.12
 
 ```
 
@@ -342,6 +382,69 @@ override any changes you've made in the staging database.
 ```
 heroku pg:backups:restore $(heroku pg:backups:url --app commitchange) --app commitchange-test
 ```
+
+
+# Production config
+
+## Environment variables
+
+The following environnment variables MUST be set. If you miss any of them, the site may not run or if it does run, it may silently be broken. Do not ignore this information!
+
+* ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY
+* ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT
+* ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY
+* AIRBRAKE_API_KEY
+* AIRBRAKE_PROJECT_ID
+* ASSET_VERSION
+* AWS_ACCESS_KEY
+* AWS_SECRET_ACCESS_KEY
+* AWS_SES_ACCESS_KEY
+* AWS_SES_SECRET_KEY
+* BEACON_SECRET_KEY
+* CUSTOM_HOST
+* CYPHER_KEY
+* DATABASE_URL
+* DEVISE_SECRET_KEY
+* ERROR_PAGE_URL
+* FACEBOOK_API_SECRET
+* FACEBOOK_APP_ID
+* FEE_SWITCHOVER_TIME
+* FROALA_KEY
+* GOOGLE_API_KEY
+* GOOGLE_AUTH_CLIENT_ID
+* GOOGLE_TRACK_ID
+* JEMALLOC_ENABLED
+* JEMALLOC_VERSION
+* MAILCHIMP_API_KEY
+* MAILCHIMP_OAUTH_CLIENT_ID
+* MAILCHIMP_OAUTH_CLIENT_SECRET
+* MAILCHIMP_REDIRECT_URL
+* MAILCHIMP_USERNAME
+* MAINTENANCE_PAGE_URL
+* MEMCACHIER_PASSWORD
+* MEMCACHIER_SERVERS
+* MEMCACHIER_USERNAME
+* MINIMUM_RECAPTCHA_SCORE
+* OPENREDIS_SECURE_URL
+* OPENREDIS_URL
+* ORG_NAME
+* PAPERTRAIL_API_TOKEN
+* RACK_TIMEOUT_SERVICE_TIMEOUT
+* RAILS_ENV
+* RECAPTCHA_ENTERPRISE
+* RECAPTCHA_ENTERPRISE_API_KEY
+* RECAPTCHA_ENTERPRISE_PROJECT_ID
+* RECAPTCHA_SECRET_KEY
+* RECAPTCHA_SITE_KEY
+* S3_BUCKET_NAME
+* SECRET_KEY_BASE
+* SECRET_TOKEN
+* Settings.aws.bucket_name
+* STRIPE_API_KEY
+* STRIPE_API_PUBLIC
+* STRIPE_CONNECT_WEBHOOK_SECRET
+* STRIPE_WEBHOOK_SECRET
+* TWITTER_API_SECRET
 
 
 ## Creating issues

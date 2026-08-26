@@ -28,7 +28,7 @@ class User < ApplicationRecord
 
   geocoded_by :location
 
-  devise :database_authenticatable, :registerable, :confirmable, :recoverable, :rememberable, :trackable, :validatable,
+  devise :two_factor_authenticatable, :registerable, :confirmable, :recoverable, :rememberable, :trackable, :validatable,
     :lockable
 
   attr_accessor :offsite_donation_id, :current_password
@@ -64,10 +64,19 @@ class User < ApplicationRecord
     u
   end
 
-  def self.find_or_create_with_email(em)
+  def self.find_or_create_with_email(em, require_two_factor)
     user = where("lower(email) = ?", em.downcase).first
     return user if user.present?
-    User.create!(email: em, auto_generated: true)
+
+    transaction do
+      user = User.create!(email: em, auto_generated: true)
+      if require_two_factor
+        user.otp_required_for_login = true
+        user.otp_secret = User.generate_otp_secret
+        user.save!
+      end
+      user
+    end
   end
 
   def profile_picture(size)
@@ -138,5 +147,9 @@ class User < ApplicationRecord
   def geocode!
     # self.geocode
     # self.save
+  end
+
+  def two_factor_required_by_nonprofit?
+    Nonprofit.joins(:roles).where(roles: {user_id: id}, require_two_factor: true).exists?
   end
 end

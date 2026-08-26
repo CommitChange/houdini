@@ -32,20 +32,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if current_user.pending_password && params[:user][:password] && params[:user][:password_confirmation]
         params[:user][:pending_password] = false
       end
-      success = current_user.update_attributes(params[:user])
+
+      handle_two_factor_changes
+
+      success = current_user.update_attributes(update_params)
       errs = current_user.errors.full_messages
     else
       success = false
-      errs = {password: :incorrect}
+      errs = {password: [:incorrect]}
     end
 
     if success
       flash[:notice] = if params[:user][:email].present?
         "We need to confirm your new email address. Check your inbox for a confirmation link."
+      elsif current_user.saved_change_to_otp_required_for_login?
+        two_factor_change_message
       else
         "Account updated!"
       end
-
       sign_in(current_user, bypass: true)
       render json: current_user
     else
@@ -73,5 +77,32 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def handle_recaptcha_failure
     render json: {error: "There was an temporary error preventing your payment. Please try again. If it persists, please contact support@commitchange.com with error code: 5X4J "}, status: :unprocessable_entity
+  end
+
+  def update_params
+    params[:user].except(:otp_required_for_login)
+  end
+
+  def handle_two_factor_changes
+    return if current_user.two_factor_required_by_nonprofit?
+
+    otp_param = params[:user][:otp_required_for_login]
+    return if otp_param.blank?
+
+    current_user.otp_required_for_login = otp_param
+
+    if current_user.otp_required_for_login_changed?
+      current_user.otp_secret = if current_user.otp_required_for_login?
+        User.generate_otp_secret
+      end
+    end
+  end
+
+  def two_factor_change_message
+    if current_user.otp_required_for_login?
+      "Two-factor authentication has been enabled! You'll receive a one-time password via email on future logins."
+    else
+      "Two-factor authentication has been disabled."
+    end
   end
 end
