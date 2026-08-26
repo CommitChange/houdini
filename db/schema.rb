@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_23_214715) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_26_154514) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -312,30 +312,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_214715) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "e_tap_import_contacts", id: :serial, force: :cascade do |t|
-    t.integer "e_tap_import_id"
-    t.jsonb "row"
-    t.integer "supporter_id"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.index ["e_tap_import_id"], name: "index_e_tap_import_contacts_on_e_tap_import_id"
-    t.index ["supporter_id"], name: "index_e_tap_import_contacts_on_supporter_id"
-  end
-
-  create_table "e_tap_import_journal_entries", id: :serial, force: :cascade do |t|
-    t.integer "e_tap_import_id"
-    t.jsonb "row"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.index ["e_tap_import_id"], name: "index_e_tap_import_journal_entries_on_e_tap_import_id"
-  end
-
-  create_table "e_tap_imports", id: :serial, force: :cascade do |t|
-    t.integer "nonprofit_id"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-  end
-
   create_table "email_customizations", id: :serial, force: :cascade do |t|
     t.string "name"
     t.text "contents"
@@ -406,6 +382,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_214715) do
     t.string "organizer_email", limit: 255
     t.datetime "start_datetime", precision: nil
     t.datetime "end_datetime", precision: nil
+    t.string "in_person_or_virtual", default: "in_person", comment: "whether or not this is a virtual event"
+    t.index ["in_person_or_virtual"], name: "index_events_on_in_person_or_virtual"
     t.index ["nonprofit_id", "deleted", "published", "end_datetime"], name: "events_nonprofit_id_not_deleted_and_published_endtime"
     t.index ["nonprofit_id", "deleted", "published"], name: "index_events_on_nonprofit_id_and_deleted_and_published"
     t.index ["nonprofit_id"], name: "index_events_on_nonprofit_id"
@@ -484,10 +462,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_214715) do
     t.index ["supporter_id"], name: "index_full_contact_infos_on_supporter_id"
   end
 
-  create_table "full_contact_jobs", force: :cascade do |t|
-    t.integer "supporter_id"
-  end
-
   create_table "full_contact_orgs", id: :serial, force: :cascade do |t|
     t.boolean "is_primary"
     t.string "name", limit: 255
@@ -552,10 +526,25 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_214715) do
     t.integer "user_id"
   end
 
-  create_table "journal_entries_to_items", id: :serial, force: :cascade do |t|
-    t.integer "e_tap_import_journal_entry_id"
-    t.integer "item_id"
-    t.string "item_type"
+  create_table "maintenance_tasks_runs", force: :cascade do |t|
+    t.string "task_name", null: false
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
+    t.float "time_running", default: 0.0, null: false
+    t.bigint "tick_count", default: 0, null: false
+    t.bigint "tick_total"
+    t.string "job_id"
+    t.string "cursor"
+    t.string "status", default: "enqueued", null: false
+    t.string "error_class"
+    t.string "error_message"
+    t.text "backtrace"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "arguments"
+    t.integer "lock_version", default: 0, null: false
+    t.text "metadata"
+    t.index ["task_name", "status", "created_at"], name: "index_maintenance_tasks_runs", order: { created_at: :desc }
   end
 
   create_table "manual_balance_adjustments", id: :serial, force: :cascade do |t|
@@ -782,15 +771,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_214715) do
     t.index ["supporter_id"], name: "index_offsite_payments_on_supporter_id"
   end
 
-  create_table "payment_dupe_statuses", id: :serial, force: :cascade do |t|
-    t.integer "payment_id"
-    t.boolean "matched", default: false
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.integer "matched_with_offline", default: [], array: true
-    t.index ["payment_id"], name: "index_payment_dupe_statuses_on_payment_id"
-  end
-
   create_table "payment_imports", id: :serial, force: :cascade do |t|
     t.integer "user_id"
     t.integer "nonprofit_id"
@@ -885,17 +865,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_214715) do
     t.string "last_name", limit: 255
     t.text "mini_bio"
     t.string "country", limit: 255, default: "US"
-  end
-
-  create_table "reassignments", id: :serial, force: :cascade do |t|
-    t.integer "item_id"
-    t.string "item_type"
-    t.integer "e_tap_import_id"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.integer "source_supporter_id"
-    t.integer "target_supporter_id"
-    t.index ["e_tap_import_id"], name: "index_reassignments_on_e_tap_import_id"
   end
 
   create_table "recaptcha_rejections", id: :serial, force: :cascade do |t|

@@ -19,14 +19,14 @@ jobs:
       runs-on: ${{ matrix.os }}
       strategy:
         matrix:
-          os: [ubuntu-22.04, ubuntu-24.04, macos-13, macos-latest] # macos-13 is the last Intel mac version
+          os: [ubuntu-24.04, macos-15-intel, macos-latest] # macos-15-intel is the last Intel mac version
           node: [16]
-          ruby: ['3.3.8']
+          ruby: ['3.3.12']
           postgres: ['16']
         fail-fast: false
       steps:
-        - uses: actions/checkout@v4
-        - uses: dorny/paths-filter@v3
+        - uses: actions/checkout@v7
+        - uses: dorny/paths-filter@v4
           id: changes
           with:
             filters: |
@@ -66,16 +66,15 @@ jobs:
                 - '.github/workflows/**'
 
         - name: Setup PostgreSQL with PostgreSQL extensions and unprivileged user
-          uses: ikalnytskyi/action-setup-postgres@v7
+          uses: ikalnytskyi/action-setup-postgres@v8
           with:
             postgres-version: ${{ matrix.postgres }}
             username: admin
             password: password
             database: commitchange_test
-        - uses: actions/setup-node@v4
+        - uses: actions/setup-node@v7
           with:
             node-version: ${{ matrix.node }}
-            cache: 'yarn'
         - uses: ruby/setup-ruby@v1
           with:
             ruby-version: ${{ matrix.ruby }}
