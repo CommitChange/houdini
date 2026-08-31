@@ -47,6 +47,13 @@
 <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 
 <%= yield :recaptcha_js %>
+<script src="https://www.recaptcha.net/recaptcha/enterprise.js?render=<%= ENV['RECAPTCHA_SITE_KEY'] %>"></script>
+<script>
+
+  grecaptcha.enterprise.ready(() => {
+      grecaptcha.enterprise.execute("<%=ENV['RECAPTCHA_SITE_KEY']%>", {action:'page_load'})
+  })
+</script>
 
 
 <%= csrf_meta_tags %>
