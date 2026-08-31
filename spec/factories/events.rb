@@ -10,7 +10,7 @@ FactoryBot.define do
     address { "100 N Appleton St" }
     city { "Appleton" }
     state_code { "WI" }
-    slug { "event-of-wonders" }
+    slug { SecureRandom.uuid }
     nonprofit
     profile
 
