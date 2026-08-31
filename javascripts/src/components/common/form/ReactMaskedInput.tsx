@@ -6,7 +6,7 @@ import {InputHTMLAttributes} from "react";
 import {action, observable} from "mobx";
 import {Field} from "mobx-react-form";
 import {castToNullIfUndef} from "../../../lib/utils";
-import MaskedInput, {maskArray} from "react-text-mask";
+import MaskedInput, {maskArray, MaskedInputProps} from "react-text-mask";
 
 type InputTypes = ReactInputProps &
   InputHTMLAttributes<HTMLInputElement> & {
@@ -70,7 +70,9 @@ class ReactMaskedInput extends React.Component<InputTypes, {}> {
   }
 
   render() {
-    return <MaskedInput {...this.winnowProps()} {...this.field.bind()}/>
+    // This code works in production but Typescript doesn't like it. Let's tell Typescript to ignore for now
+    const props = { ...this.winnowProps(), ...this.field.bind() } as unknown as Readonly<MaskedInputProps>
+    return <MaskedInput {...props}/>
   }
 }
 
