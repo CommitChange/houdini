@@ -1,10 +1,10 @@
 // License: LGPL-3.0-or-later
-import { AmountButtonDesc } from "./amt";
-const h = require('snabbdom/h') as Function;
+import { AmountButtonDesc } from "../../amt";
+const h = require('snabbdom/h');
 
 
 
-export default function amount_button_contents(currency_symbol: string, amt: AmountButtonDesc): any[] {
+export default function amount_button_contents(currency_symbol: string, amt: AmountButtonDesc):  ReturnType<typeof h>[] {
 
   return [
     h('span.dollar', currency_symbol),
