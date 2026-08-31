@@ -29,36 +29,34 @@ module InsertRefunds
     results = InsertRefunds.perform_stripe_refund(nonprofit_id: charge["nonprofit_id"], refund_data: refund_data, charge_date: charge["created_at"])
 
     Refund.transaction do
-      refund = Refund.create!({amount: h["amount"],
-        comment: h["comment"],
-        reason: h["reason"],
-        stripe_refund_id: results[:stripe_refund].id,
-        charge_id: charge["id"]})
+      gross_amount = -h["amount"]
+      fee_total = results[:stripe_app_fee_refund]&.amount || 0
+      net_amount = gross_amount + fee_total
+      date = Time.current
 
-      refund.create_misc_refund_info(is_modern: true, stripe_application_fee_refund_id: results[:stripe_app_fee_refund]&.id)
-
-      gross = -h["amount"]
-      fees = (results[:stripe_app_fee_refund] && results[:stripe_app_fee_refund].amount) || 0
-      net = gross + fees
-
-      # Create a corresponding./run  negative payment record
       payment = Payment.create!({
-        gross_amount: gross,
-        fee_total: fees,
-        net_amount: net,
+        gross_amount:,
+        fee_total:,
+        net_amount:,
         kind: "Refund",
         towards: original_payment.towards,
-        date: refund.created_at,
+        date:,
         nonprofit_id: charge["nonprofit_id"],
         supporter_id: charge["supporter_id"]
       })
 
+      refund = Refund.create!(
+        amount: h["amount"],
+        comment: h["comment"],
+        reason: h["reason"],
+        stripe_refund_id: results[:stripe_refund].id,
+        charge_id: charge["id"],
+        payment: payment
+      )
+
+      refund.create_misc_refund_info(is_modern: true, stripe_application_fee_refund_id: results[:stripe_app_fee_refund]&.id)
+
       InsertActivities.for_refunds([payment.id])
-
-      # Update the refund to have the above payment_id
-      refund.payment = payment
-      refund.save!
-
       # Update original payment to increment its refund_total for any future refund attempts
       original_payment.refund_total += h["amount"].to_i
       original_payment.save!
