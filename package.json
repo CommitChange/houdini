@@ -15,6 +15,7 @@
     "test": "rake -v spec  && yarn build && yarn jest",
     "export-button-config": "bundle exec rake settings:generate_json",
     "export-i18n": "bundle exec rake settings:combine_translations",
+    "export-routes": "bundle exec rails js:routes:typescript",
     "tsc": "tsc"
   },
   "devDependencies": {

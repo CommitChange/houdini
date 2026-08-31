@@ -3,7 +3,8 @@ require('../cards/create')
 const request = require('../common/super-agent-promise')
 const create_card = require('../cards/create')
 const format_err = require('../common/format_response_error')
-var path = '/nonprofits/' + app.nonprofit_id + '/events/' + appl.event_id + '/tickets'
+const {nonprofitEventTicketsPath} = require('../../../app/javascript/routes')
+const path = nonprofitEventTicketsPath(app.nonprofit_id, appl.event_id)
 
 const autocomplete = require('../components/address-autocomplete-viewscript');
 
