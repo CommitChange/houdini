@@ -56,7 +56,7 @@ Rails.application.config.action_controller.allow_deprecated_parameters_hash_equa
 # 3. If you don't currently have data encrypted with Active Record encryption, you can disable this setting to
 # configure the default behavior starting 7.1+:
 #++
-Rails.application.config.active_record.encryption.support_sha1_for_non_deterministic_encryption = false
+# Rails.application.config.active_record.encryption.support_sha1_for_non_deterministic_encryption = false
 
 ###
 # No longer run after_commit callbacks on the first of multiple Active Record
@@ -101,7 +101,7 @@ Rails.application.config.active_job.use_big_decimal_serializer = true
 # Options are `true`, and `false`. If `false`, the exception will be reported
 # as `handled` and logged instead.
 #++
-# Rails.application.config.active_support.raise_on_invalid_cache_expiration_time = true
+Rails.application.config.active_support.raise_on_invalid_cache_expiration_time = true
 
 ###
 # Specify whether Query Logs will format tags using the SQLCommenter format
