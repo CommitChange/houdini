@@ -1,21 +1,41 @@
 // License: LGPL-3.0-or-later
 import DonationSubmitter from '.';
+import run from '../../../../../app/javascript/common/Callbacks/run';
+import PlausibleCallback from './PlausibleCallback';
+import {waitFor} from '@testing-library/dom';
+
+jest.mock('../../../../../app/javascript/common/Callbacks/run', () => jest.fn());
 
 describe('DonationSubmitter', () => {
 
-  
-  function SetupDonationSubmitter(updated=jest.fn()) {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  })
+
+  function SetupDonationSubmitter(updated=jest.fn(), getPlausible=jest.fn()) {
+    const runCallbacks = run as jest.Mock;
+
     const ret = {
-      submitter: new DonationSubmitter(),
+      submitter: new DonationSubmitter({getPlausible}),
       updated,
+      getPlausible,
+      runCallbacks,
     };
 
     ret.submitter.addEventListener('updated', ret.updated)
-    
-    
+
+
     return ret;
 
   }
+
+  it('has only one postSuccess callback', () => {
+    const ret = SetupDonationSubmitter()
+    expect(Array.from(ret.submitter.callbacks().keys())).toStrictEqual(['success'])
+
+    expect(ret.submitter.callbacks('success')).toStrictEqual({before: [], after: [PlausibleCallback]})
+  })
+
   describe("before anything happens", () => {
 
     function prepare(): ReturnType<typeof SetupDonationSubmitter> {
@@ -52,6 +72,12 @@ describe('DonationSubmitter', () => {
       const {updated} = prepare()
       expect(updated).not.toHaveBeenCalled()
     })
+
+    it('has not ran callbacks', () => {
+      const {runCallbacks} = prepare();
+      expect(runCallbacks).not.toHaveBeenCalled();
+
+    });
   })
 
   describe("when beginSubmit and then savedCard", () => {
@@ -106,10 +132,16 @@ describe('DonationSubmitter', () => {
 
       expect(updated).toHaveBeenCalledTimes(2);
     })
+
+    it('has not ran callbacks', () => {
+      const {runCallbacks} = prepare();
+      expect(runCallbacks).not.toHaveBeenCalled();
+
+    });
   })
 
   describe("when beginSubmit and then completed", () => {
-    
+
     const donationResult = { };
     function prepare(): ReturnType<typeof SetupDonationSubmitter> {
       const mocked = SetupDonationSubmitter();
@@ -156,13 +188,19 @@ describe('DonationSubmitter', () => {
       expect(updated).toHaveBeenCalledTimes(3);
     })
 
-    it('calling completed twice only fires it once', () => {
+    it('calling completed twice only fires it once', async () => {
       const {submitter: state, updated} = prepare();
       state.reportCompleted(donationResult);
 
       expect(updated).toHaveBeenCalledTimes(3)
     })
 
+    it('has ran callbacks', async () => {
+      const {runCallbacks, submitter:state} = prepare();
+      expect(runCallbacks).toHaveBeenCalledWith(state, []);
+
+      await waitFor(() => expect(runCallbacks).toHaveBeenCalledWith(state, [PlausibleCallback]))
+    });
   })
 
   describe("when beginSubmit and then errored", () => {
@@ -221,6 +259,12 @@ describe('DonationSubmitter', () => {
       expect(updated).toHaveBeenCalledTimes(2);
       
     })
+
+    it('has not ran callbacks', () => {
+      const {runCallbacks} = prepare();
+      expect(runCallbacks).not.toHaveBeenCalled();
+
+    });
   })
 
   describe("when savedCard and then errored", () => {
@@ -278,6 +322,12 @@ describe('DonationSubmitter', () => {
 
       expect(updated).toHaveBeenCalledTimes(3);
     })
+
+    it('has not ran callbacks', () => {
+      const {runCallbacks} = prepare();
+      expect(runCallbacks).not.toHaveBeenCalled();
+
+    });
   });
 
 
@@ -329,13 +379,18 @@ describe('DonationSubmitter', () => {
       expect(updated).toHaveBeenCalledTimes(4);
     });
 
+    it('has not ran callbacks', () => {
+      const {runCallbacks} = prepare();
+      expect(runCallbacks).not.toHaveBeenCalled();
+
+    });
   })
 
-  describe("when errored and then re-attempted", () => {
+  describe("when errored and then succeeded", () => {
     const error = "Error message";
     const donationResult:any = { charge: undefined };
     function prepare(): ReturnType<typeof SetupDonationSubmitter> {
-      const mocked = SetupDonationSubmitter(jest.fn());
+      const mocked = SetupDonationSubmitter(jest.fn(), jest.fn());
       mocked.submitter.reportBeginSubmit();
       mocked.submitter.reportSavedCard();
       mocked.submitter.reportError(error);
@@ -379,6 +434,14 @@ describe('DonationSubmitter', () => {
       const {updated} = prepare();
 
       expect(updated).toHaveBeenCalledTimes(6);
+    });
+
+    it('has ran callbacks', async () => {
+      const {runCallbacks, submitter:state} = prepare();
+      expect(runCallbacks).toHaveBeenCalledWith(state, []);
+      await waitFor(() => expect(runCallbacks).toHaveBeenCalledWith(state, [PlausibleCallback]))
+
+
     });
   })
 
