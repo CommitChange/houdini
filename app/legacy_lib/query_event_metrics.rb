@@ -55,7 +55,8 @@ module QueryEventMetrics
       "events.start_datetime",
       "events.end_datetime",
       "events.organizer_email",
-      "events.in_person_or_virtual"
+      "events.in_person_or_virtual",
+      "events.timezone"
     ]
 
     exp = QueryEventMetrics.expression(selects)

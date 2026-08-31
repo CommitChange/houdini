@@ -281,7 +281,8 @@ describe InsertDuplicate do
         {
           id: result.id,
           start_datetime: DateTime.new(2020, 5, 12),
-          end_datetime: DateTime.new(2020, 5, 12, 4)
+          end_datetime: DateTime.new(2020, 5, 12, 4),
+          timezone: "UTC"
         }
       ).with_indifferent_access)
       validate_tls(result)
@@ -301,9 +302,9 @@ describe InsertDuplicate do
       expect(result.attributes.with_indifferent_access).to eq(common_result_attributes.merge(
         {
           id: result.id,
-
           start_datetime: Time.utc(2020, 5, 12),
-          end_datetime: Time.utc(2020, 5, 12, 4)
+          end_datetime: Time.utc(2020, 5, 12, 4),
+          timezone: "UTC"
 
         }
       ).with_indifferent_access)
@@ -323,7 +324,8 @@ describe InsertDuplicate do
         {
           id: result.id,
           start_datetime: event.start_datetime.to_time,
-          end_datetime: event.end_datetime.to_time
+          end_datetime: event.end_datetime.to_time,
+          timezone: "UTC"
         }
       ).with_indifferent_access)
       validate_tls(result)
