@@ -417,7 +417,7 @@ GEM
     rabl (0.17.0)
       activesupport (>= 2.3.14)
     racc (1.8.1)
-    rack (2.2.23)
+    rack (2.2.24)
     rack-attack (6.5.0)
       rack (>= 1.0, < 3)
     rack-cors (2.0.2)
@@ -891,7 +891,7 @@ CHECKSUMS
   qx (0.1.1)
   rabl (0.17.0) sha256=4870e3cbfe28ae89ff5964b583105950cd8c49167440f63e9317b241d4afe70f
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
-  rack (2.2.23) sha256=a8fe9d7e07064770b8ec123663fded8a59ef7e2b6db5cda7173d45a5718ab69c
+  rack (2.2.24) sha256=ef16526a0d871c43753452338c754040a664c8b41bf0dd7450b85f7772adca5f
   rack-attack (6.5.0) sha256=9802e4a4bbdc8f75b00bae9206ba9ce6efe257f8eed9e0a5a40fcbafeeef314e
   rack-cors (2.0.2) sha256=415d4e1599891760c5dc9ef0349c7fecdf94f7c6a03e75b2e7c2b54b82adda1b
   rack-session (1.0.2) sha256=a02115e5420b4de036839b9811e3f7967d73446a554b42aa45106af335851d76
