@@ -1,5 +1,4 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-require "qx"
 
 module InsertEmailLists
   def self.for_mailchimp(npo_id, tag_master_ids)
