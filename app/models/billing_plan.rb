@@ -2,13 +2,13 @@
 class BillingPlan < ApplicationRecord
   Names = ["Starter", "Fundraising", "Supporter Management"]
 
-  attr_accessible \
-    :name, # str: readable name
-    :amount, # int (cents)
-    :stripe_plan_id, # str (matches plan ID in Stripe) Not needed if it's not a paying subscription
-    :interval, # str ('monthly', 'annual')
-    :percentage_fee, # 0.038
-    :flat_fee
+  # attr
+  #   :name, # str: readable name
+  #   :amount, # int (cents)
+  #   :stripe_plan_id, # str (matches plan ID in Stripe) Not needed if it's not a paying subscription
+  #   :interval, # str ('monthly', 'annual')
+  #   :percentage_fee, # 0.038
+  #   :flat_fee
 
   has_many :billing_subscriptions
 
