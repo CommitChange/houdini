@@ -33,7 +33,8 @@ class Event < ApplicationRecord
     :organizer_email, # string
     :receipt_message, # text
     :nonprofit,
-    :in_person_or_virtual
+    :in_person_or_virtual,
+    :timezone # string (timezone): event time zone if different from nonprofit timezone
 
   enum :in_person_or_virtual, %w[in_person virtual].index_by(&:itself), validate: true
 
@@ -87,6 +88,8 @@ class Event < ApplicationRecord
     end
     self.published = false if published.nil?
     self.total_raised ||= 0
+    self.timezone = nonprofit_timezone || "UTC"
+
     self
   end
 
@@ -122,5 +125,9 @@ class Event < ApplicationRecord
 
   def get_tickets_button_label
     misc_event_info&.custom_get_tickets_button_label || "Get Tickets"
+  end
+
+  def timezone_with_fallback
+    timezone.presence || nonprofit_timezone
   end
 end

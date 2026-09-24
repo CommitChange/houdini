@@ -44,31 +44,38 @@
 			<div class='wizard-step dates-step' style='display: block;'>
 				<!--= wizard.set_step 'new_event_wiz' 'Dates' -->
 
-				<form parsley-validate class='dates-fields u-centered'>
+				<form parsley-validate class='u-centered'>
 					<!--= on 'submit' (def 'new_event' form_object) (wizard.advance 'new_event_wiz') -->
 
-					<fieldset class='group'>
-						<label class='u-floatL'>Start Date & Time</label>
-            <div pikaday-timepicker='MM/DD/YYYY hh:mm a'>
-              <input class='u-width--200 u-bold u-inlineBlock' apply-pikaday-time='MM/DD/YYYY hh:mm a' type='text' name='event[start_datetime]' required parsley-trigger='change' placeholder='MM/DD/YYYY HH:MM'>
-              <a class='button edit u-inlineBlock'>Set</a>
-            </div>
-					</fieldset>
+					<div class="dates-fields">
+						<fieldset class='group'>
+							<label class='u-floatL'>Start Date & Time</label>
+	            <div pikaday-timepicker='MM/DD/YYYY hh:mm a'>
+	              <input class='u-width--200 u-bold u-inlineBlock' apply-pikaday-time='MM/DD/YYYY hh:mm a' type='text' name='event[start_datetime]' required parsley-trigger='change' placeholder='MM/DD/YYYY HH:MM'>
+	              <a class='button edit u-inlineBlock'>Set</a>
+	            </div>
+						</fieldset>
 
-					<fieldset class='group u-marginBottom--15  u-relative'>
-						<label class='u-floatL'>End Date & Time:</label>
-            <div pikaday-timepicker='MM/DD/YYYY hh:mm a'>
-              <input class='u-width--200 u-bold u-inlineBlock' type='text' name='event[end_datetime]' required parsley-trigger='change' placeholder='MM/DD/YYYY HH:MM'>
-              <a class='button edit u-inlineBlock'>Set</a>
-            </div>
+						<fieldset class='group'>
+							<label class='u-floatL'>End Date & Time:</label>
+	            <div pikaday-timepicker='MM/DD/YYYY hh:mm a'>
+	              <input class='u-width--200 u-bold u-inlineBlock' type='text' name='event[end_datetime]' required parsley-trigger='change' placeholder='MM/DD/YYYY HH:MM'>
+	              <a class='button edit u-inlineBlock'>Set</a>
+	            </div>
+						</fieldset>
+					</div>
+
+					<fieldset class='group timezone-select u-marginBottom--15 u-relative'>
+					  <label>Timezone</label>
+					  <div>
+					  	<%= select(:event, :timezone, time_zone_options_with_iana(@nonprofit.timezone), include_blank: 'Select Timezone', class: 'u-bold') %>
+					  </div>
 					</fieldset>
 
 					<%= render 'components/forms/submit_button', button_text: 'Next', scope: 'new_event_wiz', branded: true %>
 
 				</form>
 			</div><!-- .dates-step -->
-
-
 
 			<div class='wizard-step location-step'>
 				<!--= wizard.set_step 'new_event_wiz' 'Location' -->
