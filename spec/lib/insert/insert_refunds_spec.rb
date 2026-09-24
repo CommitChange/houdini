@@ -117,6 +117,12 @@ describe InsertRefunds do
                   expect(refund.reason).to eq reason
                 end
 
+                it "has the correct supporter_id and nonprofit_id on Refund" do
+                  original_payment.reload
+                  expect(refund.supporter_id).to eq original_payment.supporter.id
+                  expect(refund.nonprofit_id).to eq original_payment.nonprofit.id
+                end
+
                 it "has an accurate misc_refund_info" do
                   expect(misc_refund_info.is_modern).to eq true
                   if amount_of_fees_to_refund > 0
