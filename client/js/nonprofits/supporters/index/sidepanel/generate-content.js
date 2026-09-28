@@ -155,9 +155,7 @@ exports.SupporterNote = (data, state) => {
 
 exports.SupporterEmail = (data, state) => {
   var jd = data.json_data
-  var canView = false
   var body = [h('div.activity-section', `Subject: ${jd.subject}`), h('br')]
-  var thread =  h('a', {props: {href: '#'}, on: {click: [state.threadId$, jd.gmail_thread_id]}}, 'View thread')
   
   return {
     title: `Email thread started by ${jd.from}`
