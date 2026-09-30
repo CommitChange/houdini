@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby ENV["CUSTOM_RUBY_VERSION"] || "3.4.10" # heroku needs a specific ruby version in the Gemfile
 
 gem "rake"
-gem "rails", "~> 7.1.6"
+gem "rails", "~> 8.1.4"
 gem "sprockets", "~> 3.7" # Sprockets 4.0 stops allowing us to add a proc to the config.assets.precompile array, which we currently use
 
 gem "rack", "~> 2.2.23"
@@ -102,14 +102,14 @@ group :development, :ci, :test do
   gem "pry-byebug"
   gem "binding_of_caller"
   gem "rspec", "~> 3"
-  gem "rspec-rails", "~> 7"
+  gem "rspec-rails", "~> 8"
   gem "database_cleaner"
   gem "dotenv-rails"
   gem "stripe-ruby-mock", "~> 5.0", require: "stripe_mock"
   gem "factory_bot"
   gem "factory_bot_rails"
   gem "action_mailer_matchers", "~> 1.2.0"
-  gem "simplecov", "~> 0.22.0", require: false
+  gem "simplecov", "~> 1.3.1", require: false
   gem "simplecov-tailwindcss", require: false
   gem "byebug"
   gem "shoulda-matchers"
