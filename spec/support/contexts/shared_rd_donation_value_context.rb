@@ -377,12 +377,12 @@ RSpec.shared_context :shared_rd_donation_value_context do
     expected = generate_expected(@donation_id, result["payment"].id, result["charge"].id, pay_method, supporter, nonprofit, @stripe_charge_id, event: event, recurring_donation_expected: data[:recurring_donation], recurring_donation: result["recurring_donation"])
 
     expect(result.count).to eq expected.count
-    expect(result["donation"].attributes).to match expected[:donation]
-    expect(result["charge"].attributes).to eq expected[:charge]
+    expect(result["donation"]).to have_attributes expected[:donation]
+    expect(result["charge"]).to have_attributes expected[:charge]
     # expect(result[:json]['activity']).to eq expected[:activity]
-    expect(result["payment"].attributes).to eq expected[:payment]
+    expect(result["payment"]).to have_attributes expected[:payment]
     if data[:recurring_donation]
-      expect(result["recurring_donation"].attributes).to eq expected[:recurring_donation]
+      expect(result["recurring_donation"]).to have_attributes expected[:recurring_donation]
     end
 
     result
@@ -394,12 +394,12 @@ RSpec.shared_context :shared_rd_donation_value_context do
     expected = generate_expected(@donation_id, result["payment"].id, result["charge"].id, pay_method, supporter, nonprofit, @stripe_charge_id, campaign: campaign, recurring_donation_expected: data[:recurring_donation], recurring_donation: result["recurring_donation"])
 
     expect(result.count).to eq expected.count
-    expect(result["donation"].attributes).to match expected[:donation]
-    expect(result["charge"].attributes).to eq expected[:charge]
+    expect(result["donation"]).to have_attributes expected[:donation]
+    expect(result["charge"]).to have_attributes expected[:charge]
     # expect(result[:json]['activity']).to eq expected[:activity]
-    expect(result["payment"].attributes).to eq expected[:payment]
+    expect(result["payment"]).to have_attributes expected[:payment]
     if data[:recurring_donation]
-      expect(result["recurring_donation"].attributes).to eq expected[:recurring_donation]
+      expect(result["recurring_donation"]).to have_attributes expected[:recurring_donation]
     end
     result
   end
@@ -414,18 +414,18 @@ RSpec.shared_context :shared_rd_donation_value_context do
 
     expected["donation"].merge!(profile_id: profile.id)
     expect(result.count).to eq expected.count
-    expect(result["donation"].attributes).to match expected[:donation]
+    expect(result["donation"]).to have_attributes expected[:donation]
     if expect_charge
-      expect(result["charge"].attributes).to eq expected[:charge]
+      expect(result["charge"]).to have_attributes expected[:charge]
     end
     # expect(result[:json]['activity']).to eq expected[:activity]
 
     if expect_payment
-      expect(result["payment"].attributes).to eq expected[:payment]
+      expect(result["payment"]).to have_attributes expected[:payment]
     end
 
     if data[:recurring_donation]
-      expect(result["recurring_donation"].attributes).to eq expected[:recurring_donation]
+      expect(result["recurring_donation"]).to have_attributes expected[:recurring_donation]
     end
     result
   end

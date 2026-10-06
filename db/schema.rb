@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_26_154514) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_28_153953) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -181,8 +181,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_26_154514) do
     t.string "status", limit: 255
     t.integer "fee"
     t.integer "direct_debit_detail_id"
+    t.string "stripe_payment_intent_id", comment: "the StripePaymentIntent associated with this charge if using Slipflow"
     t.index ["donation_id"], name: "index_charges_on_donation_id"
     t.index ["payment_id"], name: "index_charges_on_payment_id"
+    t.index ["stripe_payment_intent_id"], name: "index_charges_on_stripe_payment_intent_id"
   end
 
   create_table "custom_field_joins", id: :serial, force: :cascade do |t|
@@ -778,6 +780,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_26_154514) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
+  create_table "payment_intents", force: :cascade do |t|
+    t.bigint "nonprofit_id", null: false
+    t.string "stripe_payment_intent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["nonprofit_id"], name: "index_payment_intents_on_nonprofit_id"
+    t.index ["stripe_payment_intent_id"], name: "index_payment_intents_on_stripe_payment_intent_id"
+  end
+
   create_table "payment_payouts", id: :serial, force: :cascade do |t|
     t.integer "donation_id"
     t.integer "payout_id"
@@ -1007,6 +1018,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_26_154514) do
     t.datetime "updated_at", precision: nil, null: false
     t.index ["event_id"], name: "index_stripe_events_on_event_id"
     t.index ["object_id", "event_time"], name: "index_stripe_events_on_object_id_and_event_time"
+  end
+
+  create_table "stripe_payment_intents", id: :string, force: :cascade do |t|
+    t.string "stripe_account_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stripe_account_id"], name: "index_stripe_payment_intents_on_stripe_account_id"
   end
 
   create_table "stripe_transaction_charges", id: :serial, force: :cascade do |t|
@@ -1299,6 +1317,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_26_154514) do
   end
 
   add_foreign_key "campaign_gifts", "campaign_gift_options", name: "campaign_gifts_to_option_fk"
+  add_foreign_key "charges", "stripe_payment_intents"
   add_foreign_key "email_customizations", "nonprofits"
   add_foreign_key "export_formats", "nonprofits"
   add_foreign_key "fee_coverage_detail_bases", "fee_eras"
