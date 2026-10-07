@@ -1,0 +1,59 @@
+// For format details, see https://containers.dev/implementors/json_reference/.
+// For config options, see the README at: https://github.com/devcontainers/templates/tree/main/src/ruby
+{
+  "name": "houdini",
+  "dockerComposeFile": "compose.yaml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:2": {
+      "version": "16"
+    },
+    "ghcr.io/joshuanianji/devcontainer-features/github-cli-persistence:1": {}, // makes it so gh auth login persists across container builds
+    "ghcr.io/nikobockerman/devcontainer-features/yarn-persistent-cache:1": {}, // persistent yarn cache to speed up rebuilds
+    "ghcr.io/nullcoder/devcontainer-features/stripe-cli:1": {}, // stripe cli
+    "ghcr.io/devcontainers-extra/features/heroku-cli:1": {}, // heroku cli
+    "ghcr.io/rails/devcontainer/features/activestorage:1": {},
+    "ghcr.io/rails/devcontainer/features/postgres-client:1": {}, // the pg cli,
+    "ghcr.io/rails/devcontainer/features/bundler-cache:1": {}, // bundler cache to speed up rebuilds
+  },
+  "containerEnv": {
+    "DATABASE_HOST": "postgres",
+    "DISABLE_DATABASE_ENVIRONMENT_CHECK": "1" // it thinks we're on prod so database management won't happen. Let's tell it to stop being fussy
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [5000],
+  // Configure tool-specific properties.
+  // "customizations": {},
+  // Uncomment to connect as root instead. More info: https://containers.dev/implementors/json_reference/#remoteUser.
+  // "remoteUser": "root",
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "bin/setup --skip-server",
+  // makes sure our network is available on the host
+  "initializeCommand": "docker network inspect houdini-slipflow || docker network create houdini-slipflow",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.vscode-github-actions",
+        "vunguyentuan.vscode-postcss",
+        "vunguyentuan.vscode-css-variables",
+        "stripe.vscode-stripe",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "cssVariables.lookupFiles": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.sass",
+          "**/*.less",
+        ],
+        "rubyLsp.rubyVersionManager": {
+          "identifier": "mise" // this is the one used by the Rails devcontainer image
+        },
+        "stripe.cliInstallPath": "/usr/bin/stripe", // if you use the stripe vscode extension, it will want to know this
+      }
+    }
+  }
+}
