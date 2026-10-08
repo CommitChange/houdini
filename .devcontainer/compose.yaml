@@ -36,6 +36,10 @@ volumes:
   postgres-data:
 
 networks:
+  # houdini-slipflow is a common external network 
+  # used by both this devcontainer and the Slipflow devcontainer
+  # It will be autocreated if needed when either devcontainer is started
+  # Or during run depending on the tool
   houdini-slipflow:
     name: "houdini-slipflow"
     external: true
