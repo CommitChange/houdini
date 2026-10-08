@@ -1,0 +1,45 @@
+name: "houdini"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+
+    volumes:
+      - ../..:/workspaces:cached
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    # Uncomment the next line to use a non-root user for all processes.
+    # user: vscode
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16.1
+    restart: unless-stopped
+    networks:
+      - default
+      - houdini-slipflow
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+
+volumes:
+  postgres-data:
+
+networks:
+  # houdini-slipflow is a common external network 
+  # used by both this devcontainer and the Slipflow devcontainer
+  # It will be autocreated if needed when either devcontainer is started
+  # Or during run depending on the tool
+  houdini-slipflow:
+    name: "houdini-slipflow"
+    external: true
