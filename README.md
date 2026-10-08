@@ -374,7 +374,7 @@ git push production HEAD:master
 ```
 ### Build for staging
 
-* Run the workflow at https://github.com/CommitChange/deploy-houdini/actions/workflows/create-release.yml.
+* Run the workflow by `./create_new_staging_release` (which calls https://github.com/CommitChange/deploy-houdini/actions/workflows/create-release.yml).
 * Once the deploy finishes, increase ASSET_VERSION in https://dashboard.heroku.com/apps/commitchange-test/settings by 1
 * To get the latest backup of the prod database on staging, you need to run the following command locally. NOTE: this will
 override any changes you've made in the staging database.
