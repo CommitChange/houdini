@@ -31,7 +31,7 @@
   // "remoteUser": "root",
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bin/setup --skip-server",
-  // makes sure our network is available on the host
+  // makes sure our common network is available to this and the slipflow devcontainer
   "initializeCommand": "docker network inspect houdini-slipflow || docker network create houdini-slipflow",
   "customizations": {
     "vscode": {
