@@ -36,7 +36,7 @@ FileUtils.chdir APP_ROOT do
 
   puts "\n== Creating database (if necessary) =="
   # this is needed in addition to db:setup because config/initializers/pg_type_map.rb will cause db:setup to fail unless the db is pre-created
-  system! "bin/rails db:create:all"
+  system! "bin/rails db:create"
 
   puts "\n== Preparing database =="
   system! "bin/rails db:setup"
