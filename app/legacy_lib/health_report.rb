@@ -1,7 +1,4 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-require "qx"
-require "format/csv"
-require "format/currency"
 
 module HealthReport
   # Send an email report about what has happend on the servers and database in the last 24hrs, and how things are running

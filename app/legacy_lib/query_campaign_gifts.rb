@@ -1,8 +1,6 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 # Query code for both campaign_gift_options and campaign_gifts
 
-require "psql"
-
 module QueryCampaignGifts
   # Create a mapping of: {
   # 'total_donations' => Integer, # total donations for gift options
