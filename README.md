@@ -303,83 +303,54 @@ and React (using TSX files). Please use the React Generators for creation.
 
 ## How to build releases at CommitChange
 
-### Build for production
+Releases go through the private [deploy-houdini](https://github.com/CommitChange/deploy-houdini) repo, which holds the built assets, and are then pushed to Heroku. Ask Eric for access to `deploy-houdini` and the `commitchange` Heroku app.
 
-* Make your changes on `supporter_level_goal` (or any branch in the public houdini repo) and commit
-* Push your changes to remote
-* Run `./create_new_release.sh`. This moves you to `PRIVATE_MASTER` (ask Eric for the remote and access) and merges the changes.
-* Push to remote for `PRIVATE_MASTER`
-* Checkout `PRIVATE_PROD_DEPLOY`
-*`git merge PRIVATE_PROD_MASTER`
-* If you have changes on assets or on javascript, then run: `./run_production yarn build-all`. After that finishes, run `git add public` and then `git commit`
-* If no changes on assets or javascript, don’t do the last step
-* Push to the remote for `PRIVATE_PROD_DEPLOY` (ask Eric for the remote and access)
-* Push to heroku production  using `git commit production PRIVATE_PROD_DEPLOY:master` ( ask Eric for access to `production`)
+### One-time setup
 
-## (Mac Setup) Build for Production 
-# In order to get prod env set, you need to download Github CLI and Heroku CLI. 
+Install the GitHub CLI (`brew install gh`, then `gh auth login`) and the Heroku CLI (`brew tap heroku/brew && brew install heroku`, then `heroku login`). Then, from your houdini checkout:
 
-# Github CLI setup 
-```
-gh # to check if GH CLI has been downloaded 
-brew install gh  # if GH CLI has not been downloaded
-gh 
-gh auth
-gh auth login
-```
-# Answer the following questions: 
-—? What account do you want to log into? GitHub.com
-? What is your preferred protocol for Git operations? HTTPS
-? Authenticate Git with your GitHub credentials? Yes
-? How would you like to authenticate GitHub CLI? Login with a web browser
-—copy one time code, and enter into browser 
-
-
-# Heroku CLI setup 
-```
-brew tap heroku/brew && brew install heroku 
-heroku login 
-heroku git:remote —remote=production -a commitchange 
-git branch 
-git push production HEAD:master 
-```
-
-# One-time setup to build for production
-```
-git checkout supporter_level_goal
-git pull 
-git remote add private https://github.com/commitchange/deploy-houdini.git
+```bash
+gh auth setup-git    # lets git use your gh login for the private repo
+git remote add private https://github.com/CommitChange/deploy-houdini.git
+heroku git:remote --remote=production -a commitchange
+git fetch private
+git branch PRIVATE_MASTER private/master
 git branch -u private/master PRIVATE_MASTER
-git fetch private 
-git checkout private/master
-git switch -c PRIVATE_MASTER
-git branch -u private/master PRIVATE_MASTER
-git checkout private/prod_deploy
-git switch -c PRIVATE_PROD_DEPLOY
+git branch PRIVATE_PROD_DEPLOY private/prod_deploy
 git branch -u private/prod_deploy PRIVATE_PROD_DEPLOY
 ```
 
-```
-git checkout supporter_level_goal
+Building the production assets runs `rake assets:precompile`, which boots the app. It needs the Ruby gems installed (`bundle install`) and a Postgres database at `BUILD_DATABASE_URL` (default `postgres://admin:password@localhost/commitchange_development_legacy`) with the schema loaded.
+
+### Build for production
+
+1. Merge your changes into `supporter_level_goal` and push.
+2. From an up-to-date `supporter_level_goal`, run `./create_new_release.sh`. It checks out `PRIVATE_MASTER`, merges your commit, and commits a `CCS_HASH` file recording it.
+3. Merge that into the deploy branch, build the assets if JS or assets changed, and push:
+
+```bash
+git checkout supporter_level_goal && git pull
 ./create_new_release.sh
 git push private HEAD:master
 git checkout PRIVATE_PROD_DEPLOY
+git pull
 git merge PRIVATE_MASTER
-git push private HEAD:prod_deploy
-npm run build-all-production
+npm run build-all-production    # only if JS or assets changed
 git add public
-git commit -m "<a build message>"
+git commit -m "Build for <commit>"
 git push private HEAD:prod_deploy
 git push production HEAD:master
 ```
+
+`git push production HEAD:master` is the step that deploys. Check the release with `heroku releases -a commitchange`.
+
 ### Build for staging
 
-* Run the workflow by `./create_new_staging_release` (which calls https://github.com/CommitChange/deploy-houdini/actions/workflows/create-release.yml).
-* Once the deploy finishes, increase ASSET_VERSION in https://dashboard.heroku.com/apps/commitchange-test/settings by 1
-* To get the latest backup of the prod database on staging, you need to run the following command locally. NOTE: this will
-override any changes you've made in the staging database.
+* Staging builds run through the [create-release workflow](https://github.com/CommitChange/deploy-houdini/actions/workflows/create-release.yml) in `deploy-houdini`. `create_new_staging_release.sh` on deploy-houdini's `master` branch merges the source into a local `PRIVATE_STAGING_MASTER` branch, the same way `create_new_release.sh` does for production.
+* Once the deploy finishes, increase `ASSET_VERSION` by 1 in https://dashboard.heroku.com/apps/commitchange-test/settings.
+* To copy the latest production backup onto staging, run the command below. It overwrites everything in the staging database.
 
-```
+```bash
 heroku pg:backups:restore $(heroku pg:backups:url --app commitchange) --app commitchange-test
 ```
 
