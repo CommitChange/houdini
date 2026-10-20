@@ -16,13 +16,13 @@ aws:
   access_key_id: <%= ENV['AWS_ACCESS_KEY'] %>
   secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
   region: us-west-1
-  bucket: commitchange
+  bucket: commitchange-staging
 
 button_config:
   url: "https://commitchange-test.herokuapp.com"
 
 image:
-  host: "https://dmnsmycmdpaix.cloudfront.net"
+  host: "https://commitchange-staging.s3.amazonaws.com"
 
 api_domain:
   url: "https://commitchange-test.herokuapp.com"
