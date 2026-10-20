@@ -1,5 +1,9 @@
 # This library is deprecated. You can use [Arel](https://github.com/rails/arel) instead
 
+> **Houdini note.** This is a vendored copy of [jayrbolton/ruby-qx](https://github.com/jayrbolton/ruby-qx).
+> We changed `Qx.quote` to escape strings through ActiveRecord's database adapter,
+> so building SQL that contains a string needs an ActiveRecord connection.
+
 # Qx
 
 A ruby SQL expression builder (and executor)  focused on Postgresql. It allows you to directly and safely write efficient SQL expressions in Ruby, using data from Ruby-land. These expressions can be passed around, reused, and modified. This lib is for those of us who want to use SQL directly within ruby, and do not want an ORM.
