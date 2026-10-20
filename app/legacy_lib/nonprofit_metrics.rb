@@ -112,7 +112,7 @@ module NonprofitMetrics
   # each hash is nested in an outer hash,  set to a key that is also the date, lol
   # this is used in the payment_history query to fill in missing dates in the data.
   def self.payment_history_timespans(params)
-    raise ArgumentError.new("Invalid timespan") unless ["year", "month", "week", "day"].include? params[:timeSpan]
+    validate_time_span!(params[:timeSpan])
     date_hash = {}
     beginning_of = "beginning_of_" + params[:timeSpan]
 
@@ -126,7 +126,16 @@ module NonprofitMetrics
     date_hash
   end
 
+  TIME_SPANS = ["year", "month", "week", "day"].freeze
+
+  # payment_history pastes time_span straight into its SQL, so check it
+  # against the allowlist before building any query
+  def self.validate_time_span!(time_span)
+    raise ArgumentError.new("Invalid timespan") unless TIME_SPANS.include?(time_span)
+  end
+
   def self.payment_history(params)
+    validate_time_span!(params[:timeSpan])
     results = Qx.select(
       "to_char(date_trunc('#{params[:timeSpan]}', MAX(payments.date)), 'YYYY-MM-DD') AS time_span",
       "coalesce(SUM(payments.gross_amount), 0) AS total_cents",

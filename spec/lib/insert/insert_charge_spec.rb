@@ -202,8 +202,8 @@ describe InsertCharge do
 
           result_expected = common_expected.merge({card_id: card.id, nonprofit_id: nonprofit.id, donation_id: nil, supporter_id: supporter.id, ticket_id: nil, payment_id: nil, profile_id: nil, direct_debit_detail_id: nil}).with_indifferent_access
 
-          expect(finished_result["charge"].attributes).to eq result_expected
-          expect(Charge.first.attributes).to eq result_expected
+          expect(finished_result["charge"]).to have_attributes result_expected
+          expect(Charge.first).to have_attributes result_expected
 
           expect(Payment).to_not be_exists
         end
@@ -222,8 +222,8 @@ describe InsertCharge do
 
           result_expected = common_expected.merge({card_id: card.id, nonprofit_id: nonprofit.id, donation_id: nil, supporter_id: supporter.id, ticket_id: nil, payment_id: nil, profile_id: nil, direct_debit_detail_id: nil}).with_indifferent_access
 
-          expect(finished_result["charge"].attributes).to eq result_expected
-          expect(Charge.first.attributes).to eq result_expected
+          expect(finished_result["charge"]).to have_attributes result_expected
+          expect(Charge.first).to have_attributes result_expected
 
           expect(Payment).to_not be_exists
         end
@@ -281,8 +281,8 @@ describe InsertCharge do
 
             result_charge_expected = common_charge_expected.merge({card_id: expected_card.id, nonprofit_id: nonprofit.id, donation_id: 555, supporter_id: supporter.id, ticket_id: nil, payment_id: Payment.first.id, profile_id: nil, direct_debit_detail_id: nil}).with_indifferent_access
 
-            expect(finished_result["charge"].attributes).to eq result_charge_expected
-            expect(Charge.first.attributes).to eq result_charge_expected
+            expect(finished_result["charge"]).to have_attributes result_charge_expected
+            expect(Charge.first).to have_attributes result_charge_expected
             expect(Charge.count).to eq 1
 
             common_payment_expected = {id: Payment.first.id,
@@ -299,8 +299,8 @@ describe InsertCharge do
                                        created_at: Time.now,
                                        updated_at: Time.now}.with_indifferent_access
 
-            expect(finished_result["payment"].attributes).to eq common_payment_expected
-            expect(Payment.first.attributes).to eq common_payment_expected
+            expect(finished_result["payment"]).to have_attributes common_payment_expected
+            expect(Payment.first).to have_attributes common_payment_expected
             expect(Payment.count).to eq 1
           end
 
@@ -318,8 +318,8 @@ describe InsertCharge do
 
             result_charge_expected = common_charge_expected.merge({card_id: card.id, nonprofit_id: nonprofit.id, donation_id: 555, supporter_id: supporter.id, ticket_id: nil, payment_id: Payment.first.id, profile_id: nil, direct_debit_detail_id: nil}).with_indifferent_access
 
-            expect(finished_result["charge"].attributes).to eq result_charge_expected
-            expect(Charge.first.attributes).to eq result_charge_expected
+            expect(finished_result["charge"]).to have_attributes result_charge_expected
+            expect(Charge.first).to have_attributes result_charge_expected
             expect(Charge.count).to eq 1
 
             common_payment_expected = {id: Payment.first.id,
@@ -336,8 +336,8 @@ describe InsertCharge do
                                        created_at: Time.now,
                                        updated_at: Time.now}.with_indifferent_access
 
-            expect(finished_result["payment"].attributes).to eq common_payment_expected
-            expect(Payment.first.attributes).to eq common_payment_expected
+            expect(finished_result["payment"]).to have_attributes common_payment_expected
+            expect(Payment.first).to have_attributes common_payment_expected
             expect(Payment.count).to eq 1
           end
         end

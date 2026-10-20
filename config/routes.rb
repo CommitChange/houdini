@@ -148,7 +148,7 @@ Rails.application.routes.draw do
     resources :campaign_gift_options, only: [:index]
   end
 
-  resources :nonprofits, only: %i[show create update destroy] do
+  resources :nonprofits, only: %i[show update destroy] do
     collection do
       post :onboard
       get :search
@@ -244,6 +244,7 @@ Rails.application.routes.draw do
     match "/users/is_confirmed" => "users/confirmations#is_confirmed", :via => %i[get post]
     get "/users/exists" => "users/confirmations#exists"
     post "/users/confirm_auth", action: :confirm_auth, controller: "users/sessions", via: %i[get post]
+    post "/users/send_otp" => "users/sessions#send_otp"
   end
 
   # Super admin
@@ -263,6 +264,8 @@ Rails.application.routes.draw do
     post "/webhooks/stripe/receive" => "webhooks/stripe#receive"
     post "/webhooks/stripe/receive_connect" => "webhooks/stripe#receive_connect"
   end
+
+  mount MaintenanceTasks::Engine, at: "/maintenance_tasks"
 
   # Nonprofits
   get ":state_code/:city/:name" => "nonprofits#show", :as => :nonprofit_location

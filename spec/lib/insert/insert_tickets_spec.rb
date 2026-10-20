@@ -322,8 +322,8 @@ describe InsertTickets do
                 ticket_level_id: ticket_level.id,
                 ticket_purchase_id: ticket_purchase.id
               }])
-            expect(result["payment"].attributes).to eq expected[:payment]
-            expect(result["offsite_payment"].attributes).to eq expected[:offsite_payment]
+            expect(result["payment"]).to have_attributes expected[:payment]
+            expect(result["offsite_payment"]).to have_attributes expected[:offsite_payment]
             expect(result["tickets"].map { |i| i.attributes }[0]).to eq expected[:tickets][0]
 
             expect(result["tickets"].map(&:ticket_purchase)).to contain_exactly TicketPurchase.last
@@ -502,8 +502,8 @@ describe InsertTickets do
                }]}.merge(other_elements)
           )
 
-          expect(result["payment"].attributes).to eq expected[:payment]
-          expect(result["charge"].attributes).to eq expected[:charge]
+          expect(result["payment"]).to have_attributes expected[:payment]
+          expect(result["charge"]).to have_attributes expected[:charge]
           expect(result["tickets"].map { |i| i.attributes }[0]).to eq expected[:tickets][0]
 
           result
