@@ -162,7 +162,7 @@ class QxTest < Minitest::Test
 
   def test_insert_into_values_common_values
     parsed = Qx.insert_into(:table_name).values([{x: "bye"}, {x: "hi"}]).common_values(z: 1).parse
-    assert_equal parsed, %(INSERT INTO "table_name" ("x", "z") VALUES ($Q$bye$Q$, 1), ($Q$hi$Q$, 1))
+    assert_equal parsed, %(INSERT INTO "table_name" ("x", "z") VALUES ('bye', 1), ('hi', 1))
   end
 
   def test_insert_into_values_timestamps

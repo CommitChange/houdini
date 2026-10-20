@@ -209,17 +209,20 @@ class Qexpr
 
   # Quote a string for use in sql to prevent injection or weird errors
   # Always use this for all values!
-  # Just uses double-dollar quoting universally. Should be generally safe and easy.
   # Will return an unquoted value it it's a Fixnum
+  #
+  # ActiveRecord's database adapter escapes and single-quotes strings, so the
+  # escaping matches the connection's settings. Building SQL that contains a
+  # string needs an ActiveRecord connection, even if you never execute it.
   def self.quote(val)
-    if val.is_a?(Integer) || (val.is_a?(String) && val =~ /^\$Q\$.+\$Q\$$/) # is a valid num or already quoted
+    if val.is_a?(Integer)
       val
     elsif val.nil?
       "NULL"
     elsif !!val == val # is a boolean
       val ? "'t'" : "'f'"
     else
-      "$Q$" + val.to_s + "$Q$"
+      ActiveRecord::Base.connection.quote(val.to_s)
     end
   end
 

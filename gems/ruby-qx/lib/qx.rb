@@ -453,7 +453,6 @@ class Qx
     str
       .gsub(/(FROM|WHERE|VALUES|SET|SELECT|UPDATE|INSERT INTO|DELETE FROM)/) { Regexp.last_match(1).to_s.blue.bold }
       .gsub(/(\(|\))/) { Regexp.last_match(1).to_s.cyan }
-      .gsub("$Q$", "'")
   end
 
   # -- utils
@@ -471,8 +470,11 @@ class Qx
 
   # Quote a string for use in sql to prevent injection or weird errors
   # Always use this for all values!
-  # Just uses double-dollar quoting universally. Should be generally safe and easy.
   # Will return an unquoted value it it's a Fixnum
+  #
+  # ActiveRecord's database adapter escapes and single-quotes strings, so the
+  # escaping matches the connection's settings. Building SQL that contains a
+  # string needs an ActiveRecord connection, even if you never execute it.
   def self.quote(val)
     if val.is_a?(Qx)
       val.parse
@@ -485,7 +487,7 @@ class Qx
     elsif !!val == val # is a boolean
       val ? "'t'" : "'f'"
     else
-      "$Q$" + val.to_s + "$Q$"
+      ActiveRecord::Base.connection.quote(val.to_s)
     end
   end
 
