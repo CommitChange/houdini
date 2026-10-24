@@ -31,6 +31,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
+    shm_size: 1g
 
 volumes:
   postgres-data:
