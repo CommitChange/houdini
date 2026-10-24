@@ -32,7 +32,7 @@
   // Uncomment to connect as root instead. More info: https://containers.dev/implementors/json_reference/#remoteUser.
   // "remoteUser": "root",
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bin/setup --skip-server",
+  "postCreateCommand": "bin/setup",
   // makes sure our common network is available to this and the slipflow devcontainer
   "initializeCommand": "docker network inspect houdini-slipflow || docker network create houdini-slipflow",
   "customizations": {
