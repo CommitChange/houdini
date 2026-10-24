@@ -21,7 +21,6 @@
   },
   "containerEnv": {
     "DATABASE_HOST": "db",
-    "DISABLE_DATABASE_ENVIRONMENT_CHECK": "1", // it thinks we're on prod so database management won't happen. Let's tell it to stop being fussy
     "RAILS_ENV": "development",
     "BUILD_DATABASE_URL": "postgres://admin:password@db/commitchange_development_legacy" // needed because the frontend build process is weird ™️
   },
