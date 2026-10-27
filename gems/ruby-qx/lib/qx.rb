@@ -14,6 +14,11 @@ class Qx
     @@type_map = h[:type_map]
   end
 
+  # Built on first use so loading Qx doesn't open a database connection
+  def self.type_map
+    @@type_map ||= PG::BasicTypeMapForResults.new(ActiveRecord::Base.connection.raw_connection)
+  end
+
   # Qx.new, only used internally
   def initialize(tree)
     @tree = tree
@@ -143,7 +148,7 @@ class Qx
       expr = "COPY (#{expr}) TO '#{options[:copy_csv]}' DELIMITER ',' CSV HEADER"
     end
     result = ActiveRecord::Base.connection.execute(expr)
-    result.map_types!(@@type_map) if @@type_map
+    result.map_types!(type_map)
     if options[:format] == "csv"
       data = result.map(&:values)
       data.unshift((result.first || {}).keys)
