@@ -1,17 +1,17 @@
 # Redirecting donors to a custom thank-you page
 
-After a donation completes, you can send donors to your own custom thank-you page (for example, a page with a special video, a survey, or conversion tracking). This is done with two settings: **redirect** and **skipFinish**.
+When a donation completes, you can send donors to your own thank-you page, for example a page with a video, a survey or conversion tracking. Two settings control this: **redirect** and **skipFinish**.
 
 **Which method should I use?**
 
-- If it's okay for donors to click a **"Finish" button** before being sent to your page, use the **donate button** (Option 1) — it's the easiest and there's nothing to encode.
-- If you want donors sent to your page **automatically and immediately** when their gift completes (skipping the Finish screen), you must use the **custom iframe embed** (Option 2). This is the only method that supports the automatic skip.
+- If donors can click a **Finish** button before going to your page, use the **donate button** (Option 1). It's the easiest, and there's nothing to encode.
+- If you want donors sent to your page **as soon as their gift completes**, skipping the Finish screen, use a **custom iframe embed** (Option 2). It's the only method that can skip the Finish screen.
 
 ---
 
-## Option 1 — Donate button (redirect after "Finish")
+## Option 1: Donate button (redirect after Finish)
 
-If you're using a CommitChange donate button, just add the `data-redirect` attribute. CommitChange handles all the URL formatting for you, so there's nothing to encode.
+If you use a CommitChange donate button, add the `data-redirect` attribute. CommitChange formats the address for you, so there's nothing to encode.
 
 ```html
 <a class='commitchange-donate'
@@ -19,79 +19,79 @@ If you're using a CommitChange donate button, just add the `data-redirect` attri
    data-redirect='https://www.example.org/thank-you'></a>
 ```
 
-- **data-redirect** — the full URL of your thank-you page
+- **data-redirect** is the full address of your thank-you page.
 
-With this method, the donor completes their gift, clicks **Finish**, and is then sent to your thank-you page. (The donate button does not support skipping the Finish screen — for that, use Option 2.)
+The donor completes their gift, clicks **Finish**, and goes to your thank-you page. The donate button can't skip the Finish screen. For that, use Option 2.
 
 ---
 
-## Option 2 — Custom iframe embed
+## Option 2: Custom iframe embed
 
-If you embed the donation form with an iframe, you need **two** things on the page: a small CommitChange helper script, and the iframe itself.
+To embed the donation form with an iframe, you need **two** things on your page: the CommitChange helper script and the iframe.
 
-### Step 1 — Add the helper script (required for the redirect to work)
+### Step 1: Add the helper script
 
-This is the step that's easy to miss. When a donation finishes inside an iframe, the form sends a "go to the thank-you page now" signal out to your website. Your page needs the CommitChange helper script to catch that signal and actually make the jump. **Without it, the donation completes but nothing redirects.**
+This is the step people miss. When a donation finishes inside an iframe, the form sends a signal to your page saying "go to the thank-you page now." The CommitChange helper script is what catches that signal and moves the donor. **Without it, the donation completes but the redirect never happens.**
 
-Add this line to the page, just above the iframe (replace `3728` with your nonprofit ID):
+Add this line to your page, above the iframe. Replace `3728` with your nonprofit ID.
 
 ```html
 <script id='commitchange-donation-script' data-npo-id='3728' src='https://commitchange.com/js/donate-button.v2.js'></script>
 ```
 
-### Step 2 — Add the iframe
+### Step 2: Add the iframe
 
-Add `redirect` and `skipFinish` as query parameters in the iframe's `src`.
+Put `redirect` and `skipFinish` in the iframe's `src` address, and set its size with a `style` attribute:
 
 ```html
-<iframe frameborder="0" class="commitchange-iframe-embedded" width="100%" height="600"
+<iframe frameborder="0" class="commitchange-iframe-embedded"
+  style="width:100%; height:600px;"
   src="https://us.commitchange.com/nonprofits/3728/donate?campaign_id=6090&amp;mode=embedded&amp;redirect=https://www.example.org/thank-you&amp;skipFinish=t"></iframe>
 ```
 
-> **Heads-up — the form may resize.** The helper script loads CommitChange's styling, which sets the embedded form to about 390px wide by 450px tall. If you want a different size, add this *after* the script:
-> ```html
-> <style>.commitchange-iframe-embedded { width: 100% !important; height: 600px !important; }</style>
-> ```
+> **Set the size with `style`.** The helper script applies CommitChange's styling, which makes the form 390px wide by 450px tall and removes any margins around it. A `style` attribute on the iframe itself takes priority over that. To add space below the form, include a margin too, for example `style="width:100%; height:600px; margin-bottom:40px;"`. The `width` and `height` attributes alone won't work, because the styling overrides them.
 
-### The rules (this is where most mistakes happen)
+### The rules (where most mistakes happen)
 
-1. **Use only ONE `?` in the whole URL.** It goes right after `/donate`. Everything after it is joined with `&` (written as `&amp;` inside HTML). A second `?` will break the redirect silently.
+1. **Use only one `?` in the whole address.** It goes right after `/donate`. Join everything after it with `&`, written as `&amp;` inside HTML. A second `?` breaks the redirect without any error.
 
-   ❌ Wrong: `...custom_amounts=25,50,100?redirect=https://...`
-   ✅ Right: `...custom_amounts=25,50,100&amp;redirect=https://...`
+   Wrong: `...custom_amounts=25,50,100?redirect=https://...`
 
-2. **Keep `&amp;` as-is.** Inside an iframe, `&amp;` is the correct way to write `&` — your browser converts it automatically. Don't change it to a plain `&` or anything else, and never type `&amp;` directly into a browser address bar (security firewalls will block it).
+   Right: `...custom_amounts=25,50,100&amp;redirect=https://...`
 
-3. **`skipFinish` is a CommitChange setting, not part of your thank-you page address.** It stays in the iframe URL; it is not added onto your thank-you page.
+2. **Leave `&amp;` as it is.** Inside an iframe, `&amp;` is the correct way to write `&`, and your browser converts it. Don't change it to a plain `&` or anything else. Never type `&amp;` into a browser address bar, because security firewalls will block it.
+
+3. **`skipFinish` is a CommitChange setting, not part of your thank-you page address.** It stays in the iframe address and isn't added to your thank-you page.
 
 ---
 
 ## Adding tracking (UTM tags) to your thank-you page
 
-If your thank-you page uses Google Analytics, you can tag the redirect so you can see which campaign drove the donation. Use the standard `utm_campaign` tag (plus `utm_source` and `utm_medium` if you like).
+If your thank-you page uses Google Analytics, you can tag the redirect to see which campaign brought in the donation. Use the standard `utm_campaign` tag, and `utm_source` and `utm_medium` if you like.
 
-**Important:** Once your thank-you page address has its *own* `?` (like a UTM tag), the entire redirect address must be URL-encoded so it doesn't conflict with the donation form's settings.
+**Important:** once your thank-you page address has its own `?`, as it does with UTM tags, you must URL-encode the entire redirect address. Otherwise it clashes with the donation form's settings.
 
-Your desired thank-you page:
+Your thank-you page:
 ```
 https://www.example.org/thank-you?utm_source=commitchange&utm_medium=donation&utm_campaign=spring-appeal
 ```
 
-URL-encoded for the redirect (this is what goes in the iframe):
+The same address URL-encoded, which is what goes in the iframe:
 ```
 https%3A%2F%2Fwww.example.org%2Fthank-you%3Futm_source%3Dcommitchange%26utm_medium%3Ddonation%26utm_campaign%3Dspring-appeal
 ```
 
-You can use any free "URL encoder" tool online to do this conversion. Keep UTM values lowercase with no spaces (Google Analytics treats `Spring` and `spring` as different campaigns).
+Any free online "URL encoder" tool can do this conversion. Keep UTM values lowercase with no spaces. Google Analytics treats `Spring` and `spring` as different campaigns.
 
 ---
 
 ## Troubleshooting
 
-- **The redirect doesn't happen (iframe method).** The most common cause is the missing helper script — confirm the `<script ... donate-button.v2.js>` line from Step 1 is on the page, above the iframe. Without it, the donation completes but nothing redirects.
-- **The redirect doesn't happen.** Check that there's only one `?` in your URL and that everything else uses `&` (or `&amp;` in an iframe).
-- **You land on a blank or error page.** Open your thank-you page address directly in a browser first to confirm it loads. If the page itself is broken or blocked, fix that on your website before adding it to the redirect.
-- **Tracking isn't showing up.** Confirm Google Analytics is installed on the thank-you page, and that you URL-encoded the redirect once you added UTM tags.
+- **The redirect doesn't happen (iframe method).** Usually the helper script is missing. Check that the `<script ... donate-button.v2.js>` line from Step 1 is on the page.
+- **The redirect still doesn't happen.** Check that the address has only one `?` and that everything after it uses `&amp;`.
+- **The form is small or lost its spacing.** Set the size and margin with a `style` attribute on the iframe, as in Step 2.
+- **Donors land on a blank or error page.** Open your thank-you page address in a browser first to make sure it loads. If the page itself is broken or blocked, fix it on your website before using it as the redirect.
+- **Tracking isn't showing up.** Make sure Google Analytics is installed on the thank-you page, and that you URL-encoded the redirect after adding UTM tags.
 
 ---
 
