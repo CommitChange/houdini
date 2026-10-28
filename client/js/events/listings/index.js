@@ -24,20 +24,20 @@ module.exports = pathPrefix => {
 
   const listings = (key, state) => {
     const resp$ = state[key]
-    const mixin = (content, count) =>
+    const sectionForEventType = (content, count) =>
       h('section.u-marginBottom--20.u-marginTop--30', [
         h('h4.u-marginBottom--0.u-paddingX--20', `${count} ${upperFirst(key)} Events`)
       , h(`div`, content)
       ])
 
     if(!resp$())
-      return mixin([h(`p.u-padding--15.fundraiser--${key}`, 'Loading...')], 0)
+      return sectionForEventType([h(`p.u-padding--15.fundraiser--${key}`, 'Loading...')], 0)
 
     const numberElems = resp$().body.length
     if(!numberElems)
-      return mixin([h(`p.u-padding--15.fundraiser--${key}`, `No ${key} events`)], 0)
+      return sectionForEventType([h(`p.u-padding--15.fundraiser--${key}`, `No ${key} events`)], 0)
 
-    return mixin(resp$().body.map(item => listing(item, key)), numberElems);
+    return sectionForEventType(resp$().body.map(item => listing(item, key)), numberElems);
   }
 
   const view = state =>
