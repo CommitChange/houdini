@@ -36,9 +36,8 @@ describe UpdateTickets do
         profile_id: nil,
         note: nil,
         deleted: false,
-        source_token: nil,
-        ticket_level: nil,
-        ticket_purchase: nil
+        source_token_id: nil,
+        ticket_level_id: nil
       }
     }
 
@@ -69,11 +68,13 @@ describe UpdateTickets do
     let(:charge) { force_create(:charge) }
 
     let(:ticket) {
-      force_create(:ticket, general_ticket.merge(event: event))
+      force_create(:ticket,
+        general_ticket.merge(event: event))
     }
 
     let(:other_ticket) {
-      force_create(:ticket, general_ticket.merge(event: other_event))
+      force_create(:ticket,
+        general_ticket.merge(event: other_event))
     }
 
     it "basic validation" do

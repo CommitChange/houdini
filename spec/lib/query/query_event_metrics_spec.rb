@@ -2,50 +2,41 @@
 require "rails_helper"
 
 describe QueryEventMetrics do
-  let(:nonprofit) { create(:nonprofit, slug: SecureRandom.uuid) }
-  let(:user) { create(:user) }
-  let(:profile) { create(:profile, user:) }
-  let(:supporter) { create(:supporter, nonprofit:, profile:, import: create(:import, user:, nonprofit:)) }
-  let(:supporter2) { create(:supporter, nonprofit:, import: create(:import, nonprofit:)) }
+  let(:nonprofit) { create(:nonprofit_base) }
+  let(:supporter) { create(:supporter_base, nonprofit:) }
+  let(:supporter2) { create(:supporter_base, nonprofit:) }
 
   let!(:event_active1) do
-    create(:event, nonprofit:,
-      name: Faker::FunnyName.four_word_name,
-      organizer_email: Faker::Internet.email,
-      end_datetime: 10.days.since.at_beginning_of_day, start_datetime: 10.days.ago.at_beginning_of_day, published: true, slug: SecureRandom.uuid,
-      address: Faker::Address.street_address, city: Faker::Address.city, state_code: Faker::Address.state_abbr, zip_code: Faker::Address.zip)
+    create(:event_base, nonprofit:, published: true, organizer_email: "organizer1@example.com",
+      start_datetime: 10.days.ago.at_beginning_of_day, end_datetime: 10.days.since.at_beginning_of_day)
   end
 
   let!(:event_active2) do
-    create(:event, nonprofit:,
-      name: Faker::FunnyName.four_word_name,
-      organizer_email: Faker::Internet.email,
-      end_datetime: 20.days.since.at_beginning_of_day, start_datetime: 10.days.ago.at_beginning_of_day, published: true, slug: SecureRandom.uuid,
-      address: Faker::Address.street_address, city: Faker::Address.city, state_code: Faker::Address.state_abbr, zip_code: Faker::Address.zip)
+    create(:event_base, nonprofit:, published: true, organizer_email: "organizer2@example.com",
+      start_datetime: 10.days.ago.at_beginning_of_day, end_datetime: 20.days.since.at_beginning_of_day)
   end
 
-  let!(:tl1) { create(:ticket_level, event: event_active2) }
-  let!(:payment1) { create(:payment, supporter:, nonprofit:, gross_amount: 2137, fee_total: -159, net_amount: 1978) }
-  let!(:ticket1) { create(:ticket, event: event_active2, supporter:, profile:, payment: payment1, ticket_level: tl1, checked_in: true, quantity: 4) }
+  let!(:ticket_level) { create(:ticket_level, event: event_active2, name: "General admission") }
 
-  let!(:payment2) { create(:payment, supporter:, nonprofit:, gross_amount: 1085, fee_total: -85, net_amount: 1000) }
-  let!(:ticket2) { create(:ticket, event: event_active2, supporter: supporter2, payment: payment2, ticket_level: tl1, checked_in: nil, quantity: 3) }
   # Two tickets, two payments (21.37 + 10.85 = $32.22)
+  let!(:ticket_payment1) { create(:payment, supporter:, nonprofit:, gross_amount: 2137, fee_total: -159, net_amount: 1978) }
+  let!(:ticket1) { create(:ticket, event: event_active2, supporter:, payment: ticket_payment1, ticket_level:, checked_in: true, quantity: 4) }
+  let!(:ticket_payment2) { create(:payment, supporter:, nonprofit:, gross_amount: 1085, fee_total: -85, net_amount: 1000) }
+  let!(:ticket2) { create(:ticket, event: event_active2, supporter: supporter2, payment: ticket_payment2, ticket_level:, checked_in: nil, quantity: 3) }
 
+  # Two donations (26.64 + 52.95 = $79.59)
   let!(:donation_payment1) { create(:payment, supporter:, nonprofit:, gross_amount: 2664, fee_total: -164, net_amount: 2500) }
-  let!(:donation1) { create(:donation, supporter:, nonprofit:, event: event_active2, card: create(:card), amount: 2664, payment: donation_payment1) }
-
+  let!(:donation1) { create(:donation_base, supporter:, nonprofit:, event: event_active2, amount: 2664, payment: donation_payment1) }
   let!(:donation_payment2) { create(:payment, supporter:, nonprofit:, gross_amount: 5295, fee_total: -295, net_amount: 5000) }
-  let!(:donation2) { create(:donation, supporter:, nonprofit:, event: event_active2, card: create(:card), amount: 5295, payment: donation_payment2) }
-  # Two donations 2664 + 5295 = $79.59
+  let!(:donation2) { create(:donation_base, supporter:, nonprofit:, event: event_active2, amount: 5295, payment: donation_payment2) }
 
-  let!(:event_past) { create(:event, nonprofit:, end_datetime: 20.days.ago.at_beginning_of_day, published: true, slug: SecureRandom.uuid) }
-  let!(:event_deleted) { create(:event, nonprofit:, deleted: true, slug: SecureRandom.uuid) }
-  let!(:event_unpublished) { create(:event, nonprofit:, slug: SecureRandom.uuid) }
+  let!(:event_past) { create(:event_base, nonprofit:, published: true, start_datetime: 21.days.ago, end_datetime: 20.days.ago.at_beginning_of_day) }
+  let!(:event_deleted) { create(:event_base, nonprofit:, deleted: true) }
+  let!(:event_unpublished) { create(:event_base, nonprofit:) }
 
-  let!(:nonprofit2) { create(:nonprofit, slug: SecureRandom.uuid) }
-  let!(:other_event_active2) { create(:event, nonprofit: nonprofit2, end_datetime: 10.days.since, published: true, slug: SecureRandom.uuid) }
-  let!(:other_event_active3) { create(:event, nonprofit: nonprofit2, end_datetime: 20.days.since, published: true, slug: SecureRandom.uuid) }
+  let!(:other_nonprofit) { create(:nonprofit_base) }
+  let!(:other_event_active1) { create(:event_base, nonprofit: other_nonprofit, published: true, end_datetime: 10.days.since) }
+  let!(:other_event_active2) { create(:event_base, nonprofit: other_nonprofit, published: true, end_datetime: 20.days.since) }
 
   describe ".for_listings" do
     describe "for nonprofit" do
@@ -76,8 +67,9 @@ describe QueryEventMetrics do
         end
       end
 
-      describe "active" do
+      describe "past" do
         subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"past" => true}) }
+
         it "query result has correct element" do
           expect(results.count).to eq 1
           expect(results.first["id"]).to eq event_past.id
@@ -86,6 +78,7 @@ describe QueryEventMetrics do
 
       describe "unpublished" do
         subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"unpublished" => true}) }
+
         it "query result has correct element" do
           expect(results.count).to eq 1
           expect(results.first["id"]).to eq event_unpublished.id
@@ -94,6 +87,7 @@ describe QueryEventMetrics do
 
       describe "deleted" do
         subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"deleted" => true}) }
+
         it "query result has correct element" do
           expect(results.count).to eq 1
           expect(results.first["id"]).to eq event_deleted.id
