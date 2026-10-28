@@ -346,7 +346,7 @@ git push production HEAD:master
 
 ### Build for staging
 
-* Staging builds run through the [create-release workflow](https://github.com/CommitChange/deploy-houdini/actions/workflows/create-release.yml) in `deploy-houdini`. `create_new_staging_release.sh` on deploy-houdini's `master` branch merges the source into a local `PRIVATE_STAGING_MASTER` branch, the same way `create_new_release.sh` does for production.
+* Run `./create_new_staging_release.sh` from your houdini checkout. It uses `gh workflow run` to start the [create-release workflow](https://github.com/CommitChange/deploy-houdini/actions/workflows/create-release.yml) in `deploy-houdini`, and doesn't change anything on your machine.
 * Once the deploy finishes, increase `ASSET_VERSION` by 1 in https://dashboard.heroku.com/apps/commitchange-test/settings.
 * To copy the latest production backup onto staging, run the command below. It overwrites everything in the staging database.
 
