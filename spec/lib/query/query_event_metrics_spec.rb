@@ -12,7 +12,7 @@ describe QueryEventMetrics do
   end
 
   let!(:event_active2) do
-    create(:event_base, nonprofit:, published: true, organizer_email: "organizer2@example.com",
+    create(:event_base, nonprofit:, published: true, organizer_email: "organizer2@example.com", in_person_or_virtual: "virtual",
       start_datetime: 10.days.ago.at_beginning_of_day, end_datetime: 20.days.since.at_beginning_of_day)
   end
 
@@ -44,26 +44,41 @@ describe QueryEventMetrics do
         subject(:results) { QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"active" => true}) }
 
         it "query result has correct attributes" do
-          expect(results.count).to eq 2
+          # the query doesn't order its results, so look events up by id
+          expect(results.map { |r| r["id"] }).to contain_exactly(event_active1.id, event_active2.id)
 
-          # first element is event_active2 because of order desc
-          expect(results.first["id"]).to eq event_active2.id
-          expect(results.first["name"]).to eq event_active2.name
-          expect(results.first["venue_name"]).to eq event_active2.venue_name
-          expect(results.first["address"]).to eq event_active2.address
-          expect(results.first["city"]).to eq event_active2.city
-          expect(results.first["state_code"]).to eq event_active2.state_code
-          expect(results.first["zip_code"]).to eq event_active2.zip_code
-          expect(results.first["start_datetime"]).to eq 10.days.ago.at_beginning_of_day
-          expect(results.first["end_datetime"]).to eq 20.days.since.at_beginning_of_day
-          expect(results.first["organizer_email"]).to eq event_active2.organizer_email
-          expect(results.first["checked_in_count"]).to eq 1
-          expect(results.first["total_attendees"]).to eq 7
-          expect(results.first["tickets_total_paid"]).to eq 3_222
-          expect(results.first["donations_total_paid"]).to eq 7_959
-          expect(results.first["total_paid"]).to eq(3_222 + 7_959)
+          result = results.find { |r| r["id"] == event_active2.id }
+          expect(result["name"]).to eq event_active2.name
+          expect(result["venue_name"]).to eq event_active2.venue_name
+          expect(result["address"]).to eq event_active2.address
+          expect(result["city"]).to eq event_active2.city
+          expect(result["state_code"]).to eq event_active2.state_code
+          expect(result["zip_code"]).to eq event_active2.zip_code
+          expect(result["start_datetime"]).to eq 10.days.ago.at_beginning_of_day
+          expect(result["end_datetime"]).to eq 20.days.since.at_beginning_of_day
+          expect(result["organizer_email"]).to eq event_active2.organizer_email
+          expect(result["in_person_or_virtual"]).to eq "virtual"
+          expect(result["checked_in_count"]).to eq 1
+          expect(result["total_attendees"]).to eq 7
+          expect(result["tickets_total_paid"]).to eq 3_222
+          expect(result["donations_total_paid"]).to eq 7_959
+          expect(result["total_paid"]).to eq(3_222 + 7_959)
+        end
 
-          expect(results.last["id"]).to eq event_active1.id
+        it "counts a payment once when it covers tickets at more than one level" do
+          # buying two ticket levels in one checkout creates two ticket rows that share one payment
+          other_supporter = create(:supporter_base, nonprofit: other_nonprofit)
+          general = create(:ticket_level, event: other_event_active1, name: "General admission")
+          vip = create(:ticket_level, event: other_event_active1, name: "VIP")
+          payment = create(:payment, supporter: other_supporter, nonprofit: other_nonprofit, gross_amount: 5_000, fee_total: 0, net_amount: 5_000)
+          create(:ticket, event: other_event_active1, supporter: other_supporter, payment:, ticket_level: general, quantity: 2)
+          create(:ticket, event: other_event_active1, supporter: other_supporter, payment:, ticket_level: vip, quantity: 1)
+
+          other_results = QueryEventMetrics.for_listings("nonprofit", other_nonprofit.id, {"active" => true})
+          result = other_results.find { |r| r["id"] == other_event_active1.id }
+          expect(result["total_attendees"]).to eq 3
+          expect(result["tickets_total_paid"]).to eq 5_000
+          expect(result["total_paid"]).to eq 5_000
         end
       end
 
