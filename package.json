@@ -140,7 +140,7 @@
     "snabbdom": "0.3.0",
     "superagent": "^7.1.5",
     "text-mask": "0.0.2",
-    "uuid": "2.0.2",
+    "uuid": "14.0.0",
     "validator": "^9.4.1",
     "vdom-thunk": "3.0.0",
     "velocity-react": "^1.4.1",
