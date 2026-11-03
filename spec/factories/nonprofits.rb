@@ -10,14 +10,6 @@ FactoryBot.define do
     billing_subscription { build(:billing_subscription, billing_plan: build(:billing_plan_percentage_fee_of_2_5_percent_and_5_cents_flat)) }
     vetted { true }
 
-    factory :nonprofit_with_cards do
-      after(:create) { |nonprofit, evaluator|
-        create(:active_card_1, holder: nonprofit)
-        create(:active_card_2, holder: nonprofit)
-        create(:inactive_card, holder: nonprofit)
-      }
-    end
-
     factory :nonprofit_with_billing_plan_percentage_fee_of_2_5_percent_and_5_cents_flat do
     end
 

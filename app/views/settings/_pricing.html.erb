@@ -15,13 +15,8 @@
     <p><a class='u-color--red u-small' href='/nonprofits/<%=@nonprofit.id%>/billing_subscription/cancellation'>Unsubscribe from plan</a></p>
   <% end %>
 
-	<% if @nonprofit.active_card %>
-		<hr>
-		<label>Payment Method</label>
-		<p>Current payment method for your nonprofit:
-			<strong><%= @nonprofit.active_card.name %></strong>
-		</p>
-	<% end %>
+	<hr>
+	<label>Payment Method</label>		
 
 	<p class='note u-marginTop--10'>If you have any questions about your current plan, please contact <a href='mailto:<%= Settings.devise.mailer_sender %>'><%= Settings.devise.mailer_sender %></a></p>
 </div>
