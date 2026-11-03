@@ -1,14 +1,6 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 # Create a new payout
 
-# require 'psql'
-# require 'qexpr'
-# require 'query/query_payments'
-# require 'update/update_charges'
-# require 'update/update_refunds'
-# require 'update/update_disputes'
-# require 'param_validation'
-
 module InsertPayout
   # Pass in the following inside the data hash:
   # - stripe_account_id

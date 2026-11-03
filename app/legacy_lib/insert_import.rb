@@ -1,12 +1,4 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-# require 'qx'
-# require 'required_keys'
-# require 'open-uri'
-# require 'csv'
-# require 'insert/insert_supporter'
-# require 'insert/insert_full_contact_infos'
-# require 'insert/insert_custom_field_joins'
-# require 'insert/insert_tag_joins'
 
 module InsertImport
   # Wrap the import in a transaction and email any errors

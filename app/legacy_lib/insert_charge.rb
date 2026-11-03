@@ -1,12 +1,4 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-# require 'psql'
-# require 'qexpr'
-# require 'calculate/calculate_fees'
-# require 'stripe'
-# require 'get_data'
-# require 'active_support/core_ext'
-
-require "stripe_account" unless !Settings.payment_provider.stripe_connect
 
 module InsertCharge
   # In data, pass in: amount, nonprofit_id, supporter_id, card_id, statement
