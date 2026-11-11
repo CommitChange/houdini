@@ -1,0 +1,26 @@
+name: Devcontainer validation
+
+on:
+  pull_request:
+    paths: [.devcontainer/*, .github/workflows/devcontainer.yml]
+  push:
+    branches: [main]
+    paths: [.devcontainer/*, .github/workflows/devcontainer.yml]
+  workflow_dispatch:
+concurrency:
+  group: build--devcontainer.yml--${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-devcontainer:
+    name: "Validate .devcontainer builds and loads"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v7"
+      - name: Build and run dev container task
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: "./.devcontainer/devcontainer.json"
+          runCmd: echo "It runs"
+          env: |
+            RAILS_ENV=test

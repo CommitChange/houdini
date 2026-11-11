@@ -1,4 +1,5 @@
 require "active_record"
+require "pg"
 require "colorize"
 
 class Qx
@@ -12,6 +13,11 @@ class Qx
   @@type_map = nil
   def self.config(h)
     @@type_map = h[:type_map]
+  end
+
+  # Built on first use so loading Qx doesn't open a database connection
+  def self.type_map
+    @@type_map ||= PG::BasicTypeMapForResults.new(ActiveRecord::Base.connection.raw_connection)
   end
 
   # Qx.new, only used internally
@@ -143,7 +149,7 @@ class Qx
       expr = "COPY (#{expr}) TO '#{options[:copy_csv]}' DELIMITER ',' CSV HEADER"
     end
     result = ActiveRecord::Base.connection.execute(expr)
-    result.map_types!(@@type_map) if @@type_map
+    result.map_types!(type_map)
     if options[:format] == "csv"
       data = result.map(&:values)
       data.unshift((result.first || {}).keys)
@@ -496,7 +502,7 @@ class Qx
     if expr.is_a?(Qx)
       Qx.parse(expr.tree)
     else
-      expr.to_s.split(".").map { |s| (s == "*") ? s : "\"#{s}\"" }.join(".")
+      expr.to_s.split(".").map { |s| (s == "*") ? s : PG::Connection.quote_ident(s) }.join(".")
     end
   end
 

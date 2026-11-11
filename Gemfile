@@ -6,7 +6,7 @@ gem "rake"
 gem "rails", "~> 7.1.6"
 gem "sprockets", "~> 3.7" # Sprockets 4.0 stops allowing us to add a proc to the config.assets.precompile array, which we currently use
 
-gem "rack", "~> 2.2.23"
+gem "rack", "~> 2.2.25"
 
 # https://stripe.com/docs/api
 gem "stripe", "~> 5.0"
@@ -159,4 +159,3 @@ gem "globalid", ">= 1.0.1"
 
 gem "js-routes"
 
-gem "concurrent-ruby", "1.3.4" # there's a regression in 1.3.5 that can be removed at Rails 7.1
