@@ -19,15 +19,15 @@ describe QueryEventMetrics do
   let!(:ticket_level) { create(:ticket_level, event: event_active2, name: "General admission") }
 
   # Two tickets, two payments (21.37 + 10.85 = $32.22)
-  let!(:ticket_payment1) { create(:payment, supporter:, nonprofit:, gross_amount: 2137, fee_total: -159, net_amount: 1978) }
-  let!(:ticket1) { create(:ticket, event: event_active2, supporter:, payment: ticket_payment1, ticket_level:, checked_in: true, quantity: 4) }
-  let!(:ticket_payment2) { create(:payment, supporter:, nonprofit:, gross_amount: 1085, fee_total: -85, net_amount: 1000) }
-  let!(:ticket2) { create(:ticket, event: event_active2, supporter: supporter2, payment: ticket_payment2, ticket_level:, checked_in: nil, quantity: 3) }
+  let!(:ticket_payment1) { create(:payment_base, supporter:, nonprofit:, gross_amount: 2137, fee_total: -159, net_amount: 1978) }
+  let!(:ticket1) { create(:ticket_base, event: event_active2, supporter:, payment: ticket_payment1, ticket_level:, checked_in: true, quantity: 4) }
+  let!(:ticket_payment2) { create(:payment_base, supporter:, nonprofit:, gross_amount: 1085, fee_total: -85, net_amount: 1000) }
+  let!(:ticket2) { create(:ticket_base, event: event_active2, supporter: supporter2, payment: ticket_payment2, ticket_level:, checked_in: nil, quantity: 3) }
 
   # Two donations (26.64 + 52.95 = $79.59)
-  let!(:donation_payment1) { create(:payment, supporter:, nonprofit:, gross_amount: 2664, fee_total: -164, net_amount: 2500) }
+  let!(:donation_payment1) { create(:payment_base, supporter:, nonprofit:, gross_amount: 2664, fee_total: -164, net_amount: 2500) }
   let!(:donation1) { create(:donation_base, supporter:, nonprofit:, event: event_active2, amount: 2664, payment: donation_payment1) }
-  let!(:donation_payment2) { create(:payment, supporter:, nonprofit:, gross_amount: 5295, fee_total: -295, net_amount: 5000) }
+  let!(:donation_payment2) { create(:payment_base, supporter:, nonprofit:, gross_amount: 5295, fee_total: -295, net_amount: 5000) }
   let!(:donation2) { create(:donation_base, supporter:, nonprofit:, event: event_active2, amount: 5295, payment: donation_payment2) }
 
   let!(:event_past) { create(:event_base, nonprofit:, published: true, start_datetime: 21.days.ago, end_datetime: 20.days.ago.at_beginning_of_day) }
@@ -70,9 +70,9 @@ describe QueryEventMetrics do
           other_supporter = create(:supporter_base, nonprofit: other_nonprofit)
           general = create(:ticket_level, event: other_event_active1, name: "General admission")
           vip = create(:ticket_level, event: other_event_active1, name: "VIP")
-          payment = create(:payment, supporter: other_supporter, nonprofit: other_nonprofit, gross_amount: 5_000, fee_total: 0, net_amount: 5_000)
-          create(:ticket, event: other_event_active1, supporter: other_supporter, payment:, ticket_level: general, quantity: 2)
-          create(:ticket, event: other_event_active1, supporter: other_supporter, payment:, ticket_level: vip, quantity: 1)
+          payment = create(:payment_base, supporter: other_supporter, nonprofit: other_nonprofit, gross_amount: 5_000, fee_total: 0, net_amount: 5_000)
+          create(:ticket_base, event: other_event_active1, supporter: other_supporter, payment:, ticket_level: general, quantity: 2)
+          create(:ticket_base, event: other_event_active1, supporter: other_supporter, payment:, ticket_level: vip, quantity: 1)
 
           other_results = QueryEventMetrics.for_listings("nonprofit", other_nonprofit.id, {"active" => true})
           result = other_results.find { |r| r["id"] == other_event_active1.id }
@@ -111,11 +111,63 @@ describe QueryEventMetrics do
     end
 
     describe "for profile" do
-      skip "TODO"
+      let(:profile) { create(:profile) }
+      let!(:profile_event_active) do
+        create(:event_base, nonprofit:, profile:, published: true, end_datetime: 5.days.since)
+      end
+      let!(:profile_event_past) do
+        create(:event_base, nonprofit:, profile:, published: true, start_datetime: 6.days.ago, end_datetime: 5.days.ago)
+      end
+
+      it "only returns events for that profile" do
+        results = QueryEventMetrics.for_listings("profile", profile.id, {})
+
+        expect(results.map { |r| r["id"] }).to contain_exactly(profile_event_active.id, profile_event_past.id)
+      end
+
+      it "applies the active filter" do
+        results = QueryEventMetrics.for_listings("profile", profile.id, {"active" => true})
+
+        expect(results.map { |r| r["id"] }).to contain_exactly(profile_event_active.id)
+      end
+
+      it "applies the past filter" do
+        results = QueryEventMetrics.for_listings("profile", profile.id, {"past" => true})
+
+        expect(results.map { |r| r["id"] }).to contain_exactly(profile_event_past.id)
+      end
     end
   end
 
   describe ".with_event_ids" do
-    skip "TODO"
+    it "returns an empty array for no ids" do
+      expect(QueryEventMetrics.with_event_ids([])).to eq []
+    end
+
+    it "returns only the metrics columns" do
+      result = QueryEventMetrics.with_event_ids([event_active2.id]).first
+
+      expect(result.keys).to contain_exactly("total_attendees", "checked_in_count", "tickets_total_paid", "donations_total_paid", "total_paid")
+    end
+
+    it "returns the metrics for an event" do
+      result = QueryEventMetrics.with_event_ids([event_active2.id]).first
+
+      expect(result["total_attendees"]).to eq 7
+      expect(result["checked_in_count"]).to eq 1
+      expect(result["tickets_total_paid"]).to eq 3_222
+      expect(result["donations_total_paid"]).to eq 7_959
+      expect(result["total_paid"]).to eq(3_222 + 7_959)
+    end
+
+    it "returns zeros for an event with no tickets or donations" do
+      result = QueryEventMetrics.with_event_ids([event_active1.id]).first
+
+      expect(result.values).to all(eq 0)
+    end
+
+    it "returns one row per event" do
+      expect(QueryEventMetrics.with_event_ids([event_active1.id, event_active2.id]).count).to eq 2
+    end
   end
 end
