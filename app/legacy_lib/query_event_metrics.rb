@@ -1,11 +1,13 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
 module QueryEventMetrics
   EVENT_COLUMNS = %i[id name venue_name address city state_code zip_code start_datetime end_datetime organizer_email in_person_or_virtual].freeze
+  METRIC_COLUMNS = %w[total_attendees checked_in_count tickets_total_paid donations_total_paid total_paid].freeze
 
   def self.with_event_ids(event_ids)
     return [] if event_ids.blank?
 
-    add_metrics_to_events(Event.select(*EVENT_COLUMNS).where(id: event_ids))
+    # events#metrics is public, so return only the metrics, not the event's details
+    add_metrics_to_events(Event.select(*EVENT_COLUMNS).where(id: event_ids)).map { |row| row.slice(*METRIC_COLUMNS) }
   end
 
   def self.for_listings(id_type, id, params)
@@ -23,11 +25,14 @@ module QueryEventMetrics
 
     if params["active"].present?
       events = events.where("end_datetime >= ?", Time.current).where(published: true).where("COALESCE(deleted, FALSE) = FALSE")
-    elsif params["past"].present?
+    end
+    if params["past"].present?
       events = events.where("end_datetime < ?", Time.current).where(published: true).where("COALESCE(deleted, FALSE) = FALSE")
-    elsif params["unpublished"].present?
+    end
+    if params["unpublished"].present?
       events = events.where("COALESCE(published, FALSE) = FALSE").where("COALESCE(deleted, FALSE) = FALSE")
-    elsif params["deleted"].present?
+    end
+    if params["deleted"].present?
       events = events.where(deleted: true)
     end
 
