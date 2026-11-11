@@ -108,6 +108,14 @@ describe QueryEventMetrics do
           expect(results.first["id"]).to eq event_deleted.id
         end
       end
+
+      describe "more than one filter" do
+        it "applies all of them" do
+          results = QueryEventMetrics.for_listings("nonprofit", nonprofit.id, {"active" => true, "deleted" => true})
+
+          expect(results).to be_empty
+        end
+      end
     end
 
     describe "for profile" do
