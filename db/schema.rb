@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_28_153953) do
+ActiveRecord::Schema[7.1].define(version: 2026_11_12_234603) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -1027,6 +1027,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_28_153953) do
     t.index ["stripe_account_id"], name: "index_stripe_payment_intents_on_stripe_account_id"
   end
 
+  create_table "stripe_recurrences", force: :cascade do |t|
+    t.integer "amount", null: false
+    t.datetime "start_time", null: false, comment: "When the schedule began. Charges will happen monthly going forward."
+    t.bigint "payment_intent_id", comment: "The general PaymentIntent belonging to a nonprofit that created this recurrence"
+    t.bigint "stripe_payment_intent_id", comment: "The local copy of the Stripe::PaymentIntent that created this recurrence"
+    t.bigint "stripe_account_id", comment: "The id of the StripeAccount used that this is associated with"
+    t.string "stripe_customer_id", null: false, comment: "The id of a Stripe::Customer to use for future payment"
+    t.string "stripe_payment_method_id", null: false, comment: "The id of the Stripe::PaymentMethod to use for future payments"
+    t.index ["payment_intent_id"], name: "index_stripe_recurrences_on_payment_intent_id"
+    t.index ["stripe_account_id"], name: "index_stripe_recurrences_on_stripe_account_id"
+    t.index ["stripe_payment_intent_id"], name: "index_stripe_recurrences_on_stripe_payment_intent_id"
+  end
+
   create_table "stripe_transaction_charges", id: :serial, force: :cascade do |t|
     t.string "houid", null: false
     t.datetime "created_at", precision: nil
@@ -1378,10 +1391,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_28_153953) do
   create_trigger :update_donations_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_donations_fts BEFORE INSERT OR UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION update_fts_on_donations()
   SQL
-  create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
-      CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
-  SQL
   create_trigger :update_supporters_fts, sql_definition: <<-SQL
       CREATE TRIGGER update_supporters_fts BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_fts_on_supporters()
+  SQL
+  create_trigger :update_supporters_phone_index, sql_definition: <<-SQL
+      CREATE TRIGGER update_supporters_phone_index BEFORE INSERT OR UPDATE ON public.supporters FOR EACH ROW EXECUTE FUNCTION update_phone_index_on_supporters()
   SQL
 end
