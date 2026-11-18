@@ -1031,10 +1031,12 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_12_234603) do
     t.integer "amount", null: false
     t.datetime "start_time", null: false, comment: "When the schedule began. Charges will happen monthly going forward."
     t.bigint "payment_intent_id", comment: "The general PaymentIntent belonging to a nonprofit that created this recurrence"
-    t.bigint "stripe_payment_intent_id", comment: "The local copy of the Stripe::PaymentIntent that created this recurrence"
+    t.string "stripe_payment_intent_id", comment: "The local copy of the Stripe::PaymentIntent that created this recurrence"
     t.bigint "stripe_account_id", comment: "The id of the StripeAccount used that this is associated with"
     t.string "stripe_customer_id", null: false, comment: "The id of a Stripe::Customer to use for future payment"
     t.string "stripe_payment_method_id", null: false, comment: "The id of the Stripe::PaymentMethod to use for future payments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["payment_intent_id"], name: "index_stripe_recurrences_on_payment_intent_id"
     t.index ["stripe_account_id"], name: "index_stripe_recurrences_on_stripe_account_id"
     t.index ["stripe_payment_intent_id"], name: "index_stripe_recurrences_on_stripe_payment_intent_id"
