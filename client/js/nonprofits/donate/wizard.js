@@ -22,6 +22,7 @@ const format = require('../../common/format')
 
 const brandedWizard = require('../../components/styles/branded-wizard')
 const renderStyles = require('../../components/styles/render-styles')
+const { default: DonationInfoCollector } = require('./DonationInfoCollector')
 
 const closeButton = require('../../../../app/assets/images/ui_components/close.svg')
 
@@ -64,6 +65,8 @@ const init = params$ => {
 
   state.hide_anonymous = state.params$().hide_anonymous || app.nonprofit.no_anon
 
+  state.donationInfoCollector = new DonationInfoCollector();
+
   state.selectedPayment$ = flyd.stream('sepa')
 
   state.amountStep = amountStep.init(donationDefaults, state.params$)
@@ -84,6 +87,8 @@ const init = params$ => {
   , dedicationData$: state.infoStep.dedicationData$
   , activePaymentTab$: state.selectedPayment$
   , params$: state.params$
+  , donationInfoCollector: state.donationInfoCollector
+  ,
   })
 
   const currentStep$ = flyd.mergeAll([
