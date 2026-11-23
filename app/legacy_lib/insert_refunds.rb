@@ -33,7 +33,9 @@ module InsertRefunds
         comment: h["comment"],
         reason: h["reason"],
         stripe_refund_id: results[:stripe_refund].id,
-        charge_id: charge["id"]})
+        charge_id: charge["id"],
+        nonprofit_id: charge["nonprofit_id"],
+        supporter_id: charge["supporter_id"]})
 
       refund.create_misc_refund_info(is_modern: true, stripe_application_fee_refund_id: results[:stripe_app_fee_refund]&.id)
 

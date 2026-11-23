@@ -5,7 +5,7 @@ module MergeSupporters
     new_supporter_id = new_supporter.id
     old_supporter_ids = old_supporters.map { |i| i.id }
     # The new supporter needs to have the following tables from the merged supporters:
-    associations = [:activities, :donations, :recurring_donations, :offsite_payments, :payments, :tickets, :supporter_notes, :supporter_emails, :full_contact_infos]
+    associations = [:activities, :donations, :recurring_donations, :offsite_payments, :payments, :tickets, :supporter_notes, :supporter_emails, :full_contact_infos, :refunds]
 
     associations.each do |table_name|
       Qx.update(table_name)

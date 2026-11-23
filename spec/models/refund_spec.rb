@@ -10,6 +10,8 @@ RSpec.describe Refund, type: :model do
   it { is_expected.to have_one(:nonprofit).through(:charge) }
   it { is_expected.to have_one(:supporter).through(:charge) }
   it { is_expected.to have_many(:manual_balance_adjustments) }
+  it { is_expected.to have_db_column(:supporter_id) }
+  it { is_expected.to have_db_column(:nonprofit_id) }
 
   describe "#from_donation?" do
     it "is true when refund is associated with a donation" do
