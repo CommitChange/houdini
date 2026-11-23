@@ -6,10 +6,10 @@ const {dollarsToCents, centsToDollars} = require('../../common/format')
 flyd.scanMerge = require('flyd/module/scanmerge')
 
 const getAmt = require('./amt').default;
-const getSustainingAmount = require('./sustaining_amount').default;
-const getPostfixElement = require('./postfix_element').default;
+const getSustainingAmount = require('./components/amount-step/sustaining_amount').default;
+const getPostfixElement = require('./components/amount-step/postfix_element').default;
 const {dollarsToCentsSafe} = require('../../../../javascripts/src/lib/format');
-const { default: amount_button_contents } = require('./amount_button_contents')
+const { default: amount_button_contents } = require('./components/amount-step/amount_button_contents')
 
 function init(donationDefaults, params$) {
     var state = {

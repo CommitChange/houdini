@@ -2,7 +2,7 @@
 const h = require('snabbdom/h')
 declare const app: {widget?:{postfix_element?:{type?:string, html_content?:string }}} |undefined;
 
-export default function getPostfixElement() : any[] {
+export default function getPostfixElement() : ReturnType<typeof h>[] {
 
   if (app && app.widget && app.widget.postfix_element && app.widget.postfix_element.html_content)
   {
