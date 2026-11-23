@@ -1,9 +1,4 @@
 # License: AGPL-3.0-or-later WITH Web-Template-Output-Additional-Permission-3.0-or-later
-require "qexpr"
-require "psql"
-require "email"
-require "format/currency"
-require "format/csv"
 
 module QuerySupporters
   # Query supporters and their donations and gift levels for a campaign
