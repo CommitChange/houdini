@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_28_153953) do
+ActiveRecord::Schema[7.1].define(version: 2026_11_12_234603) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -1027,6 +1027,26 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_28_153953) do
     t.index ["stripe_account_id"], name: "index_stripe_payment_intents_on_stripe_account_id"
   end
 
+  create_table "stripe_recurrences", force: :cascade do |t|
+    t.integer "gift_amount", null: false, comment: "The gift each month, in cents, without any fee the donor covers"
+    t.boolean "fee_covered", default: false, null: false, comment: "Whether the donor chose to cover the fee"
+    t.integer "covered_fee_amount", default: 0, null: false, comment: "The fee the donor covers each month, in cents; 0 when they don't"
+    t.datetime "start_time", null: false, comment: "When the schedule began. Charges will happen monthly going forward."
+    t.bigint "payment_intent_id", null: false, comment: "The general PaymentIntent belonging to a nonprofit that created this recurrence"
+    t.string "stripe_payment_intent_id", null: false, comment: "The local copy of the Stripe::PaymentIntent that created this recurrence"
+    t.bigint "stripe_account_id", null: false, comment: "The StripeAccount (its id, not its acct_ id) the recurrence's payments go to"
+    t.string "stripe_customer_id", null: false, comment: "The id of a Stripe::Customer, on the platform account, to use for future payment"
+    t.string "stripe_payment_method_id", null: false, comment: "The id of the Stripe::PaymentMethod to use for future payments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["payment_intent_id"], name: "index_stripe_recurrences_on_payment_intent_id", unique: true
+    t.index ["stripe_account_id"], name: "index_stripe_recurrences_on_stripe_account_id"
+    t.index ["stripe_payment_intent_id"], name: "index_stripe_recurrences_on_stripe_payment_intent_id", unique: true
+    t.check_constraint "covered_fee_amount >= 0", name: "stripe_recurrences_covered_fee_amount_not_negative"
+    t.check_constraint "fee_covered OR covered_fee_amount = 0", name: "stripe_recurrences_covered_fee_amount_only_when_covered"
+    t.check_constraint "gift_amount > 0", name: "stripe_recurrences_gift_amount_positive"
+  end
+
   create_table "stripe_transaction_charges", id: :serial, force: :cascade do |t|
     t.string "houid", null: false
     t.datetime "created_at", precision: nil
@@ -1325,6 +1345,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_28_153953) do
   add_foreign_key "payments", "supporters", name: "payments_supporter_fk"
   add_foreign_key "periodic_reports", "nonprofits"
   add_foreign_key "periodic_reports", "users"
+  add_foreign_key "stripe_recurrences", "payment_intents"
+  add_foreign_key "stripe_recurrences", "stripe_accounts"
+  add_foreign_key "stripe_recurrences", "stripe_payment_intents"
   add_foreign_key "supporter_addresses", "supporters"
   create_function :is_valid_json, sql_definition: <<-'SQL'
       CREATE OR REPLACE FUNCTION public.is_valid_json(p_json text)
