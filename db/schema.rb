@@ -1028,7 +1028,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_12_234603) do
   end
 
   create_table "stripe_recurrences", force: :cascade do |t|
-    t.integer "amount", null: false, comment: "The gift each month, in cents, without any fee the donor covers"
+    t.integer "gift_amount", null: false, comment: "The gift each month, in cents, without any fee the donor covers"
     t.boolean "fee_covered", default: false, null: false, comment: "Whether the donor chose to cover the fee"
     t.integer "covered_fee_amount", default: 0, null: false, comment: "The fee the donor covers each month, in cents; 0 when they don't"
     t.datetime "start_time", null: false, comment: "When the schedule began. Charges will happen monthly going forward."
@@ -1042,9 +1042,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_12_234603) do
     t.index ["payment_intent_id"], name: "index_stripe_recurrences_on_payment_intent_id", unique: true
     t.index ["stripe_account_id"], name: "index_stripe_recurrences_on_stripe_account_id"
     t.index ["stripe_payment_intent_id"], name: "index_stripe_recurrences_on_stripe_payment_intent_id", unique: true
-    t.check_constraint "amount > 0", name: "stripe_recurrences_amount_positive"
     t.check_constraint "covered_fee_amount >= 0", name: "stripe_recurrences_covered_fee_amount_not_negative"
     t.check_constraint "fee_covered OR covered_fee_amount = 0", name: "stripe_recurrences_covered_fee_amount_only_when_covered"
+    t.check_constraint "gift_amount > 0", name: "stripe_recurrences_gift_amount_positive"
   end
 
   create_table "stripe_transaction_charges", id: :serial, force: :cascade do |t|
