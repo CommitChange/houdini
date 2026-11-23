@@ -1,15 +1,31 @@
 // License: LGPL-3.0-or-later
 
-import StateManager, {DonationResult}  from "./StateManager";
+import noop from 'lodash/noop';
 
-export default class DonationSubmitter implements EventTarget {
+import StateManager, { DonationResult } from "./StateManager";
+import { CallbackControllerBuilder } from '../../../../../app/javascript/common/Callbacks';
+
+
+import PlausibleCallback, { GetPlausible } from './PlausibleCallback';
+import type { CallbackAccessor, CallbackFilters, CallbackMap, CallbackClass } from "../../../../../app/javascript/common/Callbacks/types";
+
+interface DonationSubmitterProps {
+  getPlausible?: GetPlausible,
+}
+
+type ActionNames = 'success'
+
+export default class DonationSubmitter implements EventTarget, CallbackAccessor<DonationSubmitter, ActionNames> {
 
   
   private stateManager = new StateManager();
 
   private eventTarget = new EventTarget();
 
-  constructor() {
+  private callbackController = new CallbackControllerBuilder('success').withInputType<DonationSubmitter>();
+
+  constructor(public readonly props: DonationSubmitterProps) {
+    this.callbackController.addAfterCallback('success', PlausibleCallback);
 
     this.stateManager.addEventListener('beginSubmit', this.handleBeginSubmit);
     this.stateManager.addEventListener('savedCard', this.handleSavedCard);
@@ -40,7 +56,17 @@ export default class DonationSubmitter implements EventTarget {
     return this.stateManager.result;
   }
 
-  public reportBeginSubmit():void {
+  private async postSuccess(): Promise<void> {
+    await this.callbackController.run('success', this, noop);
+  }
+
+  callbacks(): CallbackMap<DonationSubmitter, ActionNames>;
+  callbacks(actionName: ActionNames): CallbackFilters<CallbackClass<DonationSubmitter>> | undefined;
+  callbacks(actionName?: ActionNames): CallbackMap<DonationSubmitter, ActionNames> | CallbackFilters<CallbackClass<DonationSubmitter>> | undefined {
+    return this.callbackController.callbacks(actionName);
+  }
+
+  public reportBeginSubmit(): void {
     this.stateManager.reportBeginSubmit();
   }
 
@@ -67,6 +93,7 @@ export default class DonationSubmitter implements EventTarget {
   }
 
   private handleCompleted = (_evt: Event) => {
+    this.postSuccess();
     this.dispatchEvent(new Event('updated'));
   }
   

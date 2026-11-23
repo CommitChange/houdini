@@ -30,7 +30,9 @@ function init(state) {
   const hideCoverFeesOption$ = flyd.map(params => params.hide_cover_fees_option, params$)
 
   const donationAmountCalculator = new DonationAmountCalculator(app.nonprofit.feeStructure);
-  const donationSubmitter = new DonationSubmitter()
+
+  const donationSubmitter = new DonationSubmitter({getPlausible:() => window['plausible']})
+
 
   // Give a donation of value x, this returns x + estimated fees (using fee coverage formula) if fee coverage is selected OR
   // x if fee coverage is not selected
@@ -182,11 +184,6 @@ function init(state) {
     , state.paid$
   )
 
-  flyd.map(
-    R.apply((donationResponse) => postSuccess(donationResp$))
-    , state.paid$
-  )
-
   onInit();
 
   return state
@@ -216,19 +213,6 @@ const postTracking = (utmParams, donationResponse) => {
       , method: 'post'
       , send: params
     }).load)
-  }
-}
-
-const postSuccess = (donationResponse) => {
-  try {
-    const plausible = window['plausible'];
-    if (plausible) {
-      const resp = donationResponse()
-      plausible('payment_succeeded', {props: {amount: resp && resp.charge && resp.charge.amount && (resp.charge.amount / 100)}});
-    }
-  }
-  catch(e) {
-    console.error(e)
   }
 }
 
