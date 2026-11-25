@@ -1029,34 +1029,36 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_25_210000) do
     t.index ["stripe_account_id"], name: "index_stripe_payment_intents_on_stripe_account_id"
   end
 
-  create_table "stripe_recurrence_charges", comment: "One row per monthly gift per month. Written and committed before Stripe is called; a second job that can't insert the month's row stops", force: :cascade do |t|
+  create_table "stripe_recurrence_charges", comment: "One row per attempt to charge a monthly gift for a month, written and committed before Stripe is called. A month has at most one row that isn't declined, failed or canceled; a job that can't insert it stops", force: :cascade do |t|
     t.bigint "stripe_recurrence_id", null: false, comment: "The monthly gift this charge is for"
-    t.date "billing_month", null: false, comment: "The month charged for, as its first day (UTC)"
-    t.date "billing_date", null: false, comment: "The day in billing_month the gift was due"
-    t.integer "amount", null: false, comment: "What the donor is charged, in cents, with any fee they cover, as it was when the row was written"
-    t.integer "application_fee_amount", null: false, comment: "The platform fee on this charge, in cents, as it was when the row was written"
-    t.integer "fee_era_id", null: false, comment: "The FeeEra application_fee_amount was worked out in"
-    t.integer "attempt", default: 1, null: false, comment: "Which attempt this month's charge is on. Starts at 1; a manual retry after a decline adds 1"
-    t.string "idempotency_key", null: false, comment: "The Stripe idempotency key for the current attempt"
+    t.date "billing_month", null: false, comment: "The month charged for: the first day of billing_date's month (UTC)"
+    t.date "billing_date", null: false, comment: "The day the gift was due (UTC)"
+    t.integer "amount", comment: "What the donor is charged, in cents, with any fee they cover, as it was when the row was written; null only when skipped"
+    t.integer "application_fee_amount", comment: "The platform fee on this charge, in cents, as it was when the row was written; null only when skipped"
+    t.integer "fee_era_id", comment: "The FeeEra application_fee_amount was worked out in; null only when skipped"
+    t.string "idempotency_key", comment: "The Stripe idempotency key for this attempt; null only when skipped"
     t.string "stripe_payment_intent_id", comment: "The local copy of the Stripe::PaymentIntent, set once Stripe has created it and before it's confirmed"
-    t.string "status", default: "pending", null: false, comment: "pending until confirmed; then succeeded, processing, requires_action, declined, failed (any other error), canceled, or skipped (not charged; see skip_reason)"
+    t.string "status", default: "pending", null: false, comment: "pending until Stripe's answer is known, which includes after an error that leaves it unknown whether the card was charged; then succeeded, processing, requires_action, declined, failed (Stripe confirmed nothing was charged), canceled, or skipped (never sent to Stripe; see skip_reason)"
     t.string "skip_reason", comment: "Why a skipped month wasn't charged, like the gift's first payment being refunded or disputed"
     t.string "failure_code", comment: "Stripe's error code when the charge was declined or failed"
     t.string "decline_code", comment: "Stripe's decline code when the card was declined"
     t.string "failure_message", comment: "Stripe's error message when the charge was declined or failed"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["fee_era_id"], name: "index_stripe_recurrence_charges_on_fee_era_id"
     t.index ["idempotency_key"], name: "index_stripe_recurrence_charges_on_idempotency_key", unique: true
     t.index ["stripe_payment_intent_id"], name: "index_stripe_recurrence_charges_on_stripe_payment_intent_id", unique: true
-    t.index ["stripe_recurrence_id", "billing_month"], name: "index_stripe_recurrence_charges_on_recurrence_and_month", unique: true
+    t.index ["stripe_recurrence_id", "billing_month"], name: "index_stripe_recurrence_charges_on_recurrence_and_month_live", unique: true, where: "((status)::text <> ALL ((ARRAY['declined'::character varying, 'failed'::character varying, 'canceled'::character varying])::text[]))"
     t.index ["updated_at"], name: "index_stripe_recurrence_charges_pending_on_updated_at", where: "((status)::text = 'pending'::text)"
     t.check_constraint "(status::text <> ALL (ARRAY['succeeded'::character varying, 'processing'::character varying, 'requires_action'::character varying, 'declined'::character varying, 'canceled'::character varying]::text[])) OR stripe_payment_intent_id IS NOT NULL", name: "stripe_recurrence_charges_payment_intent_once_confirmed"
     t.check_constraint "(status::text = 'skipped'::text) = (skip_reason IS NOT NULL)", name: "stripe_recurrence_charges_skip_reason_when_skipped"
     t.check_constraint "EXTRACT(day FROM billing_month) = 1::numeric", name: "stripe_recurrence_charges_billing_month_first_day"
     t.check_constraint "amount > 0", name: "stripe_recurrence_charges_amount_positive"
     t.check_constraint "application_fee_amount >= 0", name: "stripe_recurrence_charges_application_fee_amount_not_negative"
-    t.check_constraint "attempt > 0", name: "stripe_recurrence_charges_attempt_positive"
     t.check_constraint "billing_date >= billing_month AND billing_date < (billing_month + 'P1M'::interval)", name: "stripe_recurrence_charges_billing_date_in_month"
+    t.check_constraint "status::text <> 'skipped'::text OR amount IS NULL AND application_fee_amount IS NULL AND fee_era_id IS NULL AND idempotency_key IS NULL", name: "stripe_recurrence_charges_no_charge_details_when_skipped"
+    t.check_constraint "status::text <> 'skipped'::text OR stripe_payment_intent_id IS NULL", name: "stripe_recurrence_charges_no_payment_intent_when_skipped"
+    t.check_constraint "status::text = 'skipped'::text OR amount IS NOT NULL AND application_fee_amount IS NOT NULL AND fee_era_id IS NOT NULL AND idempotency_key IS NOT NULL", name: "stripe_recurrence_charges_charge_details_when_charged"
     t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'succeeded'::character varying, 'processing'::character varying, 'requires_action'::character varying, 'declined'::character varying, 'failed'::character varying, 'canceled'::character varying, 'skipped'::character varying]::text[])", name: "stripe_recurrence_charges_status_known"
   end
 
