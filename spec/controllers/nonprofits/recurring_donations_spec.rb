@@ -95,4 +95,32 @@ describe Nonprofits::RecurringDonationsController, type: :controller do
       expect(response_body["cancelled_by"]).to eq(user_as_np_admin.email)
     end
   end
+
+  describe "Slipflow's recurring donation" do
+    render_views
+
+    let!(:automated_user) { create(:automated_user) }
+    let(:rd) { create_slipflow_recurring_donation(nonprofit: nonprofit, n_failures: 3) }
+
+    before { sign_in user_as_np_admin }
+
+    it "says so" do
+      get :show, params: {nonprofit_id: nonprofit.id, id: rd.id}, format: :json
+
+      expect(JSON.parse(response.body)["data"]["slipflow"]).to eq(true)
+    end
+
+    it "refuses an edit" do
+      put :update, params: {nonprofit_id: nonprofit.id, id: rd.id, recurring_donation: {donation: {dollars: "20"}, n_failures: 0}}
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect([rd.reload.amount, rd.n_failures]).to eq([1000, 3])
+    end
+
+    it "cancels" do
+      delete :destroy, params: {nonprofit_id: nonprofit.id, id: rd.id}
+
+      expect(rd.reload.active).to eq(false)
+    end
+  end
 end

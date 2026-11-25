@@ -198,7 +198,7 @@ describe UpdateRecurringDonations do
         recurring_donation: orig_rd.merge(n_failures: 0, start_date: Time.now.to_date)
       }
 
-      expectations[:result] = expectations[:recurring_donation].merge(nonprofit_name: nonprofit.name, card_name: card.name)
+      expectations[:result] = expectations[:recurring_donation].merge(nonprofit_name: nonprofit.name, card_name: card.name, slipflow: false)
       expect(result).to eq expectations[:result]
       donation_for_rd.reload
       recurring_donation.reload
@@ -244,5 +244,40 @@ describe UpdateRecurringDonations do
       expect_validation_errors(e.data, [{key: :token}])
       expect(e.message).to eq "Supporter #{supporter.id} does not own card #{other_source_token.tokenizable.id}"
     }
+  end
+
+  describe "Slipflow's recurring donation" do
+    let(:rd) { create_slipflow_recurring_donation(paydate: 5, n_failures: 3) }
+    let(:card) { force_create(:card, holder: rd.supporter) }
+    let(:token) { force_create(:source_token, tokenizable: card, expiration: 1.day.from_now, max_uses: 5, token: SecureRandom.uuid).token }
+
+    def expect_refused
+      expect { yield }.to raise_error(ParamValidation::ValidationError, RecurringDonation::SLIPFLOW_EDIT_REFUSAL)
+      expect(SourceToken.find_by(token: token).total_uses).to eq(0)
+      rd.reload
+      expect([rd.amount, rd.paydate, rd.n_failures, rd.end_date, rd.donation.amount, rd.donation.card_id]).to eq([1000, 5, 3, nil, 1000, nil])
+    end
+
+    it "refuses a new card" do
+      expect_refused { UpdateRecurringDonations.update_card_id({id: rd.id}, token) }
+    end
+
+    it "refuses a new amount" do
+      expect_refused { UpdateRecurringDonations.update_amount(rd, token, 2000) }
+    end
+
+    it "refuses a new paydate" do
+      expect_refused { UpdateRecurringDonations.update_paydate({"id" => rd.id}, 10) }
+    end
+
+    it "refuses a staff edit" do
+      expect_refused { UpdateRecurringDonations.update(rd, {donation: {dollars: "20"}, end_date_str: "2030-01-01", fee_covered: true}) }
+    end
+
+    it "can be cancelled" do
+      UpdateRecurringDonations.cancel(rd.id, "donor@example.com")
+
+      expect(rd.reload.active).to eq(false)
+    end
   end
 end

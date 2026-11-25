@@ -17,7 +17,8 @@ module QueryRecurringDonations
         "recurring_donations.*",
         "nonprofits.id AS nonprofit_id",
         "nonprofits.name AS nonprofit_name",
-        "cards.name AS card_name"
+        "cards.name AS card_name",
+        "#{RecurringDonation.slipflow_clause} AS slipflow"
       ).from("recurring_donations")
        .left_outer_join("donations", "donations.id=recurring_donations.donation_id")
        .left_outer_join("cards", "donations.card_id=cards.id")
@@ -210,7 +211,7 @@ module QueryRecurringDonations
   end
 
   def self.recurring_donations_without_cards
-    RecurringDonation.active.includes(:card).includes(:charges).includes(:donation).includes(:nonprofit).includes(:supporter).where("cards.id IS NULL").order("recurring_donations.created_at DESC")
+    RecurringDonation.active.not_slipflow.includes(:card).includes(:charges).includes(:donation).includes(:nonprofit).includes(:supporter).where(cards: {id: nil}).order("recurring_donations.created_at DESC")
   end
 
   # @param [Supporter] supporter
@@ -238,6 +239,7 @@ module QueryRecurringDonations
       .from(:recurring_donations)
       .where("recurring_donations.active='t'")
       .where("coalesce(recurring_donations.n_failures, 0) < 3")
+      .where("NOT #{RecurringDonation.slipflow_charged_clause}") # Slipflow charges its own monthly gifts
       .where("recurring_donations.start_date IS NULL OR recurring_donations.start_date <= $now", now: now)
       .where("recurring_donations.end_date IS NULL OR recurring_donations.end_date > $now", now: now)
       .where("(recurring_donation_holds.id IS NULL OR recurring_donation_holds.end_date IS NULL OR (recurring_donation_holds.end_date IS NOT NULL AND recurring_donation_holds.end_date <= $now))", now: now)

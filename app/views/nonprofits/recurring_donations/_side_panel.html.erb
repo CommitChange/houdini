@@ -72,6 +72,12 @@
     </p>
 
 		<p>
+			<!--= show_if this.slipflow -->
+			This donation's amount, card and schedule can't be changed. The donor can cancel it and give again.
+		</p>
+
+		<p>
+			<!--= hide_if this.slipflow -->
 			<button class='button--small edit u-marginY--10'>
 				<!--= on 'click' (open_modal 'edit_recurring_donation') -->
 				<i class='fa fa-pencil'></i> Edit this recurring donation

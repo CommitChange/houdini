@@ -15,6 +15,17 @@ class RecurringDonation < ApplicationRecord
 
   # The query that displays in nonprofits/:id/recurring_donations is rds that are active OR failed
 
+  # Slipflow charges some monthly gifts itself. Its first payment is a Slipflow PaymentIntent that
+  # started a stripe_recurrence, and Slipflow writes this row, in the same transaction as the
+  # stripe_recurrence, as a copy for CC's display, receipts and reports. CC owns only the cancel
+  # (active, cancelled_at, cancelled_by) and refuses every other change, since Slipflow's
+  # stripe_recurrence holds the gift's real terms. n_failures is set to 3 by Slipflow when it stops
+  # the gift, so CC shows it as failed.
+  #
+  # CC's charger goes further and skips any donation with a Slipflow charge, so it can't charge a gift
+  # whatever order Slipflow's rows become visible in.
+  SLIPFLOW_EDIT_REFUSAL = "This recurring donation can only be cancelled. To change it, cancel it and give again."
+
   define_model_callbacks :cancel
 
   before_save :set_anonymous
@@ -50,6 +61,9 @@ class RecurringDonation < ApplicationRecord
   scope :fulfilled, -> { where("recurring_donations.end_date < ?", Time.current.to_date) }
   scope :unfulfilled, -> { where("recurring_donations.end_date IS NULL OR recurring_donations.end_date IS >= ?", Time.current.to_date) }
 
+  scope :slipflow, -> { where(slipflow_clause) }
+  scope :not_slipflow, -> { where.not(slipflow_clause) }
+
   scope :may_attempt_again, -> { where("recurring_donations.active AND (recurring_donations.end_date IS NULL OR recurring_donations.end_date > ?) AND recurring_donations.n_failures < 3", Time.current) }
 
   belongs_to :donation
@@ -68,6 +82,28 @@ class RecurringDonation < ApplicationRecord
   validates :interval, presence: true, numericality: {greater_than: 0}
   validates :time_unit, presence: true, inclusion: {in: Timespan::Units}
   validates_associated :donation
+
+  # SQL that's true when a recurring donation is Slipflow's
+  def self.slipflow_clause
+    "EXISTS (SELECT 1 FROM charges INNER JOIN stripe_recurrences ON stripe_recurrences.stripe_payment_intent_id = charges.stripe_payment_intent_id WHERE charges.donation_id = recurring_donations.donation_id)"
+  end
+
+  # SQL that's true when a recurring donation's donation has any Slipflow charge. CC's charger skips these.
+  def self.slipflow_charged_clause
+    "EXISTS (SELECT 1 FROM charges WHERE charges.donation_id = recurring_donations.donation_id AND charges.stripe_payment_intent_id IS NOT NULL)"
+  end
+
+  def slipflow?
+    persisted? && RecurringDonation.slipflow.exists?(id)
+  end
+
+  def slipflow_charged?
+    persisted? && RecurringDonation.where(RecurringDonation.slipflow_charged_clause).exists?(id)
+  end
+
+  def refuse_edit_if_slipflow!
+    raise ParamValidation::ValidationError.new(SLIPFLOW_EDIT_REFUSAL, key: :id) if slipflow?
+  end
 
   def most_recent_charge
     if charges

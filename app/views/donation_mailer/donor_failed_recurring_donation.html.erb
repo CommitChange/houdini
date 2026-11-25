@@ -14,7 +14,11 @@
 <br>
 <br>
 <p>
+  <% if @donation.recurring_donation.slipflow? %>
+  To give again with a new card, please cancel this recurring donation and start a new one using this secure link:
+  <% else %>
   Kindly take a moment to update your credit card information using this secure link: 
+  <% end %>
   <strong>
     <% url = edit_recurring_donation_url(@donation.recurring_donation, {t: @donation.recurring_donation.edit_token}) %>
     <a href="<%= url %>"> <%= url %> </a>

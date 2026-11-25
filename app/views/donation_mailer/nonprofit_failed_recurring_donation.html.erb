@@ -5,7 +5,11 @@ A recurring donation from one of your supporters has had a payment failure. Deta
 <br>
 
 <p>
+<% if @donation.recurring_donation.slipflow? %>
+The donor has also received a notification of the payment failure with a link to cancel and give again with a new card. Here is a copy of the link that the donor received:
+<% else %>
 The donor has also received a notification of the payment failure with a link to update their card. Here is a copy of the link that the donor received:
+<% end %>
 <br>
 <% url = edit_recurring_donation_url(@donation.recurring_donation, {t: @donation.recurring_donation.edit_token}) %>
 <a href="<%= url %>"> <%= url %> </a>

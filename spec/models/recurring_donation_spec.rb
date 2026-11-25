@@ -111,4 +111,41 @@ RSpec.describe RecurringDonation, type: :model do
       end
     end
   end
+
+  describe "Slipflow's" do
+    let(:slipflow_rd) { create_slipflow_recurring_donation }
+    let(:cc_rd) { force_create(:recurring_donation, active: true, n_failures: 0) }
+
+    it "is Slipflow's when its donation's charge started a stripe_recurrence" do
+      expect(slipflow_rd).to be_slipflow
+      expect(RecurringDonation.slipflow).to contain_exactly(slipflow_rd)
+      expect(RecurringDonation.not_slipflow).not_to include(slipflow_rd)
+    end
+
+    it "isn't Slipflow's, though Slipflow charged it, when its donation's Slipflow charge started no stripe_recurrence" do
+      donation = force_create(:donation, amount: 1000)
+      add_slipflow_charge(donation, start_recurrence: false)
+      rd = force_create(:recurring_donation, donation: donation, active: true, n_failures: 0)
+
+      expect(rd).not_to be_slipflow
+      expect(rd).to be_slipflow_charged
+      expect(slipflow_rd).to be_slipflow_charged
+      expect(cc_rd).not_to be_slipflow_charged
+    end
+
+    it "isn't Slipflow's without a Slipflow charge" do
+      expect(cc_rd).not_to be_slipflow
+      expect(RecurringDonation.not_slipflow).to include(cc_rd)
+    end
+
+    it "refuses edits" do
+      expect { slipflow_rd.refuse_edit_if_slipflow! }.to raise_error(ParamValidation::ValidationError, RecurringDonation::SLIPFLOW_EDIT_REFUSAL)
+      expect { cc_rd.refuse_edit_if_slipflow! }.not_to raise_error
+    end
+
+    it "can't be put on hold" do
+      expect(slipflow_rd.build_recurring_donation_hold(end_date: 1.month.from_now)).not_to be_valid
+      expect(cc_rd.build_recurring_donation_hold(end_date: 1.month.from_now)).to be_valid
+    end
+  end
 end
