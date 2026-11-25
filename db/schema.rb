@@ -1029,6 +1029,43 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_25_220000) do
     t.index ["stripe_account_id"], name: "index_stripe_payment_intents_on_stripe_account_id"
   end
 
+  create_table "stripe_recurrence_charges", comment: "One row per attempt to charge a monthly gift for a month, written and committed before Stripe is called. A month has at most one row that isn't declined, failed or canceled; a job that can't insert it stops", force: :cascade do |t|
+    t.bigint "stripe_recurrence_id", null: false, comment: "The monthly gift this charge is for"
+    t.date "billing_month", null: false, comment: "The month charged for: the first day of billing_date's month (UTC)"
+    t.date "billing_date", null: false, comment: "The day the gift was due (UTC)"
+    t.integer "amount", comment: "What the donor is charged, in cents, with any fee they cover, as it was when the row was written; null only when skipped"
+    t.integer "application_fee_amount", comment: "The platform fee on this charge, in cents, as it was when the row was written; null only when skipped"
+    t.integer "fee_era_id", comment: "The FeeEra application_fee_amount was worked out in; null only when skipped"
+    t.string "idempotency_key", comment: "The Stripe idempotency key for this attempt; null only when skipped"
+    t.string "stripe_payment_intent_id", comment: "The local copy of the Stripe::PaymentIntent, set once Stripe has created it and before it's confirmed"
+    t.string "status", default: "pending", null: false, comment: "pending until Stripe's answer is known, including after an error that leaves it unknown; then succeeded, processing, requires_action (needs the donor to authenticate), declined (the card was declined and the PaymentIntent is canceled at Stripe), failed (no PaymentIntent was created), canceled (the PaymentIntent is canceled at Stripe), or skipped (never sent to Stripe; see skip_reason)"
+    t.string "skip_reason", comment: "Why a skipped month wasn't charged, like the gift's first payment being refunded or disputed"
+    t.string "failure_code", comment: "Stripe's error code when the charge was declined or failed, or its cancellation reason when canceled"
+    t.string "decline_code", comment: "Stripe's decline code when the card was declined"
+    t.string "failure_message", comment: "Stripe's error message when the charge was declined, failed or was canceled"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fee_era_id"], name: "index_stripe_recurrence_charges_on_fee_era_id"
+    t.index ["idempotency_key"], name: "index_stripe_recurrence_charges_on_idempotency_key", unique: true
+    t.index ["stripe_payment_intent_id"], name: "index_stripe_recurrence_charges_on_stripe_payment_intent_id", unique: true
+    t.index ["stripe_recurrence_id", "billing_month"], name: "index_stripe_recurrence_charges_on_recurrence_and_month_live", unique: true, where: "((status)::text <> ALL ((ARRAY['declined'::character varying, 'failed'::character varying, 'canceled'::character varying])::text[]))"
+    t.index ["stripe_recurrence_id"], name: "index_stripe_recurrence_charges_on_stripe_recurrence_id"
+    t.index ["updated_at"], name: "index_stripe_recurrence_charges_pending_on_updated_at", where: "((status)::text = 'pending'::text)"
+    t.check_constraint "(status::text <> ALL (ARRAY['skipped'::character varying, 'failed'::character varying]::text[])) OR stripe_payment_intent_id IS NULL", name: "stripe_recurrence_charges_no_pi_when_skipped_or_failed"
+    t.check_constraint "(status::text <> ALL (ARRAY['succeeded'::character varying, 'processing'::character varying, 'requires_action'::character varying, 'declined'::character varying, 'canceled'::character varying]::text[])) OR stripe_payment_intent_id IS NOT NULL", name: "stripe_recurrence_charges_payment_intent_once_confirmed"
+    t.check_constraint "(status::text = 'skipped'::text) = (skip_reason IS NOT NULL)", name: "stripe_recurrence_charges_skip_reason_when_skipped"
+    t.check_constraint "EXTRACT(day FROM billing_month) = 1::numeric", name: "stripe_recurrence_charges_billing_month_first_day"
+    t.check_constraint "amount > 0", name: "stripe_recurrence_charges_amount_positive"
+    t.check_constraint "application_fee_amount < amount", name: "stripe_recurrence_charges_application_fee_amount_below_amount"
+    t.check_constraint "application_fee_amount >= 0", name: "stripe_recurrence_charges_application_fee_amount_not_negative"
+    t.check_constraint "billing_date >= billing_month AND billing_date < (billing_month + 'P1M'::interval)", name: "stripe_recurrence_charges_billing_date_in_month"
+    t.check_constraint "decline_code IS NULL OR status::text = 'declined'::text", name: "stripe_recurrence_charges_decline_code_when_declined"
+    t.check_constraint "failure_code IS NULL AND failure_message IS NULL OR (status::text = ANY (ARRAY['declined'::character varying, 'failed'::character varying, 'canceled'::character varying]::text[]))", name: "stripe_recurrence_charges_failure_when_not_charged"
+    t.check_constraint "status::text <> 'skipped'::text OR amount IS NULL AND application_fee_amount IS NULL AND fee_era_id IS NULL AND idempotency_key IS NULL", name: "stripe_recurrence_charges_no_charge_details_when_skipped"
+    t.check_constraint "status::text = 'skipped'::text OR amount IS NOT NULL AND application_fee_amount IS NOT NULL AND fee_era_id IS NOT NULL AND idempotency_key IS NOT NULL", name: "stripe_recurrence_charges_charge_details_when_charged"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'succeeded'::character varying, 'processing'::character varying, 'requires_action'::character varying, 'declined'::character varying, 'failed'::character varying, 'canceled'::character varying, 'skipped'::character varying]::text[])", name: "stripe_recurrence_charges_status_known"
+  end
+
   create_table "stripe_recurrences", force: :cascade do |t|
     t.integer "gift_amount", null: false, comment: "The gift each month, in cents, without any fee the donor covers"
     t.boolean "fee_covered", default: false, null: false, comment: "Whether the donor chose to cover the fee"
@@ -1351,6 +1388,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_25_220000) do
   add_foreign_key "payments", "supporters", name: "payments_supporter_fk"
   add_foreign_key "periodic_reports", "nonprofits"
   add_foreign_key "periodic_reports", "users"
+  add_foreign_key "stripe_recurrence_charges", "fee_eras"
+  add_foreign_key "stripe_recurrence_charges", "stripe_payment_intents"
+  add_foreign_key "stripe_recurrence_charges", "stripe_recurrences"
   add_foreign_key "stripe_recurrences", "payment_intents"
   add_foreign_key "stripe_recurrences", "stripe_accounts"
   add_foreign_key "stripe_recurrences", "stripe_payment_intents"
