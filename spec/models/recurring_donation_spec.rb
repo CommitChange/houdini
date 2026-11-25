@@ -143,7 +143,7 @@ RSpec.describe RecurringDonation, type: :model do
       expect { cc_rd.refuse_edit_if_slipflow! }.not_to raise_error
     end
 
-    it "can't be held" do
+    it "can't be put on hold" do
       expect(slipflow_rd.build_recurring_donation_hold(end_date: 1.month.from_now)).not_to be_valid
       expect(cc_rd.build_recurring_donation_hold(end_date: 1.month.from_now)).to be_valid
     end

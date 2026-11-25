@@ -9,6 +9,6 @@ class RecurringDonationHold < ApplicationRecord
 
   # Slipflow schedules its own charges, so a hold on its recurring donation would do nothing
   def recurring_donation_not_slipflow
-    errors.add(:recurring_donation, "is charged by Slipflow and can't be held") if recurring_donation&.slipflow?
+    errors.add(:recurring_donation, "is charged by Slipflow and can't be put on hold") if recurring_donation&.slipflow?
   end
 end
