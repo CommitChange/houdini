@@ -11,8 +11,9 @@ module SlipflowRecurringDonations
     row = Qx.insert_into(:recurring_donations).values({
       donation_id: donation.id, nonprofit_id: nonprofit.id, supporter_id: supporter.id, email: supporter.email,
       amount: 1000, active: true, n_failures: 0, interval: 1, time_unit: "month", start_date: 2.months.ago.to_date,
-      paydate: 2.months.ago.day, edit_token: SecureRandom.uuid, anonymous: false
+      paydate: [2.months.ago.day, 28].min, edit_token: SecureRandom.uuid, anonymous: false
     }.merge(attributes)).ts.returning("id").ex.first
+    Qx.insert_into(:misc_recurring_donation_infos).values(recurring_donation_id: row["id"], fee_covered: false).ts.ex
     RecurringDonation.find(row["id"])
   end
 
