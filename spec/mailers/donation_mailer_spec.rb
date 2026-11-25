@@ -312,4 +312,28 @@ RSpec.describe DonationMailer, type: :mailer do
       end
     end
   end
+
+  describe "donor_payment_notification for Slipflow's recurring donation" do
+    let(:rd) { create_slipflow_recurring_donation(nonprofit: force_create(:nonprofit, name: "nonprofit", email: "np@example.com")) }
+    let(:payment) { force_create(:payment, donation_id: rd.donation_id, supporter_id: rd.supporter_id, nonprofit_id: rd.nonprofit_id, gross_amount: 1000) }
+    let(:mail) { DonationMailer.donor_payment_notification(rd.donation_id, payment.id) }
+
+    it "offers only a cancel" do
+      expect(mail.body.encoded).to include("cancel it and give again")
+      expect(mail.body.encoded).to include("/recurring_donations/#{rd.id}/edit?t=#{rd.edit_token}")
+      expect(mail.body.encoded).not_to include("update your card")
+      expect(mail.body.encoded).not_to include("pause")
+    end
+  end
+
+  describe "failure emails for Slipflow's recurring donation" do
+    let(:rd) { create_slipflow_recurring_donation(nonprofit: force_create(:nonprofit, name: "nonprofit", email: "np@example.com")) }
+
+    it "ask the donor to cancel and give again, not to update their card" do
+      body = DonationMailer.donor_failed_recurring_donation(rd.donation_id).body.encoded
+
+      expect(body).to include("cancel this recurring donation and start a new one")
+      expect(body).not_to include("update your credit card")
+    end
+  end
 end

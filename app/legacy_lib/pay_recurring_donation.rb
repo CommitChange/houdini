@@ -70,6 +70,8 @@ module PayRecurringDonation
       raise ParamValidation::ValidationError.new("#{rd_id} is not a valid recurring donation", {key: :rd_id})
     end
 
+    # Slipflow charges its own monthly gifts, so even a forced run must not charge one
+    return false if rd.slipflow_charged?
     return false if !force_run && !QueryRecurringDonations.is_due?(rd_id)
 
     donation = Donation.where("id = ?", rd["donation_id"]).first

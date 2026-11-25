@@ -369,4 +369,32 @@ describe QueryRecurringDonations do
       CSV.parse(Format::Csv.from_array(QueryRecurringDonations.for_export_enumerable(@nonprofit.id, {active_and_not_failed: true, include_stripe_customer_id: true, root_url: "https://localhost:8080/"}).to_a), headers: true)
     end
   end
+
+  describe "Slipflow's recurring donations" do
+    let(:slipflow_rd) { create_slipflow_recurring_donation(start_date: 3.months.ago) }
+    let(:cc_rd) { force_create(:recurring_donation_base, donation: force_create(:donation, amount: 1000), nonprofit: slipflow_rd.nonprofit, start_date: 3.months.ago, n_failures: 0) }
+
+    it "are never due, since Slipflow charges them" do
+      Qx.insert_into(:charges).values(donation_id: cc_rd.donation_id, amount: 1000, status: "paid", created_at: 2.months.ago, updated_at: 2.months.ago).ex
+
+      expect(QueryRecurringDonations.is_due?(cc_rd.id)).to eq(true)
+      expect(QueryRecurringDonations.is_due?(slipflow_rd.id)).to eq(false)
+    end
+
+    it "aren't due before their stripe_recurrence is visible" do
+      add_slipflow_charge(cc_rd.donation, charged_at: 2.months.ago, start_recurrence: false)
+
+      expect(QueryRecurringDonations.is_due?(cc_rd.id)).to eq(false)
+    end
+
+    it "aren't in the report of recurring donations without cards" do
+      expect(QueryRecurringDonations.recurring_donations_without_cards).to include(cc_rd)
+      expect(QueryRecurringDonations.recurring_donations_without_cards).not_to include(slipflow_rd)
+    end
+
+    it "say so on their edit page" do
+      expect(QueryRecurringDonations.fetch_for_edit(slipflow_rd.id)["recurring_donation"]["slipflow"]).to eq(true)
+      expect(QueryRecurringDonations.fetch_for_edit(cc_rd.id)["recurring_donation"]["slipflow"]).to eq(false)
+    end
+  end
 end # describe

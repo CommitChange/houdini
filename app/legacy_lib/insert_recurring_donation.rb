@@ -180,6 +180,10 @@ module InsertRecurringDonation
     if !don
       raise ParamValidation::ValidationError.new("#{donation_id} is not a valid donation", {key: :donation_id, val: donation_id})
     end
+    # Slipflow made this donation and schedules any monthly gifts itself
+    if don.charges.where.not(stripe_payment_intent_id: nil).exists?
+      raise ParamValidation::ValidationError.new("#{donation_id} was made in Slipflow and can't be converted", {key: :donation_id, val: donation_id})
+    end
     rd = insert_recurring_donation({amount: don.amount, email: don.supporter.email, anonymous: don.anonymous, origin_url: don.origin_url, recurring_donation: {start_date: don.created_at, paydate: convert_date_to_valid_paydate(don.created_at)}, date: don.created_at}, {supporter_id: don.supporter, nonprofit_id: don.nonprofit, donation_id: don})
     don.recurring_donation = rd
     don.recurring = true

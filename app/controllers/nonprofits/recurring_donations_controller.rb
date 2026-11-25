@@ -63,6 +63,10 @@ module Nonprofits
     end
 
     def update
+      # UpdateRecurringDonations.update refuses too, but json_saved can't turn that into a 422
+      if current_recurring_donation.slipflow?
+        return render json: [RecurringDonation::SLIPFLOW_EDIT_REFUSAL], status: :unprocessable_entity
+      end
       json_saved UpdateRecurringDonations
         .update(current_recurring_donation, params[:recurring_donation])
     end

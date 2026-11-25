@@ -32,6 +32,10 @@ class RecurringDonationsController < ApplicationController
   def update
     data = QueryRecurringDonations.fetch_for_edit params[:id]
     if data && params[:edit_token] == data["recurring_donation"]["edit_token"]
+      # Refused here, before the supporter update, as well as in UpdateRecurringDonations, so the donor gets a 422
+      if (params[:token] || params[:paydate]) && data["recurring_donation"]["slipflow"]
+        return render json: {error: RecurringDonation::SLIPFLOW_EDIT_REFUSAL}, status: :unprocessable_entity
+      end
       data["supporter"] = UpdateSupporter.general_info(params[:supporter][:id], params[:supporter]) if params[:supporter]
       data["recurring_donation"] ||= {}
       data["recurring_donation"] = UpdateRecurringDonations.update_card_id(data["recurring_donation"], params[:token]) if params[:token]
