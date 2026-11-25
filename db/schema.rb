@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_11_25_200000) do
+ActiveRecord::Schema[7.1].define(version: 2026_11_25_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -1041,12 +1041,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_25_200000) do
     t.string "stripe_payment_method_id", null: false, comment: "The id of the Stripe::PaymentMethod to use for future payments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "stopped_at", comment: "When Slipflow stopped charging this gift on its own; null while it runs. A donor's or nonprofit's cancel is on the recurring donation, not here"
+    t.string "stop_reason", comment: "Why Slipflow stopped: declined_three_times (three declines in a row), first_payment_refunded or first_payment_disputed"
     t.index ["payment_intent_id"], name: "index_stripe_recurrences_on_payment_intent_id", unique: true
     t.index ["stripe_account_id"], name: "index_stripe_recurrences_on_stripe_account_id"
     t.index ["stripe_payment_intent_id"], name: "index_stripe_recurrences_on_stripe_payment_intent_id", unique: true
+    t.check_constraint "(stopped_at IS NULL) = (stop_reason IS NULL)", name: "stripe_recurrences_stop_reason_when_stopped"
     t.check_constraint "covered_fee_amount >= 0", name: "stripe_recurrences_covered_fee_amount_not_negative"
     t.check_constraint "fee_covered OR covered_fee_amount = 0", name: "stripe_recurrences_covered_fee_amount_only_when_covered"
     t.check_constraint "gift_amount > 0", name: "stripe_recurrences_gift_amount_positive"
+    t.check_constraint "stop_reason::text = ANY (ARRAY['declined_three_times'::character varying, 'first_payment_refunded'::character varying, 'first_payment_disputed'::character varying]::text[])", name: "stripe_recurrences_stop_reason_known"
   end
 
   create_table "stripe_transaction_charges", id: :serial, force: :cascade do |t|

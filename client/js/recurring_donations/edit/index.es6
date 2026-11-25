@@ -232,19 +232,22 @@ function actions(state) {
   var rd = state.recDon$()
   if(!rd.active) return ''
   var modalID$ = state.modalID$
+  // A gift Slipflow charges can only be cancelled; the donor gives again to change it
+  var editable = !rd.slipflow
   return h('div.pastelBox--looseleaf.u-padding--15.u-marginBottom--50', [
     h('p.u-strong.u-centered', 'What would you like to do?')
   , h('ul.hasBullets.u-maxWidth--400.u-margin--auto', [
-      h('li', [changeAmountBtn(modalID$)])
-    , h('li', [updateCardBtn(modalID$)])
+      editable ? h('li', [changeAmountBtn(modalID$)]) : ''
+    , editable ? h('li', [updateCardBtn(modalID$)]) : ''
 
     , h('li', [updateAddressBtn(modalID$)])
-    , rd.interval === 1 && rd.time_unit === 'month'
+    , editable && rd.interval === 1 && rd.time_unit === 'month'
         ? h('li', [updatePaydateBtn(modalID$)])
         : ''
     , h('li', [giveOneTimeDonationBtn(state)])
     , h('li', [cancelBtn(modalID$)])
     ])
+  , editable ? '' : h('p.u-centered.u-marginTop--15', 'To change your amount, card or billing day, cancel this donation and give again.')
   ])
 }
 
@@ -301,12 +304,13 @@ const cancelModal = state =>
     thisID: 'cancelRecDonModal'
   , id$: state.modalID$
   , body: h('div.u-marginTop--30.u-centered', [
-      h('p.u-marginBottom--20.u-strong', [
+      // A pause is a hold, which a gift Slipflow charges can't have
+      state.recDon$().slipflow ? '' : h('p.u-marginBottom--20.u-strong', [
         h('span', `If you need to pause your donation due to financial hardship, please contact ${String(state.recDon$().nonprofit_name)} by sending them an email at `),
         h('a', {props: {href: `mailto:${app.nonprofit.email}`}}, String(app.nonprofit.email)),
         h('span', ' with how long you would like the pause to occur.')
       ])
-    , h('hr.diamonds.u-marginBottom--40')
+    , state.recDon$().slipflow ? '' : h('hr.diamonds.u-marginBottom--40')
     , h('p.u-strong', 'Cancelling your recurring donation will prevent any future charges for this donation.')
     , h('hr.diamonds')
     , h('div.u-marginTop--30', [confirmCancelBtn(state)])

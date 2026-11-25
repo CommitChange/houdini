@@ -30,6 +30,7 @@ require "support/stripe_mock_helper"
 require "timecop"
 require "delayed_job"
 require "support/contexts"
+require "support/slipflow_recurring_donations"
 require "action_mailer_matchers"
 Delayed::Worker.delay_jobs = false
 # Requires supporting ruby files with custom matchers and macros, etc, in

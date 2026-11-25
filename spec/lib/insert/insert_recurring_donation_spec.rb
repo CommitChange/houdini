@@ -321,4 +321,15 @@ describe InsertRecurringDonation do
       end
     end
   end
+
+  describe ".convert_donation_to_recurring_donation for a donation made in Slipflow" do
+    it "refuses, whether or not the donation started a monthly gift" do
+      donation = force_create(:donation, amount: 1000, supporter: force_create(:supporter))
+      add_slipflow_charge(donation, start_recurrence: false)
+
+      expect { InsertRecurringDonation.convert_donation_to_recurring_donation(donation.id) }
+        .to raise_error(ParamValidation::ValidationError, /made in Slipflow/)
+      expect(donation.reload.recurring_donation).to be_nil
+    end
+  end
 end

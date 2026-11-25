@@ -22,6 +22,8 @@ module UpdateRecurringDonations
         id: {is_reference: true, required: true}
       })
 
+    RecurringDonation.find_by(id: rd[:id])&.refuse_edit_if_slipflow! # before the token is used up
+
     source_token = QuerySourceToken.get_and_increment_source_token(token, nil)
     tokenizable = source_token.tokenizable
 
@@ -46,6 +48,7 @@ module UpdateRecurringDonations
 
   # Update the paydate for a given recurring donation (provide rd['id'])
   def self.update_paydate(rd, paydate)
+    RecurringDonation.find(rd["id"]).refuse_edit_if_slipflow!
     return ValidationError.new(["Invalid paydate"]) unless (1..28).include?(paydate.to_i)
     Psql.execute(Qexpr.new.update(:recurring_donations, paydate: paydate).where("id=$id", id: rd["id"]))
     rd["paydate"] = paydate
@@ -61,6 +64,7 @@ module UpdateRecurringDonations
       {amount: {is_integer: true, min: 50, required: true},
        rd: {required: true, is_a: RecurringDonation},
        token: {required: true, format: UUID::Regex}})
+    rd.refuse_edit_if_slipflow! # before the token is used up
     source_token = QuerySourceToken.get_and_increment_source_token(token, nil)
     tokenizable = source_token.tokenizable
 
@@ -87,7 +91,8 @@ module UpdateRecurringDonations
   end
 
   def self.update_from_start_dates
-    RecurringDonation.inactive.where("start_date >= ?", Date.today).update_all(active: true)
+    # A Slipflow gift's cancel must stay put
+    RecurringDonation.inactive.not_slipflow.where("start_date >= ?", Date.today).update_all(active: true)
   end
 
   def self.update_from_end_dates
@@ -109,6 +114,7 @@ module UpdateRecurringDonations
   end
 
   def self.update(rd, params)
+    rd.refuse_edit_if_slipflow!
     model = UpdateRecurringDonations::UpdateModel.new
 
     model.amount = params[:donation] && params[:donation][:dollars]

@@ -14,6 +14,10 @@ child :card do
   attributes :name
 end
 
+node(:slipflow) do |p|
+  p.slipflow?
+end
+
 node(:fee_covered) do |p|
   !!p.misc_recurring_donation_info&.fee_covered
 end

@@ -219,4 +219,15 @@ describe PayRecurringDonation do
     #   Psql.execute("DELETE FROM delayed_jobs WHERE queue='rec-don-payments'")
     # end
   end
+
+  describe ".with_stripe for Slipflow's recurring donation" do
+    let!(:automated_user) { create(:automated_user) }
+
+    it "doesn't charge it, even when forced" do
+      rd = create_slipflow_recurring_donation(start_date: 3.months.ago)
+
+      expect { expect(PayRecurringDonation.with_stripe(rd.id, true)).to eq(false) }.not_to change(Charge, :count)
+      expect(rd.reload.n_failures).to eq(0)
+    end
+  end
 end
